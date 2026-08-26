@@ -281,6 +281,33 @@ findDuplicates(
   "canción",
 );
 
+// expresiones MDX: no se evalúan en este pipeline y se pierden en silencio,
+// así que un `desde={5}` dibujaría el diagrama equivocado sin avisar.
+const MDX_EXPRESSION = /(?:^|\s)([a-zA-Z][a-zA-Z0-9_]*)=\{/;
+
+function checkMdxExpressions(file: string, body: string) {
+  body.split("\n").forEach((line, i) => {
+    const match = MDX_EXPRESSION.exec(line);
+    if (!match) return;
+    errors.push({
+      file: rel(file),
+      message: `línea ${i + 1}: \`${match[1]}={…}\` no se evalúa en MDX y se pierde. Usa comillas: ${match[1]}="…"`,
+    });
+  });
+}
+
+function walkMdx(dir: string): string[] {
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) return walkMdx(full);
+    return entry.isFile() && entry.name.endsWith(".mdx") ? [full] : [];
+  });
+}
+
+for (const file of walkMdx(CONTENT)) {
+  checkMdxExpressions(file, readMdx(file).body);
+}
+
 // avisos: semanas sin 5 días, wiki huérfana
 for (const w of weeks) {
   if (w.dayCount < 5) {

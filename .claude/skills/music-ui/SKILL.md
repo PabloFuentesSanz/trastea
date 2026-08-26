@@ -28,6 +28,48 @@ description: APIs de los componentes musicales (Fretboard, ChordDiagram, Tab, Me
 - `<ChordDiagram />` — svguitar. `<Tab />` — AlphaTab (cargar en cliente,
   pesa; lazy import).
 
+## Primitivas de autoría en MDX
+
+El contenido **no dibuja nada a mano**: nunca una lista tipo "6ª cuerda: 5-8"
+donde cabe un diagrama. Componentes disponibles desde cualquier `.mdx`:
+
+```mdx
+<Mastil escala="A minor-pentatonic" desde="5" hasta="8" pie="Caja 1" />
+<Mastil acorde="Am7" desde="5" hasta="8" cuerdas="4, 3, 2" />
+<Acordes>
+  <Acorde nombre="C" />
+  <Acorde nombre="Am7" zona="5" />
+</Acordes>
+<Ficha formula="1 - b3 - 4 - 5 - b7" notas="En La: A C D E G" suena="…" usa="…" />
+<Aviso tipo="error">Lo que todo el mundo hace mal.</Aviso>
+<Rutina>
+  <Paso dias="1-3" min="10" bpm="60" tool="/metronomo?bpm=60">
+    …
+  </Paso>
+</Rutina>
+<Canciones titulo="Dónde practicarla">
+  <Cancion
+    titulo="Back in Black"
+    artista="AC/DC"
+    nivel="2"
+    desde="2:10"
+    que="qué se practica exactamente"
+    como="cómo se practica"
+  />
+</Canciones>
+```
+
+`escala`/`acorde` se resuelven contra `SCALES`/`CHORDS` (`parseFormulaSpec`):
+un id inexistente revienta el build, no dibuja algo equivocado.
+
+### ⚠️ Las expresiones MDX no se evalúan
+
+En este pipeline `desde={5}` **llega como `undefined`** y `{1 + 1}` en el
+cuerpo renderiza vacío. Se escriben **siempre entre comillas**: `desde="5"`,
+`min="10"`, `cuerdas="6, 5, 4"`. Los componentes convierten con `num()`/`nums()`.
+`pnpm content:audit` rechaza cualquier `prop={…}` con fichero y línea, así que
+el fallo es rojo y no silencioso.
+
 ## Errores típicos a evitar
 
 - Mezclar sostenidos y bemoles en una misma escala.
@@ -35,3 +77,7 @@ description: APIs de los componentes musicales (Fretboard, ChordDiagram, Tab, Me
 - Recalcular posiciones en cada render: memoiza por (root, scale, tuning).
 - Poner estado de herramienta en Zustand en vez de la URL: los deep links de
   las lecciones dependen de los query params.
+- Escribir notas, cajas o digitaciones como texto en el contenido: eso es
+  siempre un `<Mastil>` o un `<Acorde>`.
+- Citar canciones sin decir qué parte se practica y cómo: `<Cancion>` obliga
+  a rellenar `que`, y `como` va en casi todas.
