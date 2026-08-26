@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  AudioWaveform,
   BookOpen,
+  Grip,
   GraduationCap,
   Home,
   LineChart,
@@ -20,6 +22,11 @@ const ITEMS = [
   { href: "/metronomo", label: "Metrónomo", icon: Timer, exact: false },
   { href: "/wiki", label: "Wiki", icon: BookOpen, exact: false },
   { href: "/progreso", label: "Progreso", icon: LineChart, exact: false },
+] as const;
+
+const DESKTOP_EXTRA = [
+  { href: "/escalas", label: "Escalas", icon: AudioWaveform, exact: false },
+  { href: "/acordes", label: "Acordes", icon: Grip, exact: false },
 ] as const;
 
 function isActive(pathname: string, href: string, exact: boolean): boolean {
@@ -43,7 +50,7 @@ export function AppNav() {
             </span>
             Trastea
           </Link>
-          {ITEMS.map(({ href, label, icon: Icon, exact }) => (
+          {[...ITEMS, ...DESKTOP_EXTRA].map(({ href, label, icon: Icon, exact }) => (
             <Link
               key={href}
               href={href}
