@@ -97,7 +97,7 @@ export default async function WikiArticlePage({
                   ? `/curso/${getLesson(link.slug)?.moduleSlug ?? ""}/${link.slug}`
                   : link.kind === "wiki"
                     ? `/wiki/${link.slug}`
-                    : `/curso`;
+                    : `/canciones/${link.slug}`;
               return (
                 <li key={`${link.kind}-${link.slug}`}>
                   <Link

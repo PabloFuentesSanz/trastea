@@ -79,7 +79,14 @@ export default async function LeccionPage({
               )}
               {song && (
                 <p className="mt-3 text-sm text-muted-foreground">
-                  🎵 {song.frontmatter.title} — {song.frontmatter.artist}
+                  🎵{" "}
+                  <Link
+                    href={`/canciones/${song.frontmatter.slug}`}
+                    className="text-primary underline-offset-4 hover:underline"
+                  >
+                    {song.frontmatter.title}
+                  </Link>{" "}
+                  — {song.frontmatter.artist}
                   {song.frontmatter.external_tab_url && (
                     <>
                       {" · "}

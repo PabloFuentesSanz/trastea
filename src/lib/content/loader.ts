@@ -196,6 +196,13 @@ export const getWikiBacklinks = cache((wikiSlug: string): WikiBacklink[] => {
   return links;
 });
 
+/** Lecciones que usan una canción (para "aparece en…"). */
+export const getSongLessons = cache((songSlug: string): LessonEntry[] => {
+  return getOrderedLessons().filter((lesson) =>
+    lesson.frontmatter.blocks.some((block) => block.song === songSlug),
+  );
+});
+
 /** Convierte [[interlinks]] de la wiki en enlaces markdown antes de renderizar. */
 export function resolveInterlinks(body: string): string {
   return resolveInterlinksWith(

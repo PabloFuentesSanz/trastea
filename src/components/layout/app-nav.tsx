@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   AudioWaveform,
+  ListMusic,
   BookOpen,
   Grip,
   GraduationCap,
@@ -32,6 +33,7 @@ const MAIN_ITEMS = [
 const TOOL_ITEMS = [
   { href: "/escalas", label: "Escalas", icon: AudioWaveform, exact: false },
   { href: "/acordes", label: "Acordes", icon: Grip, exact: false },
+  { href: "/canciones", label: "Canciones", icon: ListMusic, exact: false },
   { href: "/wiki", label: "Wiki", icon: BookOpen, exact: false },
   { href: "/progreso", label: "Progreso", icon: LineChart, exact: false },
 ] as const;
