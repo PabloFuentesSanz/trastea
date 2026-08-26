@@ -218,7 +218,7 @@ export function Ficha(props: Record<string, string | undefined>) {
       {rows.map(([key, value]) => (
         <div key={key} className="bg-card px-3 py-2">
           <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
-            {LABELS[key] ?? key}
+            {LABELS[key] ?? humanize(key)}
           </dt>
           <dd className="mt-0.5 text-sm">{value}</dd>
         </div>
@@ -227,7 +227,16 @@ export function Ficha(props: Record<string, string | undefined>) {
   );
 }
 
+/** "grado1" → "Grado 1": las claves libres de <Ficha> siguen leyéndose bien. */
+function humanize(key: string): string {
+  const spaced = key.replace(/([a-zA-Z])(\d)/g, "$1 $2").replace(/[-_]/g, " ");
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+}
+
 const LABELS: Record<string, string> = {
+  intervalos: "Distancias",
+  simbolo: "Cifrado",
+  grados: "Grados",
   formula: "Fórmula",
   notas: "Notas",
   suena: "Cómo suena",
