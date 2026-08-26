@@ -33,6 +33,16 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
+
+  // Supabase manda el enlace de confirmación a la Site URL con ?code=…
+  // Lo desviamos al handler que canjea el código por sesión.
+  const authCode = request.nextUrl.searchParams.get("code");
+  if (authCode && !pathname.startsWith("/auth/")) {
+    const redirect = request.nextUrl.clone();
+    redirect.pathname = "/auth/confirm";
+    redirect.searchParams.set("next", pathname === "/" ? "/onboarding" : pathname);
+    return NextResponse.redirect(redirect);
+  }
   const isPublic = PUBLIC_PATHS.some((p) => pathname.startsWith(p));
 
   if (!user && !isPublic) {

@@ -67,9 +67,17 @@ pnpm dev                     # http://localhost:3000
    contenido de `supabase/migrations/20260826150000_initial.sql` (o usa el CLI:
    `supabase link && supabase db push`). Crea las 10 tablas con RLS por
    usuario, el trigger de perfil y el bucket privado de grabaciones.
-4. `Authentication → Sign In / Up`: activa **Email**. Para que el enlace de
-   confirmación funcione, añade `https://tu-dominio/auth/confirm` (y
-   `http://localhost:3000/auth/confirm` en desarrollo) a las Redirect URLs.
+4. `Authentication → Sign In / Up`: activa **Email**.
+5. `Authentication → URL Configuration`:
+   - **Site URL**: `https://tu-dominio.vercel.app`
+   - **Redirect URLs**: añade `https://tu-dominio.vercel.app/**` y
+     `http://localhost:3000/**` (el comodín cubre `/auth/confirm` y los
+     previews). La app acepta tanto el enlace por defecto (`?code=`) como
+     plantillas personalizadas (`?token_hash=&type=`), así que no hace falta
+     tocar las plantillas de email.
+
+> ¿Prefieres probar sin confirmar el correo? En `Authentication → Sign In / Up
+> → Email` desactiva "Confirm email" y el registro entra directo.
 
 ### Vercel (deploy)
 
