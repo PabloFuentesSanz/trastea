@@ -2,6 +2,7 @@ import type { Voicing } from "@/lib/music/voicings";
 import type { IntervalName, NoteName } from "@/lib/music/notes";
 import { toSolfege } from "@/lib/music/notes";
 import { cn } from "@/lib/utils";
+import { colorForInterval } from "./degree-colors";
 
 /**
  * Diagrama de acorde vertical clásico (caja): cuerdas en vertical
@@ -16,21 +17,6 @@ const CELL_H = 22;
 const TOP = 30;
 const LEFT = 26;
 const DOT_R = 7;
-
-function colorForInterval(interval: IntervalName): string {
-  if (interval === "1") return "var(--primary)";
-  const degree = interval.replace(/[b#]/g, "");
-  switch (degree) {
-    case "3":
-      return "var(--chart-2)";
-    case "5":
-      return "var(--chart-3)";
-    case "7":
-      return "var(--chart-4)";
-    default:
-      return "var(--muted-foreground)";
-  }
-}
 
 export type ChordDiagramLabels = "interval" | "note" | "none";
 

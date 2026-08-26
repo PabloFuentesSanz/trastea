@@ -2,7 +2,6 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { Volume2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -14,11 +13,15 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Fretboard, type FretboardLabels } from "./fretboard";
+import { FormulaLegend } from "./formula-legend";
+import { formulaMidiSequence, formulaPositions } from "@/lib/music/fretboard";
 import {
-  formulaMidiSequence,
-  formulaPositions,
-} from "@/lib/music/fretboard";
-import { PRACTICAL_ROOTS, spellFormula, toSolfege, type IntervalName, type NoteName } from "@/lib/music/notes";
+  PRACTICAL_ROOTS,
+  spellFormula,
+  toSolfege,
+  type IntervalName,
+  type NoteName,
+} from "@/lib/music/notes";
 import { TUNINGS } from "@/data/tunings";
 import { useFormulaPlayer } from "@/hooks/use-formula-player";
 
@@ -75,8 +78,13 @@ export function FormulaExplorer({
     [root, selected, tuning],
   );
 
-  const spelled = useMemo(
-    () => spellFormula(root, selected.intervals),
+  const spelled = useMemo(() => spellFormula(root, selected.intervals), [root, selected]);
+  const degreeMidis = useMemo(
+    () =>
+      formulaMidiSequence({ root, intervals: selected.intervals }).slice(
+        0,
+        selected.intervals.length,
+      ),
     [root, selected],
   );
 
@@ -172,14 +180,13 @@ export function FormulaExplorer({
         </div>
       </div>
 
-      {/* Notas deletreadas */}
-      <div className="flex flex-wrap items-center gap-2" aria-label="Notas">
-        {selected.intervals.map((interval, i) => (
-          <Badge key={interval} variant={i === 0 ? "default" : "secondary"}>
-            <span className="font-mono">{interval}</span>&nbsp;{spelled[i]}
-          </Badge>
-        ))}
-      </div>
+      {/* Notas deletreadas: leyenda clicable (cada chip suena) */}
+      <FormulaLegend
+        intervals={selected.intervals}
+        spelled={spelled}
+        midis={degreeMidis}
+        onPlayNote={(midi) => void play([midi], "sequence")}
+      />
 
       <div className="overflow-x-auto rounded-xl border bg-card p-3">
         <Fretboard positions={positions} labels={labels} lefty={lefty} title={title} />

@@ -1,6 +1,7 @@
 import type { FretPosition } from "@/lib/music/fretboard";
 import { toSolfege } from "@/lib/music/notes";
 import { cn } from "@/lib/utils";
+import { colorForInterval } from "./degree-colors";
 
 export type FretboardLabels = "note" | "interval" | "solfege" | "none";
 
@@ -11,20 +12,8 @@ const PAD_Y = 22;
 const PAD_X = 8;
 const MARKER_FRETS = [3, 5, 7, 9, 15];
 
-/** Color por función del intervalo (índice de grado dentro de la fórmula). */
 function colorFor(position: FretPosition): string {
-  if (position.isRoot) return "var(--primary)";
-  const degree = position.interval.replace(/[b#]/g, "");
-  switch (degree) {
-    case "3":
-      return "var(--chart-2)";
-    case "5":
-      return "var(--chart-3)";
-    case "7":
-      return "var(--chart-4)";
-    default:
-      return "var(--muted-foreground)";
-  }
+  return position.isRoot ? "var(--primary)" : colorForInterval(position.interval);
 }
 
 export interface FretboardProps {
@@ -55,10 +44,7 @@ export function Fretboard({
   const height = PAD_Y * 2 + (strings - 1) * STRING_GAP;
 
   const fretX = (fret: number) => {
-    const x =
-      fret === 0
-        ? PAD_X + NUT_W / 2
-        : PAD_X + NUT_W + (fret - 0.5) * FRET_W;
+    const x = fret === 0 ? PAD_X + NUT_W / 2 : PAD_X + NUT_W + (fret - 0.5) * FRET_W;
     return lefty ? width - x : x;
   };
   const fretLineX = (fret: number) => {
@@ -111,13 +97,7 @@ export function Fretboard({
       ))}
       {/* marcadores */}
       {MARKER_FRETS.filter((f) => f <= frets).map((fret) => (
-        <circle
-          key={fret}
-          cx={fretX(fret)}
-          cy={height / 2}
-          r={4}
-          fill="var(--muted)"
-        />
+        <circle key={fret} cx={fretX(fret)} cy={height / 2} r={4} fill="var(--muted)" />
       ))}
       {frets >= 12 && (
         <>

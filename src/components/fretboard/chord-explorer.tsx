@@ -2,7 +2,6 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { ChevronDown, Volume2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -22,10 +21,11 @@ import {
   toSolfege,
   type NoteName,
 } from "@/lib/music/notes";
-import { formulaPositions } from "@/lib/music/fretboard";
+import { formulaMidiSequence, formulaPositions } from "@/lib/music/fretboard";
 import { generateVoicings, type Voicing } from "@/lib/music/voicings";
 import { useFormulaPlayer } from "@/hooks/use-formula-player";
 import { ChordDiagram, describeVoicing, type ChordDiagramLabels } from "./chord-diagram";
+import { FormulaLegend } from "./formula-legend";
 import { Fretboard } from "./fretboard";
 
 export type ChordView = "chords" | "triads";
@@ -93,6 +93,14 @@ export function ChordExplorer({ initial }: { initial: ChordExplorerInitial }) {
   );
 
   const spelled = useMemo(() => spellFormula(root, chord.intervals), [root, chord]);
+  const degreeMidis = useMemo(
+    () =>
+      formulaMidiSequence({ root, intervals: chord.intervals }).slice(
+        0,
+        chord.intervals.length,
+      ),
+    [root, chord],
+  );
   const noteByInterval = useMemo(
     () =>
       Object.fromEntries(chord.intervals.map((interval, i) => [interval, spelled[i]])),
@@ -261,13 +269,14 @@ export function ChordExplorer({ initial }: { initial: ChordExplorerInitial }) {
         </span>
       </div>
 
-      {/* Notas del acorde */}
-      <div className="flex flex-wrap items-center gap-2" aria-label="Notas del acorde">
-        {chord.intervals.map((interval, i) => (
-          <Badge key={interval} variant={i === 0 ? "default" : "secondary"}>
-            <span className="font-mono">{interval}</span>&nbsp;{spelled[i]}
-          </Badge>
-        ))}
+      {/* Notas del acorde: leyenda clicable (cada chip suena) */}
+      <div className="flex flex-wrap items-center gap-2">
+        <FormulaLegend
+          intervals={chord.intervals}
+          spelled={spelled}
+          midis={degreeMidis}
+          onPlayNote={(midi) => void play([midi], "sequence")}
+        />
         <Button
           variant="secondary"
           size="sm"
