@@ -20,7 +20,7 @@ type TableDef<Row, Required extends keyof Row, Generated extends keyof Row> = {
   Relationships: [];
 };
 
-export interface ProfileRow {
+export type ProfileRow = {
   id: string;
   display_name: string;
   level: UserLevel;
@@ -31,7 +31,7 @@ export interface ProfileRow {
   created_at: string;
 }
 
-export interface PracticeSessionRow {
+export type PracticeSessionRow = {
   id: string;
   user_id: string;
   date: string;
@@ -43,7 +43,7 @@ export interface PracticeSessionRow {
   created_at: string;
 }
 
-export interface ExerciseRecordRow {
+export type ExerciseRecordRow = {
   id: string;
   user_id: string;
   exercise_slug: string;
@@ -52,7 +52,7 @@ export interface ExerciseRecordRow {
   recorded_at: string;
 }
 
-export interface LessonProgressRow {
+export type LessonProgressRow = {
   id: string;
   user_id: string;
   lesson_slug: string;
@@ -62,7 +62,7 @@ export interface LessonProgressRow {
   updated_at: string;
 }
 
-export interface AssessmentRow {
+export type AssessmentRow = {
   id: string;
   user_id: string;
   module_slug: string;
@@ -73,7 +73,7 @@ export interface AssessmentRow {
   created_at: string;
 }
 
-export interface RecordingRow {
+export type RecordingRow = {
   id: string;
   user_id: string;
   storage_path: string;
@@ -83,7 +83,7 @@ export interface RecordingRow {
   created_at: string;
 }
 
-export interface UserNoteRow {
+export type UserNoteRow = {
   id: string;
   user_id: string;
   entity_type: NoteEntityType;
@@ -93,7 +93,7 @@ export interface UserNoteRow {
   updated_at: string;
 }
 
-export interface UserSongRow {
+export type UserSongRow = {
   id: string;
   user_id: string;
   title: string;
@@ -105,7 +105,7 @@ export interface UserSongRow {
   created_at: string;
 }
 
-export interface UserResourceRow {
+export type UserResourceRow = {
   id: string;
   user_id: string;
   title: string;
@@ -115,7 +115,7 @@ export interface UserResourceRow {
   created_at: string;
 }
 
-export interface SrsCardRow {
+export type SrsCardRow = {
   id: string;
   user_id: string;
   card_type: SrsCardType;
@@ -128,7 +128,7 @@ export interface SrsCardRow {
   created_at: string;
 }
 
-export interface Database {
+export type Database = {
   public: {
     Tables: {
       profiles: TableDef<ProfileRow, "id", "created_at">;
@@ -145,7 +145,7 @@ export interface Database {
       lesson_progress: TableDef<
         LessonProgressRow,
         "user_id" | "lesson_slug",
-        "id" | "updated_at"
+        "id"
       >;
       assessments: TableDef<
         AssessmentRow,

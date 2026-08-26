@@ -1,0 +1,104 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  BookOpen,
+  GraduationCap,
+  Home,
+  LineChart,
+  Play,
+  Timer,
+  User,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+
+const ITEMS = [
+  { href: "/", label: "Inicio", icon: Home, exact: true },
+  { href: "/hoy", label: "Hoy", icon: Play, exact: false },
+  { href: "/curso", label: "Curso", icon: GraduationCap, exact: false },
+  { href: "/metronomo", label: "Metrónomo", icon: Timer, exact: false },
+  { href: "/wiki", label: "Wiki", icon: BookOpen, exact: false },
+  { href: "/progreso", label: "Progreso", icon: LineChart, exact: false },
+] as const;
+
+function isActive(pathname: string, href: string, exact: boolean): boolean {
+  return exact ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
+}
+
+export function AppNav() {
+  const pathname = usePathname();
+
+  return (
+    <>
+      {/* Barra superior (desktop) */}
+      <header className="sticky top-0 z-40 hidden border-b bg-background/90 backdrop-blur md:block">
+        <nav
+          aria-label="Principal"
+          className="mx-auto flex h-14 max-w-5xl items-center gap-1 px-4"
+        >
+          <Link href="/" className="mr-4 flex items-center gap-2 font-semibold">
+            <span aria-hidden className="text-primary">
+              ⏦
+            </span>
+            Trastea
+          </Link>
+          {ITEMS.map(({ href, label, icon: Icon, exact }) => (
+            <Link
+              key={href}
+              href={href}
+              aria-current={isActive(pathname, href, exact) ? "page" : undefined}
+              className={cn(
+                "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors",
+                isActive(pathname, href, exact)
+                  ? "bg-accent text-accent-foreground"
+                  : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+              )}
+            >
+              <Icon className="size-4" aria-hidden />
+              {label}
+            </Link>
+          ))}
+          <Link
+            href="/perfil"
+            aria-label="Perfil"
+            aria-current={isActive(pathname, "/perfil", false) ? "page" : undefined}
+            className={cn(
+              "ml-auto rounded-md p-2 transition-colors",
+              isActive(pathname, "/perfil", false)
+                ? "bg-accent text-accent-foreground"
+                : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+            )}
+          >
+            <User className="size-5" aria-hidden />
+          </Link>
+        </nav>
+      </header>
+
+      {/* Barra inferior (móvil, con la guitarra puesta) */}
+      <nav
+        aria-label="Principal"
+        className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 backdrop-blur md:hidden"
+      >
+        <div className="grid grid-cols-6">
+          {ITEMS.map(({ href, label, icon: Icon, exact }) => (
+            <Link
+              key={href}
+              href={href}
+              aria-current={isActive(pathname, href, exact) ? "page" : undefined}
+              className={cn(
+                "flex min-h-14 flex-col items-center justify-center gap-0.5 text-[11px]",
+                isActive(pathname, href, exact)
+                  ? "text-primary"
+                  : "text-muted-foreground",
+              )}
+            >
+              <Icon className="size-5" aria-hidden />
+              {label}
+            </Link>
+          ))}
+        </div>
+      </nav>
+    </>
+  );
+}

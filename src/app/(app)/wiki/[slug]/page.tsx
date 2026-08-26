@@ -1,0 +1,104 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Mdx } from "@/components/content/mdx";
+import {
+  getLesson,
+  getWikiArticle,
+  getWikiArticles,
+  getWikiBacklinks,
+  resolveInterlinks,
+} from "@/lib/content/loader";
+
+export function generateStaticParams() {
+  return getWikiArticles().map((a) => ({ slug: a.frontmatter.slug }));
+}
+
+export default async function WikiArticlePage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const article = getWikiArticle(slug);
+  if (!article) notFound();
+
+  const backlinks = getWikiBacklinks(slug);
+  const body = resolveInterlinks(article.body);
+
+  return (
+    <main className="mx-auto w-full max-w-2xl px-4 py-8">
+      <p className="text-xs text-muted-foreground">
+        <Link href="/wiki" className="hover:text-foreground">
+          Wiki
+        </Link>{" "}
+        / {article.frontmatter.category}
+      </p>
+      <h1 className="mt-1 text-3xl font-semibold tracking-tight">
+        {article.frontmatter.title}
+      </h1>
+      <p className="mt-2 text-muted-foreground">{article.frontmatter.summary}</p>
+
+      <Mdx source={body} className="mt-6" />
+
+      {article.frontmatter.related.length > 0 && (
+        <>
+          <Separator className="my-8" />
+          <section aria-label="Relacionados">
+            <h2 className="text-sm font-medium text-muted-foreground">Relacionados</h2>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {article.frontmatter.related.map((rel) => {
+                const relArticle = getWikiArticle(rel);
+                return (
+                  <Link key={rel} href={`/wiki/${rel}`}>
+                    <Badge variant="secondary">
+                      {relArticle?.frontmatter.title ?? rel}
+                    </Badge>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        </>
+      )}
+
+      {backlinks.length > 0 && (
+        <section aria-label="Aparece en" className="mt-6">
+          <h2 className="text-sm font-medium text-muted-foreground">
+            Este artículo aparece en…
+          </h2>
+          <ul className="mt-2 space-y-1 text-sm">
+            {backlinks.map((link) => {
+              const href =
+                link.kind === "lesson"
+                  ? `/curso/${getLesson(link.slug)?.moduleSlug ?? ""}/${link.slug}`
+                  : link.kind === "wiki"
+                    ? `/wiki/${link.slug}`
+                    : `/curso`;
+              return (
+                <li key={`${link.kind}-${link.slug}`}>
+                  <Link
+                    href={href}
+                    className="text-primary underline-offset-4 hover:underline"
+                  >
+                    {link.title}
+                  </Link>{" "}
+                  <span className="text-muted-foreground">
+                    (
+                    {link.kind === "lesson"
+                      ? "lección"
+                      : link.kind === "wiki"
+                        ? "wiki"
+                        : "canción"}
+                    )
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
+    </main>
+  );
+}
