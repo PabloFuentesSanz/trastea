@@ -1,0 +1,356 @@
+/**
+ * content:audit — escanea /content, valida frontmatter y referencias, y
+ * genera /content/STATE.md con el inventario y los huecos detectados.
+ * Sale con código 1 si hay referencias rotas o frontmatter inválido
+ * (referencia rota = build rojo, también en CI).
+ */
+
+import fs from "node:fs";
+import path from "node:path";
+import matter from "gray-matter";
+import {
+  exerciseFrontmatterSchema,
+  lessonFrontmatterSchema,
+  moduleFrontmatterSchema,
+  quizFrontmatterSchema,
+  songFrontmatterSchema,
+  weekFrontmatterSchema,
+  wikiFrontmatterSchema,
+  type ExerciseFrontmatter,
+  type LessonFrontmatter,
+  type ModuleFrontmatter,
+  type QuizFrontmatter,
+  type SongFrontmatter,
+  type WeekFrontmatter,
+  type WikiFrontmatter,
+} from "../src/lib/content/schemas";
+
+const ROOT = process.cwd();
+const CONTENT = path.join(ROOT, "content");
+
+interface Problem {
+  file: string;
+  message: string;
+}
+
+const errors: Problem[] = [];
+const warnings: Problem[] = [];
+
+function rel(p: string): string {
+  return path.relative(ROOT, p);
+}
+
+function readMdx(file: string): { data: unknown; body: string } {
+  const { data, content } = matter(fs.readFileSync(file, "utf8"));
+  return { data, body: content };
+}
+
+function tryParse<T>(
+  file: string,
+  data: unknown,
+  schema: { parse: (d: unknown) => T },
+): T | null {
+  try {
+    return schema.parse(data);
+  } catch (e) {
+    errors.push({ file: rel(file), message: `frontmatter inválido: ${String(e)}` });
+    return null;
+  }
+}
+
+// ---------- carga ----------
+
+interface LessonRecord {
+  file: string;
+  fm: LessonFrontmatter;
+  body: string;
+  moduleSlug: string;
+  weekOrder: number;
+}
+
+const modules: { file: string; fm: ModuleFrontmatter }[] = [];
+const weeks: { file: string; fm: WeekFrontmatter; moduleSlug: string; dayCount: number }[] =
+  [];
+const lessons: LessonRecord[] = [];
+
+const courseDir = path.join(CONTENT, "course");
+if (fs.existsSync(courseDir)) {
+  for (const moduleDir of fs.readdirSync(courseDir)) {
+    const modulePath = path.join(courseDir, moduleDir);
+    const moduleFile = path.join(modulePath, "module.mdx");
+    if (!fs.existsSync(moduleFile)) continue;
+    const moduleFm = tryParse(moduleFile, readMdx(moduleFile).data, moduleFrontmatterSchema);
+    if (!moduleFm) continue;
+    modules.push({ file: moduleFile, fm: moduleFm });
+
+    for (const weekDir of fs.readdirSync(modulePath)) {
+      const weekPath = path.join(modulePath, weekDir);
+      const weekFile = path.join(weekPath, "week.mdx");
+      if (!fs.existsSync(weekFile)) continue;
+      const weekFm = tryParse(weekFile, readMdx(weekFile).data, weekFrontmatterSchema);
+      if (!weekFm) continue;
+
+      const dayFiles = fs.readdirSync(weekPath).filter((f) => /^d\d\.mdx$/.test(f));
+      weeks.push({
+        file: weekFile,
+        fm: weekFm,
+        moduleSlug: moduleFm.slug,
+        dayCount: dayFiles.length,
+      });
+
+      for (const dayFile of dayFiles) {
+        const file = path.join(weekPath, dayFile);
+        const { data, body } = readMdx(file);
+        const fm = tryParse(file, data, lessonFrontmatterSchema);
+        if (fm) {
+          lessons.push({ file, fm, body, moduleSlug: moduleFm.slug, weekOrder: weekFm.order });
+        }
+      }
+    }
+  }
+}
+
+function loadFlat<T>(
+  dir: string,
+  schema: { parse: (d: unknown) => T },
+): { file: string; fm: T; body: string }[] {
+  const full = path.join(CONTENT, dir);
+  if (!fs.existsSync(full)) return [];
+  const out: { file: string; fm: T; body: string }[] = [];
+  for (const f of fs.readdirSync(full).filter((f) => f.endsWith(".mdx"))) {
+    const file = path.join(full, f);
+    const { data, body } = readMdx(file);
+    const fm = tryParse(file, data, schema);
+    if (fm) out.push({ file, fm, body });
+  }
+  return out;
+}
+
+const exercises = loadFlat<ExerciseFrontmatter>("exercises", exerciseFrontmatterSchema);
+const songs = loadFlat<SongFrontmatter>("songs", songFrontmatterSchema);
+const wikis = loadFlat<WikiFrontmatter>("wiki", wikiFrontmatterSchema);
+const quizzes = loadFlat<QuizFrontmatter>("quizzes", quizFrontmatterSchema);
+
+const tabsDir = path.join(CONTENT, "tabs");
+const tabs = fs.existsSync(tabsDir)
+  ? fs.readdirSync(tabsDir).filter((f) => f.endsWith(".alphatex"))
+  : [];
+
+// ---------- índices ----------
+
+const exerciseSlugs = new Set(exercises.map((e) => e.fm.slug));
+const songSlugs = new Set(songs.map((s) => s.fm.slug));
+const wikiSlugs = new Set(wikis.map((w) => w.fm.slug));
+const quizSlugs = new Set(quizzes.map((q) => q.fm.slug));
+const tabSlugs = new Set(tabs.map((f) => f.replace(/\.alphatex$/, "")));
+const lessonSlugs = new Set(lessons.map((l) => l.fm.slug));
+
+const KNOWN_TOOL_PREFIXES = [
+  "/metronomo",
+  "/escalas",
+  "/acordes",
+  "/tabs",
+  "/wiki",
+  "/curso",
+  "/entrenar",
+  "/canciones",
+];
+
+function checkRef(
+  file: string,
+  kind: string,
+  slug: string,
+  known: Set<string>,
+  broken: Map<string, string[]>,
+) {
+  if (!known.has(slug)) {
+    errors.push({ file: rel(file), message: `${kind} inexistente: "${slug}"` });
+    const list = broken.get(slug) ?? [];
+    list.push(rel(file));
+    broken.set(slug, list);
+  }
+}
+
+const brokenRefs = new Map<string, string[]>();
+
+// lecciones → ejercicios, canciones, wiki, tools
+for (const { file, fm } of lessons) {
+  for (const block of fm.blocks) {
+    if (block.exercise)
+      checkRef(file, "exercise", block.exercise, exerciseSlugs, brokenRefs);
+    if (block.song) checkRef(file, "song", block.song, songSlugs, brokenRefs);
+    if (block.tool && !KNOWN_TOOL_PREFIXES.some((p) => block.tool!.startsWith(p))) {
+      errors.push({ file: rel(file), message: `tool con ruta desconocida: "${block.tool}"` });
+    }
+  }
+  for (const ref of fm.wiki_refs) checkRef(file, "wiki", ref, wikiSlugs, brokenRefs);
+}
+
+// ejercicios → wiki
+for (const { file, fm } of exercises) {
+  for (const ref of fm.links.wiki) checkRef(file, "wiki", ref, wikiSlugs, brokenRefs);
+}
+
+// canciones → wiki y tabs
+for (const { file, fm } of songs) {
+  for (const ref of fm.wiki_refs) checkRef(file, "wiki", ref, wikiSlugs, brokenRefs);
+  if (fm.tab_slug) checkRef(file, "tab", fm.tab_slug, tabSlugs, brokenRefs);
+}
+
+// wiki → related e interlinks
+const INTERLINK = /\[\[([a-z0-9-]+)\]\]/g;
+const wikiIncoming = new Map<string, number>();
+for (const { file, fm, body } of wikis) {
+  for (const ref of fm.related) checkRef(file, "wiki", ref, wikiSlugs, brokenRefs);
+  for (const match of body.matchAll(INTERLINK)) {
+    checkRef(file, "wiki (interlink)", match[1], wikiSlugs, brokenRefs);
+    wikiIncoming.set(match[1], (wikiIncoming.get(match[1]) ?? 0) + 1);
+  }
+  for (const ref of fm.related) {
+    wikiIncoming.set(ref, (wikiIncoming.get(ref) ?? 0) + 1);
+  }
+}
+for (const { fm } of lessons) {
+  for (const ref of fm.wiki_refs) {
+    wikiIncoming.set(ref, (wikiIncoming.get(ref) ?? 0) + 1);
+  }
+}
+for (const { fm } of songs) {
+  for (const ref of fm.wiki_refs) {
+    wikiIncoming.set(ref, (wikiIncoming.get(ref) ?? 0) + 1);
+  }
+}
+for (const { fm } of exercises) {
+  for (const ref of fm.links.wiki) {
+    wikiIncoming.set(ref, (wikiIncoming.get(ref) ?? 0) + 1);
+  }
+}
+
+// módulos → quiz
+for (const { file, fm } of modules) {
+  if (fm.assessment?.quiz_slug)
+    checkRef(file, "quiz", fm.assessment.quiz_slug, quizSlugs, brokenRefs);
+}
+
+// slugs duplicados
+function findDuplicates(items: { slug: string; file: string }[], kind: string) {
+  const seen = new Map<string, string>();
+  for (const { slug, file } of items) {
+    const prev = seen.get(slug);
+    if (prev) {
+      errors.push({ file: rel(file), message: `${kind} con slug duplicado "${slug}" (también en ${prev})` });
+    } else {
+      seen.set(slug, rel(file));
+    }
+  }
+}
+findDuplicates(lessons.map((l) => ({ slug: l.fm.slug, file: l.file })), "lección");
+findDuplicates(exercises.map((e) => ({ slug: e.fm.slug, file: e.file })), "ejercicio");
+findDuplicates(wikis.map((w) => ({ slug: w.fm.slug, file: w.file })), "wiki");
+findDuplicates(songs.map((s) => ({ slug: s.fm.slug, file: s.file })), "canción");
+
+// avisos: semanas sin 5 días, wiki huérfana
+for (const w of weeks) {
+  if (w.dayCount < 5) {
+    warnings.push({
+      file: rel(w.file),
+      message: `semana con ${w.dayCount}/5 días (${w.moduleSlug} ${w.fm.slug})`,
+    });
+  }
+}
+const orphanWikis = wikis.filter((w) => !wikiIncoming.has(w.fm.slug));
+for (const w of orphanWikis) {
+  warnings.push({ file: rel(w.file), message: `artículo wiki huérfano (sin backlinks)` });
+}
+
+// ---------- STATE.md ----------
+
+const lines: string[] = [];
+lines.push("# STATE.md — estado del contenido");
+lines.push("");
+lines.push("> Generado por `pnpm content:audit`. No editar a mano.");
+lines.push("");
+lines.push("## Inventario");
+lines.push("");
+lines.push(`| Tipo | Total |`);
+lines.push(`|---|---|`);
+lines.push(`| Módulos | ${modules.length} (${modules.filter((m) => m.fm.placeholder).length} placeholder) |`);
+lines.push(`| Semanas | ${weeks.length} |`);
+lines.push(`| Lecciones-día | ${lessons.length} |`);
+lines.push(`| Ejercicios | ${exercises.length} |`);
+lines.push(`| Canciones | ${songs.length} |`);
+lines.push(`| Tabs | ${tabs.length} |`);
+lines.push(`| Artículos wiki | ${wikis.length} |`);
+lines.push(`| Quizzes | ${quizzes.length} |`);
+lines.push("");
+
+lines.push("## Módulos");
+lines.push("");
+for (const m of modules.sort((a, b) => a.fm.order - b.fm.order)) {
+  const moduleWeeks = weeks.filter((w) => w.moduleSlug === m.fm.slug);
+  const moduleLessons = lessons.filter((l) => l.moduleSlug === m.fm.slug);
+  lines.push(
+    `- **${m.fm.title}** (\`${m.fm.slug}\`)${m.fm.placeholder ? " _placeholder_" : ""}: ${moduleWeeks.length} semanas, ${moduleLessons.length} lecciones`,
+  );
+}
+lines.push("");
+
+if (brokenRefs.size > 0) {
+  lines.push("## ❌ Referencias rotas (bloquean el build)");
+  lines.push("");
+  for (const [slug, files] of brokenRefs) {
+    lines.push(`- \`${slug}\` referenciado desde: ${files.join(", ")}`);
+  }
+  lines.push("");
+}
+
+if (warnings.length > 0) {
+  lines.push("## ⚠️ Avisos");
+  lines.push("");
+  for (const w of warnings) {
+    lines.push(`- ${w.file}: ${w.message}`);
+  }
+  lines.push("");
+}
+
+lines.push("## Cobertura wiki");
+lines.push("");
+const referenced = [...wikiIncoming.keys()];
+const missingWiki = referenced.filter((s) => !wikiSlugs.has(s));
+lines.push(`- Artículos existentes: ${wikis.length}`);
+lines.push(`- Referenciados sin existir: ${missingWiki.length}${missingWiki.length ? ` → ${missingWiki.map((s) => `\`${s}\``).join(", ")}` : ""}`);
+lines.push(`- Huérfanos (sin backlinks): ${orphanWikis.length}${orphanWikis.length ? ` → ${orphanWikis.map((w) => `\`${w.fm.slug}\``).join(", ")}` : ""}`);
+lines.push("");
+
+if (errors.length > 0) {
+  lines.push("## ❌ Errores de validación");
+  lines.push("");
+  for (const e of errors) {
+    lines.push(`- ${e.file}: ${e.message.split("\n")[0]}`);
+  }
+  lines.push("");
+}
+
+lines.push(`_Última ejecución: ${new Date().toISOString()}_`);
+lines.push("");
+
+fs.mkdirSync(CONTENT, { recursive: true });
+fs.writeFileSync(path.join(CONTENT, "STATE.md"), lines.join("\n"));
+
+// ---------- salida ----------
+
+console.log(
+  `content:audit — ${modules.length} módulos, ${lessons.length} lecciones, ${exercises.length} ejercicios, ${songs.length} canciones, ${wikis.length} wiki`,
+);
+if (warnings.length > 0) {
+  console.log(`⚠️  ${warnings.length} avisos (ver content/STATE.md)`);
+}
+if (errors.length > 0) {
+  console.error(`❌ ${errors.length} errores:`);
+  for (const e of errors) console.error(`   ${e.file}: ${e.message.split("\n")[0]}`);
+  process.exit(1);
+}
+console.log("✅ referencias íntegras");
+
+// Evita "unused" para registros que hoy solo participan en índices.
+void lessonSlugs;
