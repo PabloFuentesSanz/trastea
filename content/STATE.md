@@ -6,40 +6,27 @@
 
 | Tipo | Total |
 |---|---|
-| Módulos | 1 (0 placeholder) |
-| Semanas | 1 |
-| Lecciones-día | 1 |
-| Ejercicios | 4 |
-| Canciones | 2 |
+| Módulos | 5 (4 placeholder) |
+| Semanas | 4 |
+| Lecciones-día | 20 |
+| Ejercicios | 19 |
+| Canciones | 4 |
 | Tabs | 0 |
-| Artículos wiki | 3 |
-| Quizzes | 0 |
+| Artículos wiki | 12 |
+| Quizzes | 1 |
 
 ## Módulos
 
-- **Módulo A — Cimientos** (`a-cimientos`): 1 semanas, 1 lecciones
-
-## ❌ Referencias rotas (bloquean el build)
-
-- `pentatonicas` referenciado desde: content/exercises/blues-f-pentatonica.mdx, content/songs/blues-en-fa.mdx
-- `subdivision-metronomo-2y4` referenciado desde: content/exercises/metronomo-2y4.mdx
-- `modulo-a` referenciado desde: content/course/a-cimientos/module.mdx
-
-## ⚠️ Avisos
-
-- content/course/a-cimientos/w01/week.mdx: semana con 1/5 días (a-cimientos a-cimientos-w01)
+- **Desde cero** (`desde-cero`) _placeholder_: 0 semanas, 0 lecciones
+- **Módulo A — Cimientos** (`a-cimientos`): 4 semanas, 20 lecciones
+- **Módulo B — Armonía y arpegios** (`b-armonia`) _placeholder_: 0 semanas, 0 lecciones
+- **Módulo C — Lenguaje y velocidad** (`c-lenguaje`) _placeholder_: 0 semanas, 0 lecciones
+- **Avanzado** (`avanzado`) _placeholder_: 0 semanas, 0 lecciones
 
 ## Cobertura wiki
 
-- Artículos existentes: 3
-- Referenciados sin existir: 2 → `pentatonicas`, `subdivision-metronomo-2y4`
+- Artículos existentes: 12
+- Referenciados sin existir: 0
 - Huérfanos (sin backlinks): 0
 
-## ❌ Errores de validación
-
-- content/exercises/blues-f-pentatonica.mdx: wiki inexistente: "pentatonicas"
-- content/exercises/metronomo-2y4.mdx: wiki inexistente: "subdivision-metronomo-2y4"
-- content/songs/blues-en-fa.mdx: wiki inexistente: "pentatonicas"
-- content/course/a-cimientos/module.mdx: quiz inexistente: "modulo-a"
-
-_Última ejecución: 2026-08-26T15:26:08.150Z_
+_Última ejecución: 2026-08-26T15:34:19.787Z_
