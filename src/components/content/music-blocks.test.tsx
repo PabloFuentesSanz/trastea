@@ -151,3 +151,20 @@ describe("<Acorde />", () => {
     expect(() => render(<Acorde nombre="Cxyz" />)).toThrow();
   });
 });
+
+describe("<Acorde trastes> con digitación exacta", () => {
+  it("dibuja la forma escrita, saltando cuerdas si hace falta", async () => {
+    const { Acorde } = await import("./music-blocks");
+    // shell de G7: 6ª-4ª-3ª, la 5ª muteada en medio
+    const { container } = render(<Acorde nombre="G7" trastes="3,x,3,4,x,x" />);
+    const mudas = [...container.querySelectorAll("svg text")].filter(
+      (t) => t.textContent === "✕",
+    );
+    expect(mudas).toHaveLength(3);
+  });
+
+  it("una digitación mal escrita revienta en vez de dibujar de más", async () => {
+    const { Acorde } = await import("./music-blocks");
+    expect(() => render(<Acorde nombre="G7" trastes="3,x,3" />)).toThrow(/6 valores/);
+  });
+});

@@ -5,7 +5,8 @@ import { ChordDiagram } from "@/components/fretboard/chord-diagram";
 import { formulaPositions } from "@/lib/music/fretboard";
 import { parseFormulaSpec, stringIndex, windowPositions } from "@/lib/music/spec";
 import { spellFormula, type NoteName } from "@/lib/music/notes";
-import { generateVoicings } from "@/lib/music/voicings";
+import { generateVoicings, type Voicing } from "@/lib/music/voicings";
+import { parseFretSpec, voicingFromFrets } from "@/lib/music/voicing-from-frets";
 import { getTuning } from "@/data/tunings";
 import { cn } from "@/lib/utils";
 
@@ -154,6 +155,7 @@ export function Acorde({
   zona,
   cuerdas,
   inversion,
+  trastes,
   etiquetas = "interval",
   pie,
 }: {
@@ -164,10 +166,39 @@ export function Acorde({
   cuerdas?: string | number[];
   /** 0 = fundamental en el bajo, 1 = primera inversión… */
   inversion?: Numerico;
+  /** digitación exacta de 6ª a 1ª: "3,x,3,4,x,x". Gana sobre zona/cuerdas. */
+  trastes?: string;
   etiquetas?: "interval" | "note" | "none";
   pie?: string;
 }) {
   const spec = parseFormulaSpec(nombre, "chord");
+
+  const names = spellFormula(spec.root, spec.intervals);
+  const noteByInterval: Record<string, NoteName> = {};
+  spec.intervals.forEach((interval, i) => {
+    noteByInterval[interval] = names[i];
+  });
+
+  // Digitación escrita a mano: manda sobre cualquier búsqueda.
+  if (trastes) {
+    const exacto = voicingFromFrets({
+      root: spec.root,
+      intervals: spec.intervals,
+      frets: parseFretSpec(trastes),
+      tuningMidi: STANDARD,
+    });
+    return (
+      <DiagramaAcorde
+        nombre={nombre}
+        voicing={exacto}
+        noteByInterval={noteByInterval}
+        etiquetas={etiquetas}
+        titulo={`${spec.label}, traste ${exacto.baseFret}`}
+        pie={pie}
+      />
+    );
+  }
+
   const grupo = nums(cuerdas);
   // el autor escribe "3, 2, 1"; el generador quiere índices 0 = 6ª cuerda
   const stringSet: [number, number] | undefined = grupo
@@ -183,12 +214,6 @@ export function Acorde({
       : {}),
   });
 
-  const names = spellFormula(spec.root, spec.intervals);
-  const noteByInterval: Record<string, NoteName> = {};
-  spec.intervals.forEach((interval, i) => {
-    noteByInterval[interval] = names[i];
-  });
-
   // la primera forma cuyo traste base llega a `zona`
   const desdeTraste = num(zona) ?? 0;
   const inv = num(inversion);
@@ -199,13 +224,40 @@ export function Acorde({
   if (!voicing) throw new Error(`Sin formas tocables para "${nombre}"`);
 
   return (
+    <DiagramaAcorde
+      nombre={nombre}
+      voicing={voicing}
+      noteByInterval={noteByInterval}
+      etiquetas={etiquetas}
+      titulo={`${spec.label}, traste ${voicing.baseFret}`}
+      pie={pie}
+    />
+  );
+}
+
+function DiagramaAcorde({
+  nombre,
+  voicing,
+  noteByInterval,
+  etiquetas,
+  titulo,
+  pie,
+}: {
+  nombre: string;
+  voicing: Voicing;
+  noteByInterval: Record<string, NoteName>;
+  etiquetas: "interval" | "note" | "none";
+  titulo: string;
+  pie?: string;
+}) {
+  return (
     <figure className="rounded-lg border bg-card p-2">
       <figcaption className="mb-1 text-center text-sm font-medium">{nombre}</figcaption>
       <ChordDiagram
         voicing={voicing}
         noteByInterval={noteByInterval}
         labels={etiquetas}
-        title={`${spec.label}, traste ${voicing.baseFret}`}
+        title={titulo}
       />
       {pie && (
         <figcaption className="mt-1 text-center text-xs text-muted-foreground">
