@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Trastea 🎸
 
-## Getting Started
+Tu sistema de estudio de guitarra: curso diario, sesión de práctica con timer y
+metrónomo, escalas y acordes visuales, tabs, wiki de teoría y registro de progreso.
 
-First, run the development server:
+## Setup (<5 min)
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
+cp .env.example .env.local   # rellena con tu proyecto de Supabase
+pnpm dev                     # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Sin `.env.local` la app arranca en **modo demo** (sin auth ni persistencia).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Supabase
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Crea un proyecto free en [supabase.com](https://supabase.com).
+2. Copia `Project Settings → API` → URL y anon key a `.env.local`.
+3. Aplica la migración: pega `supabase/migrations/*.sql` en el SQL Editor del
+   dashboard (o `supabase db push` con el CLI vinculado).
+4. En `Authentication → Providers` activa Email.
 
-## Learn More
+## Comandos
 
-To learn more about Next.js, take a look at the following resources:
+| Comando | Qué hace |
+| --- | --- |
+| `pnpm dev` | servidor de desarrollo |
+| `pnpm test` | tests unitarios (Vitest) |
+| `pnpm lint` / `pnpm typecheck` | calidad |
+| `pnpm content:audit` | valida `/content` y genera `content/STATE.md` |
+| `pnpm check` | todo lo anterior; debe estar verde antes de mergear |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Estructura
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `/content` — curso, ejercicios, canciones, wiki (MDX versionado en git)
+- `/src/data` — escalas/acordes/afinaciones por fórmulas de intervalos
+- `/src/lib/music` — teoría musical pura, testeada
+- `/supabase/migrations` — esquema con RLS por usuario
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Más detalle en `ARCHITECTURE.md` y `ROADMAP.md`.
