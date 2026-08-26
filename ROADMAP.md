@@ -33,7 +33,7 @@
 - [x] Módulos B y C completos (40 lecciones-día)
 - [x] Canciones con ficha completa (`/canciones`)
 - [ ] Tablaturas con AlphaTab (player estilo Songsterr) + tabs propias
-- [ ] Entrenamiento SRS de notas del mástil (SM-2 simplificado)
+- [x] Entrenamiento SRS de notas del mástil (SM-2 simplificado)
 - [ ] Storybook
 
 ## Fase 2.5 — El curso deja de ser una fila (cuando haya 2-3 especialidades)

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, BookOpen, Flame, GraduationCap, Timer } from "lucide-react";
+import { ArrowRight, Brain, Flame, GraduationCap, Timer } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -180,12 +180,12 @@ export default async function DashboardPage() {
           </Link>
         </Button>
         <Button asChild variant="outline" className="h-auto justify-start p-4">
-          <Link href="/wiki">
-            <BookOpen className="size-5 text-primary" aria-hidden />
+          <Link href="/entrenar">
+            <Brain className="size-5 text-primary" aria-hidden />
             <span className="flex flex-col items-start">
-              <span>Wiki</span>
+              <span>Entrenar</span>
               <span className="text-xs text-muted-foreground">
-                La teoría, sin humo
+                Notas del mástil, 5 minutos
               </span>
             </span>
           </Link>

@@ -33,6 +33,7 @@ juguetona en los textos, seria y precisa como herramienta.
 | **Escalas**       | `/escalas?root=F&type=minor-pentatonic&labels=interval` | Explorador con audio, deletreo correcto por tonalidad                                                                        |
 | **Acordes**       | `/acordes?root=G&type=maj7&view=triads`                 | Diagramas verticales de todas las formas tocables (abiertas, cejilla, inversiones, tríadas por grupos de cuerdas), con audio |
 | **Canciones**     | `/canciones`                                            | Repertorio del curso: propósito pedagógico, tono, referencias y en qué lecciones aparece                                     |
+| **Entrenar**      | `/entrenar`                                             | SRS de notas del mástil: te pregunta lo que peor llevas, 5 minutos al día                                                    |
 | **Wiki**          | `/wiki`                                                 | 48 fichas en profundidad con buscador: sonoridad, origen, canciones, estudio y errores comunes                               |
 | **Progreso**      | `/progreso`                                             | Gráfica de bpm por ejercicio e historial de sesiones                                                                         |
 | **Perfil**        | `/perfil`                                               | Nivel, lección actual, cierre de sesión                                                                                      |

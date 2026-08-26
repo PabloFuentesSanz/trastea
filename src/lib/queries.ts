@@ -1,6 +1,8 @@
 import "server-only";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import { currentStreak } from "@/lib/streak";
+import { buildFretboardDeck, cardId, type FretboardNoteCard } from "@/lib/srs/deck";
+import { selectSession, sessionStats, type DueCard } from "@/lib/srs/scheduler";
 import type {
   ExerciseRecordRow,
   LessonProgressRow,
@@ -144,4 +146,73 @@ export async function getBpmRecords(userId: string): Promise<ExerciseRecordRow[]
     .order("recorded_at", { ascending: true })
     .limit(500);
   return data ?? [];
+}
+
+export interface SrsProgressRow {
+  cardId: string;
+  dueAt: number;
+  reps: number;
+  ease: number;
+  intervalDays: number;
+  lapses: number;
+}
+
+/** Progreso SRS del usuario, indexado por id de tarjeta. */
+export async function getSrsProgress(userId: string): Promise<SrsProgressRow[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("srs_cards")
+    .select("payload, due_at, reps, ease, interval_days, lapses")
+    .eq("user_id", userId)
+    .eq("card_type", "fretboard_note");
+
+  return (data ?? []).flatMap((row) => {
+    const payload = row.payload as { id?: unknown } | null;
+    const cardId = typeof payload?.id === "string" ? payload.id : null;
+    if (!cardId) return [];
+    return [
+      {
+        cardId,
+        dueAt: Date.parse(row.due_at),
+        reps: row.reps,
+        ease: Number(row.ease),
+        intervalDays: Number(row.interval_days),
+        lapses: row.lapses,
+      },
+    ];
+  });
+}
+
+export interface TrainingDeck {
+  session: FretboardNoteCard[];
+  due: number;
+  fresh: number;
+  total: number;
+  learned: number;
+}
+
+/**
+ * Mazo de la sesión de hoy: cruza el mazo (código) con el progreso (base de
+ * datos) y elige qué preguntar. Aquí vive el reloj, no en el render.
+ */
+export async function getTrainingDeck(
+  userId: string | null,
+  sessionSize: number,
+): Promise<TrainingDeck> {
+  const deck = buildFretboardDeck();
+  const progress = userId ? await getSrsProgress(userId) : [];
+  const byId = new Map(progress.map((p) => [p.cardId, p]));
+  const now = Date.now();
+
+  const dueCards: DueCard<FretboardNoteCard>[] = deck.map((card) => {
+    const saved = byId.get(cardId(card));
+    return { card, dueAt: saved?.dueAt ?? now, reps: saved?.reps ?? 0 };
+  });
+
+  const stats = sessionStats(dueCards, now);
+  return {
+    session: selectSession(dueCards, now, sessionSize),
+    ...stats,
+    learned: progress.filter((p) => p.reps > 0 && p.intervalDays >= 1).length,
+  };
 }
