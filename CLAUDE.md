@@ -54,6 +54,11 @@ por fórmulas en `/src/data` · Vitest + Testing Library · Playwright (E2E).
   desde lecciones (`/metronomo?bpm=80`, `/escalas?root=C&type=major`).
 - Frontmatter validado con zod en build; slug referenciado inexistente = build rojo.
 - Skills `add-lesson`, `add-wiki` y `content-curator` en `.claude/skills`.
+- El catálogo de canciones (`/content/songs`) es la **fuente de repertorio del
+  curso**: se consulta por técnica, nivel, estilo y colección, no por título.
+  Vocabulario cerrado en `src/lib/content/song-taxonomy.ts` (valor fuera del
+  enum = build rojo) y filtrado puro en `song-filter.ts`. Ver "Canciones" en
+  `content/README.md` antes de añadir fichas.
 - El curso **no termina en 12 semanas**: el tronco (A, B, C) está hecho y la
   hoja de ruta son especialidades de años (blues, jazz, rock, fingerstyle,
   funk, fusión, flamenco, improvisación, directo, mantenimiento). Ver
