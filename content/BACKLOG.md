@@ -26,14 +26,35 @@ c-lenguaje (order 4), avanzado (order 5).
 ## Siguiente
 
 - Módulos B y C completos (semanas 5-12 del seed) vía `/content-curator`.
-- Resto de wiki base (~18 artículos: CAGED, 3nps, modos, guide tones, ii-V-I,
-  escala bebop, enclosures, swing vs straight, púa alterna, economy,
-  downpicking, legato, bending y vibrato, palm mute, métricas impares,
-  afinaciones, acordes de 7ª, análisis blues de 12).
 - Tabs alphaTex de material propio (blues-en-fa comping, cromatico-1234…).
 - Canciones restantes del plan (so-what, all-blues, blue-bossa, take-five,
   chameleon, spain, master-of-puppets, blues-lento-en-do, tema-estilo-plini,
   funk-16ths-e, ii-v-i-loop).
+- Ejercicios que enlacen a las fichas profundas nuevas (tríadas por grupos de
+  cuerdas, guide tones sobre blues jazz, enclosures sobre arpegios).
+
+## Wiki profunda ✅ (48 artículos)
+
+Cada ficha sigue la plantilla de `add-wiki`: cómo suena · origen · dónde lo has
+oído · en el mástil (deep links) · cómo estudiarlo (minutos y bpm) · frases
+típicas · errores comunes · Para trastear.
+
+- **Escalas**: mayor, menor natural, armónica, melódica, blues, pentatónicas
+  (hub + mayor + menor), cromática implícita.
+- **Modos**: hub + dórico, frigio, lidio, mixolidio, locrio, bebop.
+- **Acordes**: tríadas e inversiones, séptimas, sextas, suspendidos, power
+  chords, extensiones 9/11/13, shell voicings, drop-2, CAGED, cómo estudiarlos.
+- **Intervalos aplicados**: intervalos, terceras, sextas, octavas.
+- **Lenguaje**: campo armónico, círculo de cuartas, ii-V-I, guide tones,
+  enclosures, blues de 12 compases, 3 notas por cuerda, cómo estudiar escalas.
+- **Técnica y ritmo**: púa alterna, legato, bending y vibrato, palm mute,
+  subdivisión y metrónomo en 2 y 4, swing vs straight.
+- **Otros**: notas musicales, cifrado americano, cómo practicar, cómo
+  transcribir, anatomía de la guitarra.
+
+Pendiente de ampliar más adelante: equipo (amplis, pedales, pastillas),
+historia (blues → rock → jazz), glosario, afinaciones alternativas, armónicos,
+sweep picking, tapping, métricas impares.
 
 ## Ideas aparcadas
 

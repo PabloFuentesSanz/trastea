@@ -32,7 +32,7 @@ juguetona en los textos, seria y precisa como herramienta.
 | **Metrónomo**     | `/metronomo?bpm=80&sig=4/4&sub=2&accent=24`             | Standalone y embebido en lecciones, con presets por URL                                                                      |
 | **Escalas**       | `/escalas?root=F&type=minor-pentatonic&labels=interval` | Explorador con audio, deletreo correcto por tonalidad                                                                        |
 | **Acordes**       | `/acordes?root=G&type=maj7&view=triads`                 | Diagramas verticales de todas las formas tocables (abiertas, cejilla, inversiones, tríadas por grupos de cuerdas), con audio |
-| **Wiki**          | `/wiki`                                                 | Teoría sin humo, con interlinks y backlinks automáticos                                                                      |
+| **Wiki**          | `/wiki`                                                 | 48 fichas en profundidad con buscador: sonoridad, origen, canciones, estudio y errores comunes                               |
 | **Progreso**      | `/progreso`                                             | Gráfica de bpm por ejercicio e historial de sesiones                                                                         |
 | **Perfil**        | `/perfil`                                               | Nivel, lección actual, cierre de sesión                                                                                      |
 
@@ -140,7 +140,12 @@ En el móvil la navegación pasa a una barra inferior con targets grandes:
 
 ### 5. Wiki y progreso
 
-- La wiki enlaza artículos entre sí (`[[interlinks]]`) y muestra "este
+- La wiki son **48 fichas en profundidad** con buscador y filtros por categoría
+  y nivel. Cada una te cuenta cómo suena, de dónde viene, en qué canciones la
+  has oído, dónde cae en el mástil, **cómo estudiarla** (rutina con minutos y
+  bpm) y los errores típicos — con enlaces que abren `/escalas`, `/acordes` o
+  `/metronomo` ya configurados.
+- Los artículos se enlazan entre sí (`[[interlinks]]`) y muestran "este
   artículo aparece en…" generado automáticamente desde las lecciones.
 - `/progreso` dibuja la curva de bpm de cada ejercicio y tu historial de
   sesiones. Lo que se mide, mejora.
