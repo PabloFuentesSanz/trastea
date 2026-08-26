@@ -69,8 +69,12 @@ interface LessonRecord {
 }
 
 const modules: { file: string; fm: ModuleFrontmatter }[] = [];
-const weeks: { file: string; fm: WeekFrontmatter; moduleSlug: string; dayCount: number }[] =
-  [];
+const weeks: {
+  file: string;
+  fm: WeekFrontmatter;
+  moduleSlug: string;
+  dayCount: number;
+}[] = [];
 const lessons: LessonRecord[] = [];
 
 const courseDir = path.join(CONTENT, "course");
@@ -79,7 +83,11 @@ if (fs.existsSync(courseDir)) {
     const modulePath = path.join(courseDir, moduleDir);
     const moduleFile = path.join(modulePath, "module.mdx");
     if (!fs.existsSync(moduleFile)) continue;
-    const moduleFm = tryParse(moduleFile, readMdx(moduleFile).data, moduleFrontmatterSchema);
+    const moduleFm = tryParse(
+      moduleFile,
+      readMdx(moduleFile).data,
+      moduleFrontmatterSchema,
+    );
     if (!moduleFm) continue;
     modules.push({ file: moduleFile, fm: moduleFm });
 
@@ -103,7 +111,13 @@ if (fs.existsSync(courseDir)) {
         const { data, body } = readMdx(file);
         const fm = tryParse(file, data, lessonFrontmatterSchema);
         if (fm) {
-          lessons.push({ file, fm, body, moduleSlug: moduleFm.slug, weekOrder: weekFm.order });
+          lessons.push({
+            file,
+            fm,
+            body,
+            moduleSlug: moduleFm.slug,
+            weekOrder: weekFm.order,
+          });
         }
       }
     }
@@ -180,7 +194,10 @@ for (const { file, fm } of lessons) {
       checkRef(file, "exercise", block.exercise, exerciseSlugs, brokenRefs);
     if (block.song) checkRef(file, "song", block.song, songSlugs, brokenRefs);
     if (block.tool && !KNOWN_TOOL_PREFIXES.some((p) => block.tool!.startsWith(p))) {
-      errors.push({ file: rel(file), message: `tool con ruta desconocida: "${block.tool}"` });
+      errors.push({
+        file: rel(file),
+        message: `tool con ruta desconocida: "${block.tool}"`,
+      });
     }
   }
   for (const ref of fm.wiki_refs) checkRef(file, "wiki", ref, wikiSlugs, brokenRefs);
@@ -238,16 +255,31 @@ function findDuplicates(items: { slug: string; file: string }[], kind: string) {
   for (const { slug, file } of items) {
     const prev = seen.get(slug);
     if (prev) {
-      errors.push({ file: rel(file), message: `${kind} con slug duplicado "${slug}" (también en ${prev})` });
+      errors.push({
+        file: rel(file),
+        message: `${kind} con slug duplicado "${slug}" (también en ${prev})`,
+      });
     } else {
       seen.set(slug, rel(file));
     }
   }
 }
-findDuplicates(lessons.map((l) => ({ slug: l.fm.slug, file: l.file })), "lección");
-findDuplicates(exercises.map((e) => ({ slug: e.fm.slug, file: e.file })), "ejercicio");
-findDuplicates(wikis.map((w) => ({ slug: w.fm.slug, file: w.file })), "wiki");
-findDuplicates(songs.map((s) => ({ slug: s.fm.slug, file: s.file })), "canción");
+findDuplicates(
+  lessons.map((l) => ({ slug: l.fm.slug, file: l.file })),
+  "lección",
+);
+findDuplicates(
+  exercises.map((e) => ({ slug: e.fm.slug, file: e.file })),
+  "ejercicio",
+);
+findDuplicates(
+  wikis.map((w) => ({ slug: w.fm.slug, file: w.file })),
+  "wiki",
+);
+findDuplicates(
+  songs.map((s) => ({ slug: s.fm.slug, file: s.file })),
+  "canción",
+);
 
 // avisos: semanas sin 5 días, wiki huérfana
 for (const w of weeks) {
@@ -274,7 +306,9 @@ lines.push("## Inventario");
 lines.push("");
 lines.push(`| Tipo | Total |`);
 lines.push(`|---|---|`);
-lines.push(`| Módulos | ${modules.length} (${modules.filter((m) => m.fm.placeholder).length} placeholder) |`);
+lines.push(
+  `| Módulos | ${modules.length} (${modules.filter((m) => m.fm.placeholder).length} placeholder) |`,
+);
 lines.push(`| Semanas | ${weeks.length} |`);
 lines.push(`| Lecciones-día | ${lessons.length} |`);
 lines.push(`| Ejercicios | ${exercises.length} |`);
@@ -318,8 +352,12 @@ lines.push("");
 const referenced = [...wikiIncoming.keys()];
 const missingWiki = referenced.filter((s) => !wikiSlugs.has(s));
 lines.push(`- Artículos existentes: ${wikis.length}`);
-lines.push(`- Referenciados sin existir: ${missingWiki.length}${missingWiki.length ? ` → ${missingWiki.map((s) => `\`${s}\``).join(", ")}` : ""}`);
-lines.push(`- Huérfanos (sin backlinks): ${orphanWikis.length}${orphanWikis.length ? ` → ${orphanWikis.map((w) => `\`${w.fm.slug}\``).join(", ")}` : ""}`);
+lines.push(
+  `- Referenciados sin existir: ${missingWiki.length}${missingWiki.length ? ` → ${missingWiki.map((s) => `\`${s}\``).join(", ")}` : ""}`,
+);
+lines.push(
+  `- Huérfanos (sin backlinks): ${orphanWikis.length}${orphanWikis.length ? ` → ${orphanWikis.map((w) => `\`${w.fm.slug}\``).join(", ")}` : ""}`,
+);
 lines.push("");
 
 if (errors.length > 0) {

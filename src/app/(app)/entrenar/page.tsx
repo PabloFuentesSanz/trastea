@@ -20,8 +20,8 @@ export default async function EntrenarPage() {
     <main className="mx-auto w-full max-w-3xl px-4 py-8">
       <h1 className="text-3xl font-semibold tracking-tight">Entrenar</h1>
       <p className="mt-1 text-muted-foreground">
-        Notas del mástil con repetición espaciada: te pregunta lo que peor llevas y
-        te deja en paz con lo que ya sabes. Cinco minutos al día bastan.
+        Notas del mástil con repetición espaciada: te pregunta lo que peor llevas y te
+        deja en paz con lo que ya sabes. Cinco minutos al día bastan.
       </p>
 
       <div className="mt-6 grid grid-cols-3 gap-3">
@@ -62,8 +62,8 @@ export default async function EntrenarPage() {
 
       {!ctx.userId && (
         <p className="mt-4 rounded-lg border border-primary/30 bg-primary/10 px-3 py-2 text-xs text-primary">
-          Sin sesión iniciada puedes entrenar, pero el sistema no recordará qué
-          notas te cuestan.
+          Sin sesión iniciada puedes entrenar, pero el sistema no recordará qué notas te
+          cuestan.
         </p>
       )}
 

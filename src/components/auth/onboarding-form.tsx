@@ -31,7 +31,8 @@ const LEVELS: { value: UserLevel; label: string; description: string }[] = [
   {
     value: "intermedio",
     label: "Intermedio estancado",
-    description: "Llevo años tocando pero siento que no avanzo. (El plan está pensado para ti.)",
+    description:
+      "Llevo años tocando pero siento que no avanzo. (El plan está pensado para ti.)",
   },
   {
     value: "avanzado",

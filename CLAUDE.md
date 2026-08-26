@@ -1,7 +1,7 @@
 # Trastea
 
 App web de estudio de guitarra: curso diario por lecciones, metrónomo, escalas,
-acordes, tabs, wiki y registro de progreso. Nombre = *trastes* + *trastear*:
+acordes, tabs, wiki y registro de progreso. Nombre = _trastes_ + _trastear_:
 tono cercano y juguetón en los textos, herramienta seria y precisa.
 
 ## Stack

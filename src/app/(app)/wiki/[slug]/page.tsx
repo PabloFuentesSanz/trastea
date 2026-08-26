@@ -42,8 +42,10 @@ export default async function WikiArticlePage({
   const backlinks = getWikiBacklinks(slug);
   const body = resolveInterlinks(article.body);
 
-  const category = CATEGORY_LABEL[article.frontmatter.category] ?? article.frontmatter.category;
-  const level = LEVEL_LABEL[article.frontmatter.level] ?? String(article.frontmatter.level);
+  const category =
+    CATEGORY_LABEL[article.frontmatter.category] ?? article.frontmatter.category;
+  const level =
+    LEVEL_LABEL[article.frontmatter.level] ?? String(article.frontmatter.level);
 
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-8">

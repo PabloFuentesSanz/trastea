@@ -35,9 +35,7 @@ export default async function DashboardPage() {
       <div className="flex items-end justify-between">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">
-            {ctx.profile?.display_name
-              ? `Hola, ${ctx.profile.display_name}`
-              : "Hola 👋"}
+            {ctx.profile?.display_name ? `Hola, ${ctx.profile.display_name}` : "Hola 👋"}
           </h1>
           <p className="mt-1 text-muted-foreground">
             {data.streak > 0

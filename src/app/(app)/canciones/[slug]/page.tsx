@@ -5,12 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Mdx } from "@/components/content/mdx";
-import {
-  getSong,
-  getSongLessons,
-  getSongs,
-  getWikiArticle,
-} from "@/lib/content/loader";
+import { getSong, getSongLessons, getSongs, getWikiArticle } from "@/lib/content/loader";
 
 export function generateStaticParams() {
   return getSongs().map((s) => ({ slug: s.frontmatter.slug }));

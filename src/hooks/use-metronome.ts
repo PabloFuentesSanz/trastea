@@ -92,13 +92,11 @@ export function useMetronome(initial?: Partial<MetronomeConfig>): UseMetronome {
     setConfig((prev) => ({ ...prev, ...partial }));
   }, []);
 
-  const setBpm = useCallback(
-    (bpm: number) => update({ bpm: clampBpm(bpm) }),
-    [update],
-  );
+  const setBpm = useCallback((bpm: number) => update({ bpm: clampBpm(bpm) }), [update]);
 
   const nudgeBpm = useCallback(
-    (delta: number) => setConfig((prev) => ({ ...prev, bpm: clampBpm(prev.bpm + delta) })),
+    (delta: number) =>
+      setConfig((prev) => ({ ...prev, bpm: clampBpm(prev.bpm + delta) })),
     [],
   );
 

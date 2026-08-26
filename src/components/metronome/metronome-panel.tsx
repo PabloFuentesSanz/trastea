@@ -15,11 +15,7 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import {
-  MAX_BPM,
-  MIN_BPM,
-  type MetronomeConfig,
-} from "@/lib/metronome/pattern";
+import { MAX_BPM, MIN_BPM, type MetronomeConfig } from "@/lib/metronome/pattern";
 import type { UseMetronome } from "@/hooks/use-metronome";
 
 const SIGNATURES = ["2/4", "3/4", "4/4", "5/4", "6/8", "7/8", "9/8", "12/8"] as const;

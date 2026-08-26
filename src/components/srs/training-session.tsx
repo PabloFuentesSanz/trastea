@@ -119,8 +119,7 @@ export function TrainingSession({
               ))}
             </ul>
             <p className="mt-3 text-xs text-muted-foreground">
-              Volverán a salir pronto: el sistema las repite hasta que dejen de
-              costarte.
+              Volverán a salir pronto: el sistema las repite hasta que dejen de costarte.
             </p>
           </div>
         )}

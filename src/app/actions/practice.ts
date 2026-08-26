@@ -92,7 +92,8 @@ export async function logBpm(input: {
 }): Promise<ActionResult> {
   const ctx = await requireUser();
   if (!ctx) return DEMO;
-  if (input.bpm < 20 || input.bpm > 400) return { ok: false, error: "bpm fuera de rango" };
+  if (input.bpm < 20 || input.bpm > 400)
+    return { ok: false, error: "bpm fuera de rango" };
 
   const { error } = await ctx.supabase.from("exercise_records").insert({
     user_id: ctx.user.id,
@@ -110,7 +111,7 @@ export type CompletedBlockSummary = {
   type: string;
   min: number;
   bpm?: number;
-}
+};
 
 export async function completeLesson(input: {
   lessonSlug: string;

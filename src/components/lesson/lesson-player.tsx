@@ -56,8 +56,7 @@ export function LessonPlayer({
         setDoneBlocks((prev) => new Set([...prev, blockId]));
         if (bpm !== undefined) setBpmByBlock((prev) => ({ ...prev, [blockId]: bpm }));
       },
-      setBpm: (blockId, bpm) =>
-        setBpmByBlock((prev) => ({ ...prev, [blockId]: bpm })),
+      setBpm: (blockId, bpm) => setBpmByBlock((prev) => ({ ...prev, [blockId]: bpm })),
     }),
     [doneBlocks, bpmByBlock, completed, demo],
   );

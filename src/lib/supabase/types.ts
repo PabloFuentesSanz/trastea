@@ -29,7 +29,7 @@ export type ProfileRow = {
   last_practice_date: string | null;
   prefs: Json;
   created_at: string;
-}
+};
 
 export type PracticeSessionRow = {
   id: string;
@@ -41,7 +41,7 @@ export type PracticeSessionRow = {
   mood: number | null;
   notes: string | null;
   created_at: string;
-}
+};
 
 export type ExerciseRecordRow = {
   id: string;
@@ -50,7 +50,7 @@ export type ExerciseRecordRow = {
   bpm: number;
   clean: boolean;
   recorded_at: string;
-}
+};
 
 export type LessonProgressRow = {
   id: string;
@@ -60,7 +60,7 @@ export type LessonProgressRow = {
   blocks_done: string[];
   completed_at: string | null;
   updated_at: string;
-}
+};
 
 export type AssessmentRow = {
   id: string;
@@ -71,7 +71,7 @@ export type AssessmentRow = {
   passed: boolean;
   data: Json;
   created_at: string;
-}
+};
 
 export type RecordingRow = {
   id: string;
@@ -81,7 +81,7 @@ export type RecordingRow = {
   lesson_slug: string | null;
   duration_s: number | null;
   created_at: string;
-}
+};
 
 export type UserNoteRow = {
   id: string;
@@ -91,7 +91,7 @@ export type UserNoteRow = {
   content: string;
   created_at: string;
   updated_at: string;
-}
+};
 
 export type UserSongRow = {
   id: string;
@@ -103,7 +103,7 @@ export type UserSongRow = {
   tab_url: string | null;
   notes: string | null;
   created_at: string;
-}
+};
 
 export type UserResourceRow = {
   id: string;
@@ -113,7 +113,7 @@ export type UserResourceRow = {
   kind: ResourceKind;
   tags: string[];
   created_at: string;
-}
+};
 
 export type SrsCardRow = {
   id: string;
@@ -126,7 +126,7 @@ export type SrsCardRow = {
   reps: number;
   lapses: number;
   created_at: string;
-}
+};
 
 export type Database = {
   public: {
@@ -142,11 +142,7 @@ export type Database = {
         "user_id" | "exercise_slug" | "bpm",
         "id"
       >;
-      lesson_progress: TableDef<
-        LessonProgressRow,
-        "user_id" | "lesson_slug",
-        "id"
-      >;
+      lesson_progress: TableDef<LessonProgressRow, "user_id" | "lesson_slug", "id">;
       assessments: TableDef<
         AssessmentRow,
         "user_id" | "module_slug" | "type",
@@ -167,4 +163,4 @@ export type Database = {
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };
-}
+};

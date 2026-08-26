@@ -28,7 +28,11 @@ export interface FretPosition {
   isRoot: boolean;
 }
 
-export function midiAt(tuningMidi: readonly number[], string: number, fret: number): number {
+export function midiAt(
+  tuningMidi: readonly number[],
+  string: number,
+  fret: number,
+): number {
   const open = tuningMidi[string];
   if (open === undefined) throw new Error(`Cuerda fuera de rango: ${string}`);
   if (fret < 0) throw new Error(`Traste inválido: ${fret}`);
@@ -50,7 +54,10 @@ export function formulaPositions(options: {
   const rootPc = parseNote(root).pc;
   const names = spellFormula(root, intervals);
 
-  const byPc = new Map<PitchClass, { degreeIndex: number; note: NoteName; interval: IntervalName }>();
+  const byPc = new Map<
+    PitchClass,
+    { degreeIndex: number; note: NoteName; interval: IntervalName }
+  >();
   intervals.forEach((interval, i) => {
     const pc = mod12(rootPc + parseInterval(interval).semitones);
     if (!byPc.has(pc)) byPc.set(pc, { degreeIndex: i, note: names[i], interval });

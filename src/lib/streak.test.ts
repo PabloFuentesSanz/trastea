@@ -45,7 +45,9 @@ describe("nextStreak", () => {
 
 describe("currentStreak", () => {
   it("sin prácticas es 0", () => {
-    expect(currentStreak({ streakDays: 0, lastPracticeDate: null }, "2026-08-26")).toBe(0);
+    expect(currentStreak({ streakDays: 0, lastPracticeDate: null }, "2026-08-26")).toBe(
+      0,
+    );
   });
 
   it("practicado hoy o ayer conserva la racha", () => {

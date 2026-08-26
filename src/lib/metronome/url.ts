@@ -60,8 +60,7 @@ export function configFromParams(params: MetronomeSearchParams): MetronomeConfig
     if (Number.isFinite(every) && every > 0)
       config.autoIncrement.everyMeasures = Math.min(64, Math.round(every));
     const max = Number(first(params.max));
-    if (Number.isFinite(max) && max > 0)
-      config.autoIncrement.maxBpm = clampBpm(max);
+    if (Number.isFinite(max) && max > 0) config.autoIncrement.maxBpm = clampBpm(max);
   }
 
   return config;

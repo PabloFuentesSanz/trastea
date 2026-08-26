@@ -96,7 +96,10 @@ export function tickAt(config: MetronomeConfig, index: number): TickInfo {
 }
 
 /** Bpm vigente tras `measuresCompleted` compases con auto-incremento. */
-export function bpmAfterMeasures(config: MetronomeConfig, measuresCompleted: number): Bpm {
+export function bpmAfterMeasures(
+  config: MetronomeConfig,
+  measuresCompleted: number,
+): Bpm {
   const { autoIncrement } = config;
   if (!autoIncrement.enabled || autoIncrement.everyMeasures <= 0) return config.bpm;
   const steps = Math.floor(measuresCompleted / autoIncrement.everyMeasures);

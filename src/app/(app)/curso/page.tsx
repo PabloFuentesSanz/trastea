@@ -38,7 +38,10 @@ export default async function CursoPage() {
           const isPlaceholder = mod.frontmatter.placeholder;
 
           return (
-            <Card key={mod.frontmatter.slug} className={isPlaceholder ? "opacity-60" : ""}>
+            <Card
+              key={mod.frontmatter.slug}
+              className={isPlaceholder ? "opacity-60" : ""}
+            >
               <CardHeader>
                 <div className="flex items-center justify-between gap-2">
                   <CardTitle className="text-xl">

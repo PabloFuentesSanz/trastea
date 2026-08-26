@@ -42,8 +42,7 @@ export function useFormulaPlayer() {
 
       setPlaying(true);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      const totalMs =
-        mode === "chord" ? 2600 : midis.length * step * 1000 + 500;
+      const totalMs = mode === "chord" ? 2600 : midis.length * step * 1000 + 500;
       timeoutRef.current = setTimeout(() => setPlaying(false), totalMs);
     },
     [playNote],

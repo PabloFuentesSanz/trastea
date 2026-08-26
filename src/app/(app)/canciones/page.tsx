@@ -16,8 +16,8 @@ export default function CancionesPage() {
     <main className="mx-auto w-full max-w-3xl px-4 py-8">
       <h1 className="text-3xl font-semibold tracking-tight">Canciones</h1>
       <p className="mt-1 text-muted-foreground">
-        El repertorio del curso: cada canción está aquí por una razón pedagógica
-        concreta, no de relleno.
+        El repertorio del curso: cada canción está aquí por una razón pedagógica concreta,
+        no de relleno.
       </p>
 
       <ul className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">

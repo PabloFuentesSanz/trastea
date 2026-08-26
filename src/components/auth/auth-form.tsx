@@ -43,8 +43,8 @@ export function AuthForm({ mode }: { mode: "login" | "registro" }) {
         <CardHeader>
           <CardTitle>Modo demo</CardTitle>
           <CardDescription>
-            Supabase no está configurado, así que no hay cuentas. Puedes explorar
-            la app igualmente; el progreso no se guardará.
+            Supabase no está configurado, así que no hay cuentas. Puedes explorar la app
+            igualmente; el progreso no se guardará.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -88,8 +88,7 @@ export function AuthForm({ mode }: { mode: "login" | "registro" }) {
         <CardHeader>
           <CardTitle>Revisa tu correo 📬</CardTitle>
           <CardDescription>
-            Te hemos enviado un enlace de confirmación. Al pulsarlo podrás iniciar
-            sesión.
+            Te hemos enviado un enlace de confirmación. Al pulsarlo podrás iniciar sesión.
           </CardDescription>
         </CardHeader>
       </Card>
@@ -107,7 +106,11 @@ export function AuthForm({ mode }: { mode: "login" | "registro" }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col gap-4"
+          noValidate
+        >
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -144,25 +147,27 @@ export function AuthForm({ mode }: { mode: "login" | "registro" }) {
             </p>
           )}
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting
-              ? "Un momento…"
-              : mode === "login"
-                ? "Entrar"
-                : "Crear cuenta"}
+            {isSubmitting ? "Un momento…" : mode === "login" ? "Entrar" : "Crear cuenta"}
           </Button>
         </form>
         <p className="mt-4 text-center text-sm text-muted-foreground">
           {mode === "login" ? (
             <>
               ¿Sin cuenta?{" "}
-              <Link href="/registro" className="text-primary underline-offset-4 hover:underline">
+              <Link
+                href="/registro"
+                className="text-primary underline-offset-4 hover:underline"
+              >
                 Regístrate
               </Link>
             </>
           ) : (
             <>
               ¿Ya tienes cuenta?{" "}
-              <Link href="/login" className="text-primary underline-offset-4 hover:underline">
+              <Link
+                href="/login"
+                className="text-primary underline-offset-4 hover:underline"
+              >
                 Entra
               </Link>
             </>

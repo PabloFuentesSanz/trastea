@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { formulaMidiSequence, formulaPositions, midiAt, midiToFrequency } from "./fretboard";
+import {
+  formulaMidiSequence,
+  formulaPositions,
+  midiAt,
+  midiToFrequency,
+} from "./fretboard";
 import { SCALES } from "@/data/scales";
 import { CHORDS } from "@/data/chords";
 import { TUNINGS } from "@/data/tunings";

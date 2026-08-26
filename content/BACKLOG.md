@@ -119,11 +119,11 @@ público; canciones con copyright siguen con `external_tab_url`):
 ## P3 (ahora) — Módulos frontera: Desde cero y Avanzado
 
 - [ ] **Desde cero** (pre-A, 4 semanas): sujetar la guitarra, primeros acordes
-  abiertos, cambios, rasgueo, primeras canciones de 3 acordes, afinar.
-  Requiere ~12 ejercicios y ~6 wiki nuevas de nivel 0.
+      abiertos, cambios, rasgueo, primeras canciones de 3 acordes, afinar.
+      Requiere ~12 ejercicios y ~6 wiki nuevas de nivel 0.
 - [ ] **Avanzado** (post-C, 4 semanas): sweep/tapping aplicados, alterada y
-  disminuida sobre V7, rearmonización, chord melody, repertorio exigente.
-  Depende de las wiki P3 de teoría avanzada y técnica.
+      disminuida sobre V7, rearmonización, chord melody, repertorio exigente.
+      Depende de las wiki P3 de teoría avanzada y técnica.
 
 ## 🎯 Currículo a largo plazo: de 12 semanas a varios años
 
@@ -134,12 +134,12 @@ todavía; se irá abriendo módulo a módulo).
 
 ### Tronco común (hecho)
 
-| Módulo | Semanas | Estado |
-|---|---|---|
-| Pre — Desde cero | 4 | ⬜ placeholder |
-| A — Cimientos | 4 | ✅ |
-| B — Armonía y arpegios | 4 | ✅ |
-| C — Lenguaje y velocidad | 4 | ✅ |
+| Módulo                   | Semanas | Estado         |
+| ------------------------ | ------- | -------------- |
+| Pre — Desde cero         | 4       | ⬜ placeholder |
+| A — Cimientos            | 4       | ✅             |
+| B — Armonía y arpegios   | 4       | ✅             |
+| C — Lenguaje y velocidad | 4       | ✅             |
 
 ### Especialidades (itinerarios, no cola lineal)
 
@@ -147,18 +147,18 @@ Después del tronco, el estudiante **elige por dónde seguir** según lo que
 quiera tocar. No es una fila india: son caminos paralelos que se pueden
 compaginar o encadenar durante años.
 
-| Módulo | Semanas | Qué cubre |
-|---|---|---|
-| D — Blues en profundidad | 8 | Shuffle y slow blues, Texas/Chicago, turnarounds, vocabulario de los tres King, SRV, blues jazz, dinámicas y tono |
-| E — Jazz y standards | 12 | Comping y voicings drop-2/drop-3, walking bass, chord melody, rhythm changes, sustituciones, transcripción sistemática, repertorio de 10 standards |
-| F — Rock y metal | 8 | Riffs y construcción, alternate picking rápido, palm mute avanzado, armonías gemelas, afinaciones bajas, escalas para metal, solos melódicos |
-| G — Fingerstyle y acústica | 8 | Independencia del pulgar, Travis picking, arreglos a solo guitar, percusión sobre la caja, capo y afinaciones abiertas |
-| H — Funk, soul y R&B | 6 | Semicorcheas con notas fantasma, novenas y comping, wah, cortes y silencios, tocar "atrás del tiempo" |
-| I — Fusión y guitarra moderna | 8 | Modos aplicados de verdad, tapping, sweep, poliritmias, prog y compases mixtos, sonido moderno |
-| J — Flamenco y latino | 6 | Rumba, bulerías básicas, rasgueos, bossa y samba, clave y acompañamiento latino |
-| K — Improvisación avanzada | 8 | Targeting y voice leading, motivos y desarrollo temático, outside playing, tocar sobre cambios rápidos, dúos e interacción |
-| L — Repertorio y directo | continuo | Montar temas enteros, setlists, tocar con otros, ensayo eficiente, nervios y escenario |
-| M — Mantenimiento | indefinido | "Temporadas" de repaso: rutinas cortas que reciclan el tronco y lo que ya estudiaste |
+| Módulo                        | Semanas    | Qué cubre                                                                                                                                          |
+| ----------------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| D — Blues en profundidad      | 8          | Shuffle y slow blues, Texas/Chicago, turnarounds, vocabulario de los tres King, SRV, blues jazz, dinámicas y tono                                  |
+| E — Jazz y standards          | 12         | Comping y voicings drop-2/drop-3, walking bass, chord melody, rhythm changes, sustituciones, transcripción sistemática, repertorio de 10 standards |
+| F — Rock y metal              | 8          | Riffs y construcción, alternate picking rápido, palm mute avanzado, armonías gemelas, afinaciones bajas, escalas para metal, solos melódicos       |
+| G — Fingerstyle y acústica    | 8          | Independencia del pulgar, Travis picking, arreglos a solo guitar, percusión sobre la caja, capo y afinaciones abiertas                             |
+| H — Funk, soul y R&B          | 6          | Semicorcheas con notas fantasma, novenas y comping, wah, cortes y silencios, tocar "atrás del tiempo"                                              |
+| I — Fusión y guitarra moderna | 8          | Modos aplicados de verdad, tapping, sweep, poliritmias, prog y compases mixtos, sonido moderno                                                     |
+| J — Flamenco y latino         | 6          | Rumba, bulerías básicas, rasgueos, bossa y samba, clave y acompañamiento latino                                                                    |
+| K — Improvisación avanzada    | 8          | Targeting y voice leading, motivos y desarrollo temático, outside playing, tocar sobre cambios rápidos, dúos e interacción                         |
+| L — Repertorio y directo      | continuo   | Montar temas enteros, setlists, tocar con otros, ensayo eficiente, nervios y escenario                                                             |
+| M — Mantenimiento             | indefinido | "Temporadas" de repaso: rutinas cortas que reciclan el tronco y lo que ya estudiaste                                                               |
 
 Total estimado si se abren todos: **~70-80 semanas más ≈ 350-400 lecciones-día**,
 más el mantenimiento indefinido. Eso son años de práctica diaria.
@@ -177,19 +177,19 @@ Hoy el curso es **una única fila lineal** (`getOrderedLessons` + `nextLessonSlu
 y `/hoy` avanza por ella. Con especialidades paralelas eso se queda corto:
 
 - [ ] **Itinerarios**: `module.mdx` con `track` (tronco | especialidad) y
-  `prerequisites: [module_slug]`; el curso deja de ser una lista y pasa a ser
-  un grafo. `/curso` muestra "elige tu camino" tras el tronco.
+      `prerequisites: [module_slug]`; el curso deja de ser una lista y pasa a ser
+      un grafo. `/curso` muestra "elige tu camino" tras el tronco.
 - [ ] **Lección de hoy con criterio**: `/hoy` debe elegir dentro del itinerario
-  activo del perfil, no del array global. Añadir `active_track` a `profiles`.
+      activo del perfil, no del array global. Añadir `active_track` a `profiles`.
 - [ ] **Repaso espaciado del curso**: reciclar lecciones antiguas (el módulo M
-  vive de esto). Reutilizar el motor SRS cuando exista.
+      vive de esto). Reutilizar el motor SRS cuando exista.
 - [ ] **Rendimiento del build**: 145 páginas hoy; con ~400 lecciones conviene
-  medir y quizá pasar las lecciones a render dinámico con `generateStaticParams`
-  parcial o ISR.
+      medir y quizá pasar las lecciones a render dinámico con `generateStaticParams`
+      parcial o ISR.
 - [ ] **Navegación del curso**: con 15 módulos, `/curso` necesita filtros y
-  progreso por itinerario, no una lista infinita de tarjetas.
+      progreso por itinerario, no una lista infinita de tarjetas.
 - [ ] **content:audit**: añadir validación de `prerequisites` (grafo sin ciclos)
-  y aviso de módulos inalcanzables.
+      y aviso de módulos inalcanzables.
 
 Nada de esto bloquea escribir contenido: los módulos D-M se pueden ir creando
 como módulos normales con `order` correlativo, y la capa de itinerarios se
@@ -213,13 +213,13 @@ estorbar de verdad.
 
 ## Resumen de números
 
-| Lote | Piezas | Estado |
-|---|---|---|
-| Módulo B | 20 lecciones + 13 ejercicios + 4 canciones + quiz | ✅ |
-| Módulo C | 20 lecciones + 14 ejercicios + 7 canciones + quiz | ✅ |
-| Wiki (siguiente) | ~38 fichas (10 teoría, 9 técnica, 3 ritmo, 7 equipo, 4 historia, 5 transversales) | ⬜ |
-| Tabs | ~14 alphatex (bloqueado por player AlphaTab) | ⬜ |
-| Frontera | 2 módulos (~40 lecciones más) | ⬜ |
+| Lote             | Piezas                                                                            | Estado |
+| ---------------- | --------------------------------------------------------------------------------- | ------ |
+| Módulo B         | 20 lecciones + 13 ejercicios + 4 canciones + quiz                                 | ✅     |
+| Módulo C         | 20 lecciones + 14 ejercicios + 7 canciones + quiz                                 | ✅     |
+| Wiki (siguiente) | ~38 fichas (10 teoría, 9 técnica, 3 ritmo, 7 equipo, 4 historia, 5 transversales) | ⬜     |
+| Tabs             | ~14 alphatex (bloqueado por player AlphaTab)                                      | ⬜     |
+| Frontera         | 2 módulos (~40 lecciones más)                                                     | ⬜     |
 
 | Especialidades D-M | ~70-80 semanas ≈ 350-400 lecciones | ⬜ futuro |
 
