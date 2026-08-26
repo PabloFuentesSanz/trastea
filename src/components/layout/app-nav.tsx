@@ -9,24 +9,36 @@ import {
   GraduationCap,
   Home,
   LineChart,
+  MoreHorizontal,
   Play,
   Timer,
   User,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
-const ITEMS = [
+const MAIN_ITEMS = [
   { href: "/", label: "Inicio", icon: Home, exact: true },
   { href: "/hoy", label: "Hoy", icon: Play, exact: false },
   { href: "/curso", label: "Curso", icon: GraduationCap, exact: false },
   { href: "/metronomo", label: "Metrónomo", icon: Timer, exact: false },
+] as const;
+
+const TOOL_ITEMS = [
+  { href: "/escalas", label: "Escalas", icon: AudioWaveform, exact: false },
+  { href: "/acordes", label: "Acordes", icon: Grip, exact: false },
   { href: "/wiki", label: "Wiki", icon: BookOpen, exact: false },
   { href: "/progreso", label: "Progreso", icon: LineChart, exact: false },
 ] as const;
 
-const DESKTOP_EXTRA = [
-  { href: "/escalas", label: "Escalas", icon: AudioWaveform, exact: false },
-  { href: "/acordes", label: "Acordes", icon: Grip, exact: false },
+const MORE_ITEMS = [
+  ...TOOL_ITEMS,
+  { href: "/perfil", label: "Perfil", icon: User, exact: false },
 ] as const;
 
 function isActive(pathname: string, href: string, exact: boolean): boolean {
@@ -35,6 +47,7 @@ function isActive(pathname: string, href: string, exact: boolean): boolean {
 
 export function AppNav() {
   const pathname = usePathname();
+  const moreActive = MORE_ITEMS.some((item) => isActive(pathname, item.href, item.exact));
 
   return (
     <>
@@ -50,7 +63,7 @@ export function AppNav() {
             </span>
             Trastea
           </Link>
-          {[...ITEMS, ...DESKTOP_EXTRA].map(({ href, label, icon: Icon, exact }) => (
+          {[...MAIN_ITEMS, ...TOOL_ITEMS].map(({ href, label, icon: Icon, exact }) => (
             <Link
               key={href}
               href={href}
@@ -87,8 +100,8 @@ export function AppNav() {
         aria-label="Principal"
         className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 backdrop-blur md:hidden"
       >
-        <div className="grid grid-cols-6">
-          {ITEMS.map(({ href, label, icon: Icon, exact }) => (
+        <div className="grid grid-cols-5">
+          {MAIN_ITEMS.map(({ href, label, icon: Icon, exact }) => (
             <Link
               key={href}
               href={href}
@@ -104,6 +117,36 @@ export function AppNav() {
               {label}
             </Link>
           ))}
+
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              aria-label="Más secciones"
+              className={cn(
+                "flex min-h-14 flex-col items-center justify-center gap-0.5 text-[11px]",
+                moreActive ? "text-primary" : "text-muted-foreground",
+              )}
+            >
+              <MoreHorizontal className="size-5" aria-hidden />
+              Más
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" sideOffset={8} className="mb-1 w-44">
+              {MORE_ITEMS.map(({ href, label, icon: Icon, exact }) => (
+                <DropdownMenuItem key={href} asChild>
+                  <Link
+                    href={href}
+                    aria-current={isActive(pathname, href, exact) ? "page" : undefined}
+                    className={cn(
+                      "flex items-center gap-2",
+                      isActive(pathname, href, exact) && "text-primary",
+                    )}
+                  >
+                    <Icon className="size-4" aria-hidden />
+                    {label}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </nav>
     </>
