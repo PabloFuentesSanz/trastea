@@ -11,6 +11,21 @@ import {
   resolveInterlinks,
 } from "@/lib/content/loader";
 
+const CATEGORY_LABEL: Record<string, string> = {
+  teoria: "Teoría",
+  tecnica: "Técnica",
+  ritmo: "Ritmo",
+  equipo: "Equipo",
+  historia: "Historia",
+  glosario: "Glosario",
+};
+
+const LEVEL_LABEL: Record<number, string> = {
+  1: "Base",
+  2: "Medio",
+  3: "Avanzado",
+};
+
 export function generateStaticParams() {
   return getWikiArticles().map((a) => ({ slug: a.frontmatter.slug }));
 }
@@ -27,18 +42,25 @@ export default async function WikiArticlePage({
   const backlinks = getWikiBacklinks(slug);
   const body = resolveInterlinks(article.body);
 
+  const category = CATEGORY_LABEL[article.frontmatter.category] ?? article.frontmatter.category;
+  const level = LEVEL_LABEL[article.frontmatter.level] ?? String(article.frontmatter.level);
+
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-8">
       <p className="text-xs text-muted-foreground">
         <Link href="/wiki" className="hover:text-foreground">
           Wiki
         </Link>{" "}
-        / {article.frontmatter.category}
+        / {category}
       </p>
       <h1 className="mt-1 text-3xl font-semibold tracking-tight">
         {article.frontmatter.title}
       </h1>
-      <p className="mt-2 text-muted-foreground">{article.frontmatter.summary}</p>
+      <div className="mt-2 flex flex-wrap items-center gap-2">
+        <Badge variant="secondary">{category}</Badge>
+        <Badge variant="outline">{level}</Badge>
+      </div>
+      <p className="mt-3 text-muted-foreground">{article.frontmatter.summary}</p>
 
       <Mdx source={body} className="mt-6" />
 
