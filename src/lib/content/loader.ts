@@ -2,6 +2,7 @@ import "server-only";
 import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
+import { resolveInterlinksWith } from "./interlinks";
 import { cache } from "react";
 import {
   exerciseFrontmatterSchema,
@@ -178,7 +179,7 @@ export const getWikiBacklinks = cache((wikiSlug: string): WikiBacklink[] => {
   for (const article of getWikiArticles()) {
     const mentions =
       article.frontmatter.related.includes(wikiSlug) ||
-      article.body.includes(`[[${wikiSlug}]]`);
+      new RegExp(`\\[\\[${wikiSlug}(\\||\\]\\])`).test(article.body);
     if (mentions && article.frontmatter.slug !== wikiSlug) {
       links.push({
         kind: "wiki",
@@ -197,9 +198,8 @@ export const getWikiBacklinks = cache((wikiSlug: string): WikiBacklink[] => {
 
 /** Convierte [[interlinks]] de la wiki en enlaces markdown antes de renderizar. */
 export function resolveInterlinks(body: string): string {
-  return body.replace(/\[\[([a-z0-9-]+)\]\]/g, (_match, slug: string) => {
-    const article = getWikiArticle(slug);
-    const title = article ? article.frontmatter.title : slug;
-    return `[${title}](/wiki/${slug})`;
-  });
+  return resolveInterlinksWith(
+    body,
+    (slug) => getWikiArticle(slug)?.frontmatter.title ?? null,
+  );
 }

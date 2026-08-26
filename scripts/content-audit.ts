@@ -198,7 +198,7 @@ for (const { file, fm } of songs) {
 }
 
 // wiki → related e interlinks
-const INTERLINK = /\[\[([a-z0-9-]+)\]\]/g;
+const INTERLINK = /\[\[([a-z0-9-]+)(?:\|[^\]]+)?\]\]/g;
 const wikiIncoming = new Map<string, number>();
 for (const { file, fm, body } of wikis) {
   for (const ref of fm.related) checkRef(file, "wiki", ref, wikiSlugs, brokenRefs);

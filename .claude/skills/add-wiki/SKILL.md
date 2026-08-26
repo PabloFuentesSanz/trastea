@@ -25,6 +25,10 @@ summary: "Qué significan C, Dm7 o G7alt y por qué todo el mundo los usa."
 - 300-800 palabras. Si pide más, trocéalo en artículos enlazados.
 - Interlinks con `[[slug]]` (se convierten en enlaces y generan backlinks en
   build). Enlaza generosamente: la wiki es una red, no una lista.
+  - Si el título del artículo empieza por artículo ("Las pentatónicas") y tú ya
+    escribes uno delante ("de la [[pentatonicas]]"), el renderizador lo elide
+    solo: sale "de la pentatónicas". No hace falta que hagas nada.
+  - Cuando quieras otro texto de enlace, usa `[[slug|el texto que quieras]]`.
 - Puede embeber `<Fretboard>`, `<ChordDiagram>`, `<ToolLink>`.
 - Termina con "Para trastear": 1-2 acciones concretas en la guitarra o un
   deep link a herramienta (`/escalas?...`).
