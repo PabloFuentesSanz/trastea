@@ -92,9 +92,11 @@ describe("coerción de props de MDX", () => {
 describe("<Ficha />", () => {
   it("etiqueta las claves conocidas y humaniza las libres", async () => {
     const { Ficha } = await import("./music-blocks");
-    const { container } = render(<Ficha formula="1-3-5" grado7="la sensible" />);
+    const { container } = render(
+      <Ficha formula="1-3-5" grado7="la sensible" esLaEscalaDe="el dominante" />,
+    );
     const dts = [...container.querySelectorAll("dt")].map((d) => d.textContent);
-    expect(dts).toEqual(["Fórmula", "Grado 7"]);
+    expect(dts).toEqual(["Fórmula", "Grado 7", "Es la escala de"]);
   });
 
   it("ignora las props sin valor", async () => {
