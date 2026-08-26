@@ -168,3 +168,34 @@ describe("<Acorde trastes> con digitación exacta", () => {
     expect(() => render(<Acorde nombre="G7" trastes="3,x,3" />)).toThrow(/6 valores/);
   });
 });
+
+describe("<Mastil notas> con notas sueltas", () => {
+  it("dibuja solo las notas pedidas", () => {
+    const { container } = render(<Mastil notas="5:3, 4:2" />);
+    expect(board(container).notas).toBe(2);
+  });
+
+  it("nombra el intervalo desde la primera nota", () => {
+    const { container } = render(<Mastil notas="5:3, 4:2" />);
+    const etiquetas = [...container.querySelectorAll("svg text")]
+      .filter((t) => t.getAttribute("font-weight") === "700")
+      .map((t) => t.textContent);
+    expect(etiquetas).toEqual(["1", "3"]);
+  });
+
+  it("mide desde la raíz explícita si se da", () => {
+    const { container } = render(<Mastil notas="5:3, 4:2" raiz="A" />);
+    const etiquetas = [...container.querySelectorAll("svg text")]
+      .filter((t) => t.getAttribute("font-weight") === "700")
+      .map((t) => t.textContent);
+    expect(etiquetas).toEqual(["b3", "5"]);
+  });
+
+  it("una nota mal escrita revienta en vez de dibujar de menos", () => {
+    expect(() => render(<Mastil notas="6-5" />)).toThrow(/cuerda:traste/);
+  });
+
+  it("sin escala, acorde ni notas es un error de autoría", () => {
+    expect(() => render(<Mastil />)).toThrow(/necesita/);
+  });
+});

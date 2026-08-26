@@ -3,7 +3,13 @@ import type { ReactNode } from "react";
 import { Fretboard, type FretboardLabels } from "@/components/fretboard/fretboard";
 import { ChordDiagram } from "@/components/fretboard/chord-diagram";
 import { formulaPositions } from "@/lib/music/fretboard";
-import { parseFormulaSpec, stringIndex, windowPositions } from "@/lib/music/spec";
+import {
+  parseFormulaSpec,
+  parseNoteSpec,
+  positionsFromNotes,
+  stringIndex,
+  windowPositions,
+} from "@/lib/music/spec";
 import { spellFormula, type NoteName } from "@/lib/music/notes";
 import { generateVoicings, type Voicing } from "@/lib/music/voicings";
 import { parseFretSpec, voicingFromFrets } from "@/lib/music/voicing-from-frets";
@@ -76,6 +82,8 @@ function Figure({
 export function Mastil({
   escala,
   acorde,
+  notas,
+  raiz,
   desde,
   hasta,
   cuerdas,
@@ -85,6 +93,10 @@ export function Mastil({
 }: {
   escala?: string;
   acorde?: string;
+  /** notas sueltas "cuerda:traste": "6:5, 5:7". Para intervalos y ejercicios. */
+  notas?: string;
+  /** raíz desde la que medir los intervalos de `notas` */
+  raiz?: string;
   desde?: Numerico;
   hasta?: Numerico;
   cuerdas?: string | number[];
@@ -92,28 +104,36 @@ export function Mastil({
   pie?: string;
   zurdo?: boolean;
 }) {
+  const from = num(desde);
+  const to = num(hasta);
+  const strings = nums(cuerdas);
+
   const spec = escala
     ? parseFormulaSpec(escala, "scale")
     : acorde
       ? parseFormulaSpec(acorde, "chord")
       : null;
-  if (!spec) throw new Error("<Mastil> necesita `escala` o `acorde`");
+  if (!spec && !notas) {
+    throw new Error("<Mastil> necesita `escala`, `acorde` o `notas`");
+  }
 
-  const from = num(desde);
-  const to = num(hasta);
-  const strings = nums(cuerdas);
-  const lastFret = to ?? 15;
-  const all = formulaPositions({
-    root: spec.root,
-    intervals: spec.intervals,
-    tuningMidi: STANDARD,
-    frets: lastFret,
-  });
-  const positions = windowPositions(all, {
-    fromFret: from,
-    toFret: to,
-    strings,
-  });
+  const parsed = notas ? parseNoteSpec(notas) : null;
+  // con notas sueltas la ventana se ajusta sola a lo que hay que enseñar
+  const lastFret = to ?? (parsed ? Math.max(...parsed.map((n) => n.fret), 1) + 1 : 15);
+
+  const positions = parsed
+    ? positionsFromNotes(parsed, STANDARD, raiz ?? spec?.root)
+    : windowPositions(
+        formulaPositions({
+          root: spec!.root,
+          intervals: spec!.intervals,
+          tuningMidi: STANDARD,
+          frets: lastFret,
+        }),
+        { fromFret: from, toFret: to, strings },
+      );
+
+  const titulo = spec?.label ?? "Notas en el mástil";
 
   // el mástil entero se deja crecer; una ventana corta se queda en su tamaño
   const cells = lastFret - Math.max(from ?? 0, 1) + 1;
@@ -127,7 +147,7 @@ export function Mastil({
         frets={lastFret}
         labels={etiquetas}
         lefty={zurdo}
-        title={pie ? `${spec.label}: ${pie}` : spec.label}
+        title={pie ? `${titulo}: ${pie}` : titulo}
       />
     </Figure>
   );

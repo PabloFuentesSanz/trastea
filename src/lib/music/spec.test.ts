@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   parseChordSymbol,
   parseFormulaSpec,
+  parseNoteSpec,
+  positionsFromNotes,
   windowPositions,
   type FormulaSpec,
 } from "./spec";
@@ -121,5 +123,61 @@ describe("FormulaSpec como contrato de autoría", () => {
     expect(spec).toMatchObject({ root: "G", id: "dorian" });
     expect(typeof spec.label).toBe("string");
     expect(spec.intervals.length).toBeGreaterThan(0);
+  });
+});
+
+describe("parseNoteSpec", () => {
+  it("lee pares cuerda:traste en numeración musical", () => {
+    expect(parseNoteSpec("6:5, 5:7")).toEqual([
+      { string: 6, fret: 5 },
+      { string: 7 - 2, fret: 7 },
+    ]);
+  });
+
+  it("acepta el traste 0 (cuerda al aire)", () => {
+    expect(parseNoteSpec("6:0")).toEqual([{ string: 6, fret: 0 }]);
+  });
+
+  it("rechaza cuerdas fuera de la guitarra", () => {
+    expect(() => parseNoteSpec("7:5")).toThrow(/cuerda/i);
+    expect(() => parseNoteSpec("0:5")).toThrow(/cuerda/i);
+  });
+
+  it("rechaza basura", () => {
+    expect(() => parseNoteSpec("6-5")).toThrow();
+    expect(() => parseNoteSpec("6:xx")).toThrow();
+  });
+});
+
+describe("positionsFromNotes", () => {
+  it("nombra los intervalos respecto a la primera nota", () => {
+    // 5ª cuerda traste 3 = Do; 4ª cuerda traste 2 = Mi → 3ª mayor
+    const pos = positionsFromNotes(parseNoteSpec("5:3, 4:2"), STANDARD);
+    expect(pos.map((p) => p.interval)).toEqual(["1", "3"]);
+    expect(pos.map((p) => p.note)).toEqual(["C", "E"]);
+    expect(pos[0].isRoot).toBe(true);
+    expect(pos[1].isRoot).toBe(false);
+  });
+
+  it("la quinta justa del power chord", () => {
+    const pos = positionsFromNotes(parseNoteSpec("5:3, 4:5"), STANDARD);
+    expect(pos.map((p) => p.interval)).toEqual(["1", "5"]);
+  });
+
+  it("la octava sale como 1, no como 8", () => {
+    const pos = positionsFromNotes(parseNoteSpec("6:5, 4:7"), STANDARD);
+    expect(pos.map((p) => p.interval)).toEqual(["1", "1"]);
+    expect(pos[1].isRoot).toBe(true);
+  });
+
+  it("acepta una raíz explícita distinta de la primera nota", () => {
+    // mismas notas, pero midiendo desde La
+    const pos = positionsFromNotes(parseNoteSpec("5:3, 4:2"), STANDARD, "A");
+    expect(pos.map((p) => p.interval)).toEqual(["b3", "5"]);
+  });
+
+  it("convierte a índice interno de cuerda (6ª = 0)", () => {
+    expect(positionsFromNotes(parseNoteSpec("6:5"), STANDARD)[0].string).toBe(0);
+    expect(positionsFromNotes(parseNoteSpec("1:5"), STANDARD)[0].string).toBe(5);
   });
 });

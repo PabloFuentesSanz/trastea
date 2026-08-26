@@ -3,28 +3,77 @@ slug: notas-musicales
 title: "Las notas musicales"
 category: teoria
 level: 1
-related: [cifrado-americano]
+related: [cifrado-americano, intervalos]
 summary: "Doce sonidos, siete nombres, dos sistemas para nombrarlos y por qué el mástil parece caótico pero no lo es."
 ---
 
-Hay **doce sonidos** distintos por octava, pero solo **siete nombres**: Do Re
-Mi Fa Sol La Si. Los otros cinco viven entre medias y se nombran con
-alteraciones: sostenido (#, medio tono arriba) o bemol (b, medio tono abajo).
+<Ficha
+  sonidos="12 por octava"
+  nombres="7: Do Re Mi Fa Sol La Si"
+  losOtrosCinco="Viven entre medias, con # (medio tono arriba) o b (medio tono abajo)"
+  laClave="Mi→Fa y Si→Do están a UN semitono. Los demás vecinos, a un tono."
+  enLaGuitarra="Subir un traste = subir un semitono. Siempre."
+/>
 
-Los siete nombres no están a la misma distancia. Entre Mi→Fa y entre Si→Do hay
-**un semitono** (un traste); entre todos los demás vecinos hay **un tono** (dos
-trastes). Ese detalle es el 80% de entender el mástil: en la 6ª cuerda al aire
-tienes Mi, y por eso el Fa está en el traste 1 pero el Sol está en el 3.
+## Lo que explica el mástil entero
 
-En la guitarra, subir un traste = subir un semitono. Siempre. Una cuerda
-cualquiera es simplemente la fila de los 12 sonidos empezando desde su nota al
-aire: por eso el traste 12 repite la nota al aire, una octava más aguda.
+Los siete nombres **no están a la misma distancia**. Entre Mi→Fa y entre Si→Do
+hay un semitono (un traste); entre todos los demás vecinos hay un tono (dos
+trastes).
 
-Un mismo sonido puede tener dos nombres — Fa# y Solb son el mismo traste. Cuál
-usar depende de la tonalidad ([[cifrado-americano]] lo desarrolla): las
-tonalidades "de bemoles" escriben Sib, las "de sostenidos" escriben La#. Tu
-oído no nota la diferencia; tu lectura sí.
+<Mastil
+  escala="C chromatic"
+  cuerdas="6"
+  desde="0"
+  hasta="12"
+  pie="Los doce sonidos en la 6ª cuerda. El traste 12 repite la nota al aire."
+/>
 
-**Para trastear**: en la 6ª cuerda, toca y nombra en voz alta E-F-G-A-B-C-D-E
-(trastes 0-1-3-5-7-8-10-12). Cuando lo tengas, busca los mismos nombres en la
-5ª cuerda empezando desde La.
+Ese detalle es el 80% de entender el mástil: en la 6ª cuerda al aire tienes
+Mi, y por eso **el Fa está en el traste 1 pero el Sol está en el 3**.
+
+<Mastil
+  notas="6:0, 6:1, 6:3, 6:5, 6:7, 6:8, 6:10, 6:12"
+  desde="0"
+  hasta="12"
+  pie="Solo las notas naturales: fíjate en los dos sitios donde hay un salto de un traste"
+/>
+
+Una cuerda cualquiera es la fila de los 12 sonidos empezando desde su nota al
+aire ([[intervalos]] para lo que hay entre ellas).
+
+## Dos nombres para el mismo sonido
+
+Fa# y Solb son **el mismo traste**. Cuál usar depende de la tonalidad:
+
+<Ficha
+  deSostenidos="Escriben La#, Fa#, Do#…"
+  deBemoles="Escriben Sib, Mib, Lab…"
+  tuOido="No nota la diferencia"
+  tuLectura="Sí"
+/>
+
+[[cifrado-americano]] lo desarrolla.
+
+## Cómo estudiarlas
+
+<Rutina>
+  <Paso dias="1-3" min="5">
+    En la 6ª cuerda, toca y **nombra en voz alta** E-F-G-A-B-C-D-E (trastes
+    0-1-3-5-7-8-10-12).
+  </Paso>
+  <Paso dias="4-6" min="5">
+    Los mismos nombres en la 5ª cuerda empezando desde La. Verás que los saltos de un
+    traste caen en otro sitio.
+  </Paso>
+  <Paso dias="7+" min="5" tool="/entrenar">
+    Pásate al entrenador de notas del mástil, que te pregunta justo lo que peor llevas.
+  </Paso>
+</Rutina>
+
+<Aviso tipo="truco">
+  No memorices el mástil entero de golpe. Con la 6ª y la 5ª cuerda dominadas ya puedes
+  situar cualquier acorde con cejilla, que es el 90% del uso real.
+</Aviso>
+
+<ToolLink href="/entrenar">Entrenar las notas del mástil</ToolLink>

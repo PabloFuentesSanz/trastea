@@ -7,7 +7,16 @@
 import { CHORDS } from "@/data/chords";
 import { SCALES } from "@/data/scales";
 import type { FretPosition } from "./fretboard";
-import { parseNote, toSolfege, type IntervalName, type NoteName } from "./notes";
+import { midiAt } from "./fretboard";
+import {
+  keyPrefersFlats,
+  mod12,
+  parseNote,
+  pcToName,
+  toSolfege,
+  type IntervalName,
+  type NoteName,
+} from "./notes";
 
 export type FormulaKind = "scale" | "chord";
 
@@ -120,5 +129,87 @@ export function windowPositions(
     if (toFret !== undefined && p.fret > toFret) return false;
     if (allowed && !allowed.has(p.string)) return false;
     return true;
+  });
+}
+
+/** Semitonos desde la raíz → nombre de intervalo, para notas sueltas. */
+const INTERVAL_BY_SEMITONE: readonly IntervalName[] = [
+  "1",
+  "b2",
+  "2",
+  "b3",
+  "3",
+  "4",
+  "b5",
+  "5",
+  "b6",
+  "6",
+  "b7",
+  "7",
+];
+
+export interface NoteSpec {
+  /** numeración musical: 6 = Mi grave */
+  string: number;
+  fret: number;
+}
+
+/**
+ * Notas sueltas escritas como "cuerda:traste": `"6:5, 5:7"`.
+ * Es lo que necesitan los intervalos y los ejercicios, donde no hay fórmula
+ * que valga: son unas notas concretas en unos trastes concretos.
+ */
+export function parseNoteSpec(spec: string): NoteSpec[] {
+  const parts = spec
+    .split(/[,]+/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+
+  if (parts.length === 0) throw new Error(`Sin notas en: "${spec}"`);
+
+  return parts.map((part) => {
+    const match = /^([1-6]):(\d{1,2})$/.exec(part);
+    if (!match) {
+      throw new Error(
+        `Nota inválida: "${part}" (en "${spec}"). Se escribe cuerda:traste, p. ej. 6:5`,
+      );
+    }
+    const string = Number(match[1]);
+    const fret = Number(match[2]);
+    if (string < 1 || string > 6)
+      throw new Error(`Cuerda fuera de la guitarra: "${part}"`);
+    if (fret > 24) throw new Error(`Traste fuera del mástil: "${part}"`);
+    return { string, fret };
+  });
+}
+
+/**
+ * Convierte notas sueltas en posiciones dibujables, nombrando cada intervalo
+ * respecto a `root` (o a la primera nota si no se da).
+ */
+export function positionsFromNotes(
+  notes: readonly NoteSpec[],
+  tuningMidi: readonly number[],
+  root?: NoteName,
+): FretPosition[] {
+  const midis = notes.map((n) => midiAt(tuningMidi, stringIndex(n.string), n.fret));
+  const rootPc = root !== undefined ? parseNote(root).pc : mod12(midis[0]);
+  const flats = keyPrefersFlats(root ?? pcToName(rootPc));
+
+  return notes.map((note, i) => {
+    const midi = midis[i];
+    const pc = mod12(midi);
+    const semitones = mod12(pc - rootPc);
+    const interval = INTERVAL_BY_SEMITONE[semitones];
+    return {
+      string: stringIndex(note.string),
+      fret: note.fret,
+      midi,
+      pc,
+      degreeIndex: semitones,
+      note: pcToName(pc, flats),
+      interval,
+      isRoot: semitones === 0,
+    };
   });
 }

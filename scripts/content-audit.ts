@@ -30,7 +30,7 @@ import {
   type WeekFrontmatter,
   type WikiFrontmatter,
 } from "../src/lib/content/schemas";
-import { parseFormulaSpec } from "../src/lib/music/spec";
+import { parseFormulaSpec, parseNoteSpec } from "../src/lib/music/spec";
 import { parseFretSpec } from "../src/lib/music/voicing-from-frets";
 
 const ROOT = process.cwd();
@@ -309,6 +309,7 @@ function checkMdxExpressions(file: string, body: string) {
 const MASTIL_SPEC = /<Mastil\b[^>]*?\b(escala|acorde)="([^"]+)"/g;
 const ACORDE_SPEC = /<Acorde\b[^>]*?\bnombre="([^"]+)"/g;
 const TRASTES_SPEC = /<Acorde\b[^>]*?\btrastes="([^"]+)"/g;
+const NOTAS_SPEC = /<Mastil\b[^>]*?\bnotas="([^"]+)"/g;
 
 function checkMusicSpecs(file: string, body: string) {
   const seen: [string, "scale" | "chord"][] = [];
@@ -328,6 +329,14 @@ function checkMusicSpecs(file: string, body: string) {
   for (const m of body.matchAll(TRASTES_SPEC)) {
     try {
       parseFretSpec(m[1]);
+    } catch (e) {
+      errors.push({ file: rel(file), message: (e as Error).message });
+    }
+  }
+
+  for (const m of body.matchAll(NOTAS_SPEC)) {
+    try {
+      parseNoteSpec(m[1]);
     } catch (e) {
       errors.push({ file: rel(file), message: (e as Error).message });
     }
