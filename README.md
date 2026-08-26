@@ -56,10 +56,11 @@ pnpm dev                     # http://localhost:3000
 ### Supabase (auth + progreso)
 
 1. Crea un proyecto free en [supabase.com](https://supabase.com).
-2. `Project Settings → API`: copia URL y anon key a `.env.local`:
+2. `Project Settings → API`: copia URL y la clave pública a `.env.local`
+   (valen tanto la "publishable" nueva como la "anon" clásica):
    ```
    NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
    ```
 3. Aplica la migración: abre el **SQL Editor** del dashboard y pega el
    contenido de `supabase/migrations/20260826150000_initial.sql` (o usa el CLI:
@@ -74,7 +75,7 @@ pnpm dev                     # http://localhost:3000
 1. Importa el repo en [vercel.com](https://vercel.com) (framework: Next.js,
    preset por defecto; detecta pnpm solo).
 2. Añade las dos variables de entorno `NEXT_PUBLIC_SUPABASE_URL` y
-   `NEXT_PUBLIC_SUPABASE_ANON_KEY` en el proyecto.
+   `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` en el proyecto.
 3. Deploy. Después añade el dominio de producción a las Redirect URLs de
    Supabase Auth.
 
