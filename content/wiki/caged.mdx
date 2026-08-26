@@ -14,89 +14,152 @@ related:
 summary: "Cinco formas de acorde abierto que, movidas por el mástil, ordenan acordes, escalas y arpegios en un solo mapa."
 ---
 
-**Qué es y cómo suena.** CAGED no es un sonido, es un **mapa**. La idea:
-solo existen cinco formas de acorde mayor abierto — **C, A, G, E y D** — y
-cualquier acorde mayor del mástil es una de esas cinco formas trasladada a
-otro traste (con cejilla si hace falta). Tocadas en orden por el diapasón
-cubren las doce notas sin huecos y en el mismo orden siempre: C-A-G-E-D, y
-vuelta a empezar. Su valor real no es tocar acordes: es que cada forma trae
-**pegada** su digitación de escala y su arpegio, así que te da un mapa
-completo de una zona del mástil ([[triadas-e-inversiones]]).
+<Ficha
+  queEs="Un mapa, no un sonido"
+  laIdea="Solo hay cinco formas de acorde mayor abierto: C, A, G, E y D"
+  elOrden="Siempre C-A-G-E-D subiendo, y vuelta a empezar"
+  suValorReal="Cada forma trae pegada su escala y su arpegio: te da una zona entera del mástil"
+  loQueNoEs="Una teoría musical. Es organización."
+/>
 
-No lo confundas con las cinco cajas de la [[pentatonicas|pentatónica]] menor: son otros
-cinco patrones, aunque encajan uno a uno con las formas CAGED (ese es el
-truco que hace que todo cuadre).
+## Las cinco formas de Do mayor
 
-**De dónde viene.** No lo inventó nadie con nombre y apellido: es
-pedagogía americana de guitarra popular del siglo XX, formalizada en método
-de academia a partir de los años 70-80 y hoy estándar en cualquier libro de
-guitarra rítmica. Es una racionalización a posteriori de lo que los
-guitarristas ya hacían: reciclar formas abiertas subiéndolas de traste.
+Cada una en su zona, subiendo por el mástil:
 
-**Dónde lo has oído.** No se "oye" CAGED, se ve. Cuando en un directo un
-guitarrista toca un F con cejilla en el traste 1, está usando la forma E.
-Cuando toca un Bb con cejilla en el 1 de la 5ª cuerda, es la forma A. El
-riff de "Sweet Home Alabama" (Lynyrd Skynyrd) alterna formas D y C por la
-zona baja. Y toda la guitarra rítmica de country y de Rolling Stones vive
-en el juego entre forma E, forma A y forma D con cuerdas al aire cerca.
+<Acordes>
+  <Acorde nombre="C" trastes="x,3,2,0,1,0" pie="forma C · traste 3" />
+  <Acorde nombre="C" trastes="x,3,5,5,5,3" pie="forma A · cejilla en 3" />
+  <Acorde nombre="C" trastes="8,7,5,5,5,8" pie="forma G · zona 5-8" />
+  <Acorde nombre="C" trastes="8,10,10,9,8,8" pie="forma E · cejilla en 8" />
+  <Acorde nombre="C" trastes="x,x,10,12,13,12" pie="forma D · zona 10" />
+</Acordes>
 
-**En el mástil.** Do mayor recorrido con las cinco formas, cada una en su
-zona:
+Las raíces marcan el camino: 5ª cuerda traste 3 → 6ª cuerda traste 8 → 4ª
+cuerda traste 10, y en el 15 vuelve la forma C.
 
-- **Forma C** en traste 3 (raíz en 5ª cuerda traste 3).
-- **Forma A** con cejilla en el traste 3 (raíz en 5ª cuerda traste 3).
-- **Forma G** por la zona del traste 5 (raíz en 6ª cuerda traste 8).
-- **Forma E** con cejilla en el traste 8 (raíz en 6ª cuerda traste 8).
-- **Forma D** por la zona del traste 10 (raíz en 4ª cuerda traste 10).
+<Mastil
+  acorde="C"
+  pie="Todas las notas de Do mayor. Las cinco formas son cinco recortes de este mismo mapa."
+/>
 
-Las raíces te van marcando el camino: 5ª cuerda traste 3, 6ª cuerda traste
-8, 4ª cuerda traste 10, y en el 15 vuelve la forma C. Compruébalo tú mismo
-viendo todas las formas ordenadas por zonas:
-[/acordes?root=C&type=major](/acordes?root=C&type=major). Y para ver los
-trozos pequeños que hay dentro de cada forma, la pestaña de tríadas:
-[/acordes?root=C&type=major&view=triads&set=123](/acordes?root=C&type=major&view=triads&set=123).
+<Aviso tipo="ojo">
+  No lo confundas con las cinco cajas de la [[pentatonicas|pentatónica]] menor: son otros
+  cinco patrones, aunque encajan uno a uno con las formas CAGED. Ese es el truco que hace
+  que todo cuadre.
+</Aviso>
 
-**Cómo estudiarlo.**
+## Lo útil no son las formas grandes
 
-1. **Semana 1 (10 min/día):** una forma por día. Toca C mayor solo con esa
-   forma y localiza dónde está la raíz, la 3ª y la 5ª dentro de ella
-   (usa `labels=interval` en la herramienta).
-2. **Semana 2 (10 min):** encadena las cinco subiendo por el mástil, un
-   acorde por compás a [/metronomo?bpm=60](/metronomo?bpm=60), y vuelve
-   bajando. Sin fallos, aunque vayas lento.
-3. **Semana 3 (12 min):** convierte cada forma en menor bajando la 3ª y
-   compara: [/acordes?root=C&type=minor](/acordes?root=C&type=minor).
-4. **Semana 4 (15 min):** por cada forma, toca su arpegio y su digitación
-   de [[escala-mayor]] sin salir de esa zona. Cuando las cinco zonas suenen
-   igual de cómodas, tienes el mástil.
+<Aviso tipo="truco">
+  Las formas completas con cejilla son incómodas y suenan pesadas. Lo que se usa de verdad
+  son los **fragmentos de 3-4 cuerdas** de cada forma ([[triadas-e-inversiones]]).
+</Aviso>
 
-**Frases y usos típicos.** El uso más rentable no es tocar los cinco
-acordes seguidos: es **quedarte en una zona**. Si estás improvisando en el
-traste 8 y entra un acorde de Do, ya sabes que ahí vive la forma E — y con
-ella su escala y su arpegio. También sirve para armonizar melodías: buscas
-la nota de la melodía en la 1ª o 2ª cuerda y eliges la forma CAGED que la
-contiene.
+<Acordes>
+  <Acorde nombre="C" cuerdas="3, 2, 1" inversion="0" pie="dentro de la forma C" />
+  <Acorde
+    nombre="C"
+    cuerdas="3, 2, 1"
+    inversion="1"
+    zona="7"
+    pie="dentro de la forma G"
+  />
+  <Acorde
+    nombre="C"
+    cuerdas="3, 2, 1"
+    inversion="2"
+    zona="11"
+    pie="dentro de la forma D"
+  />
+</Acordes>
 
-**Errores comunes.** (1) Creer que CAGED "explica la guitarra": es un
-sistema de organización, no una teoría musical; la teoría está en
-[[intervalos]] y [[campo-armonico]]. (2) Quedarse en las formas grandes con
-cejilla, que son incómodas y suenan pesadas: lo útil son los fragmentos de
-3-4 cuerdas de cada forma. (3) Aprenderlo solo en mayor y no trasladarlo a
-menor y a séptimas ([[acordes-de-septima]]). (4) Practicarlo únicamente
-subiendo: baja también, y salta de la forma 1 a la 4.
+## Cómo estudiarlo
 
-**Sus límites.** CAGED es un andamio, no una casa. Se le atragantan las
-escalas de tres notas por cuerda ([[tres-notas-por-cuerda]]), que siguen otra
-lógica; encaja mal con acordes de cuatro notas y extensiones
-([[extensiones-9-11-13]]); y si te acostumbras a pensar en formas, acabas
-tocando formas en vez de melodías. Úsalo para orientarte los primeros años y
-después olvídate de las cajas y quédate con las notas.
+<Rutina>
+  <Paso dias="Semana 1" min="10" tool="/acordes?root=C&type=major">
+    **Una forma por día.** Toca Do mayor solo con esa forma y localiza dónde está la raíz,
+    la 3ª y la 5ª dentro de ella.
+  </Paso>
+  <Paso dias="Semana 2" min="10" bpm="60" tool="/metronomo?bpm=60">
+    Encadena las cinco subiendo, un acorde por compás, y vuelve bajando. Sin fallos,
+    aunque vayas lento.
+  </Paso>
+  <Paso dias="Semana 3" min="12" bpm="60">
+    Convierte cada forma en menor bajando la 3ª. Compara las dos versiones de cada zona.
+  </Paso>
+  <Paso dias="Semana 4" min="15">
+    Por cada forma, toca su arpegio y su digitación de [[escala-mayor]] **sin salir de esa
+    zona**. Cuando las cinco suenen igual de cómodas, tienes el mástil.
+  </Paso>
+</Rutina>
 
-**Para trastear.**
+## El uso más rentable
 
-1. Toca Do mayor cinco veces subiendo por el mástil, una por cada forma
-   CAGED, un compás cada una a
-   [/metronomo?bpm=60](/metronomo?bpm=60).
-2. Elige la zona del traste 8 y toca ahí, sin salir: el acorde (forma E), su
-   arpegio y la escala. Compara con el mapa completo en
-   [/acordes?root=C&type=major](/acordes?root=C&type=major).
+No es tocar los cinco acordes seguidos: es **quedarte en una zona**. Si estás
+improvisando en el traste 8 y entra un Do, ya sabes que ahí vive la forma E, y
+con ella su escala y su arpegio.
+
+También sirve para armonizar melodías: busca la nota de la melodía en la 1ª o
+2ª cuerda y elige la forma CAGED que la contiene.
+
+## Dónde practicarlo
+
+<Canciones titulo="Guitarra rítmica que vive en el juego entre formas">
+  <Cancion
+    titulo="Sweet Home Alabama"
+    artista="Lynyrd Skynyrd"
+    nivel="2"
+    que="El riff alterna formas D y C por la zona baja del mástil."
+    como="Toca el riff y nombra en voz alta qué forma CAGED estás usando en cada momento."
+  />
+  <Cancion
+    titulo="Brown Sugar"
+    artista="The Rolling Stones"
+    nivel="3"
+    que="Guitarra rítmica clásica en el juego entre forma E, forma A y cuerdas al aire cerca."
+    como="Dos compases en bucle. Fíjate en que Richards nunca toca la forma completa: siempre trozos."
+  />
+  <Cancion
+    titulo="Wish You Were Here"
+    artista="Pink Floyd"
+    nivel="2"
+    que="La intro se mueve entre formas abiertas de la zona baja: CAGED sin cejilla."
+    como="Los cuatro primeros compases. Identifica la forma antes de poner los dedos."
+  />
+  <Cancion
+    titulo="Hotel California"
+    artista="Eagles"
+    nivel="4"
+    que="El solo final recorre varias zonas del mástil: el ejercicio de CAGED aplicado."
+    como="Localiza en qué zona cae cada frase antes de intentar tocarla. El mapa primero."
+  />
+</Canciones>
+
+## Errores comunes
+
+<Aviso tipo="error">
+  (1) Creer que CAGED "explica la guitarra": la teoría está en [[intervalos]] y
+  [[campo-armonico]]. (2) Quedarse en las formas grandes con cejilla. (3) Aprenderlo solo
+  en mayor y no trasladarlo a menor y a séptimas ([[acordes-de-septima]]). (4) Practicarlo
+  únicamente subiendo: baja también, y salta de la forma 1 a la 4.
+</Aviso>
+
+## Sus límites
+
+CAGED es un andamio, no una casa.
+
+<Ficha
+  seLeAtraganta="Las escalas de tres notas por cuerda, que siguen otra lógica"
+  encajaMal="Acordes de cuatro notas y extensiones"
+  elRiesgo="Si piensas en formas, acabas tocando formas en vez de melodías"
+  cuandoDejarlo="Úsalo para orientarte los primeros años; después quédate con las notas"
+/>
+
+## De dónde viene
+
+No lo inventó nadie con nombre y apellido: es pedagogía americana de guitarra
+popular del siglo XX, formalizada en método de academia a partir de los 70-80.
+Es una racionalización a posteriori de lo que los guitarristas ya hacían:
+reciclar formas abiertas subiéndolas de traste.
+
+<ToolLink href="/acordes?root=C&type=major">Explorar en /acordes</ToolLink>
