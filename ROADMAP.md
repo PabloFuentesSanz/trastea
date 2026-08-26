@@ -36,6 +36,14 @@
 - [ ] Entrenamiento SRS de notas del mástil (SM-2 simplificado)
 - [ ] Storybook
 
+## Fase 2.5 — El curso deja de ser una fila (cuando haya 2-3 especialidades)
+
+Con los módulos D-M (blues, jazz, rock, fingerstyle, funk, fusión, flamenco,
+improvisación…) el curso pasa de lista lineal a **grafo de itinerarios**:
+`track` y `prerequisites` en los módulos, itinerario activo en el perfil,
+`/hoy` eligiendo dentro de ese camino y repaso espaciado de lecciones antiguas.
+Ver "Currículo a largo plazo" en `content/BACKLOG.md`.
+
 ## Fase 3 — Progreso profundo
 
 Grabaciones + comparador · gráficas y heatmap · Mi espacio completo ·

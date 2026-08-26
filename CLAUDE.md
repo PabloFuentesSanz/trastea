@@ -54,3 +54,7 @@ por fórmulas en `/src/data` · Vitest + Testing Library · Playwright (E2E).
   desde lecciones (`/metronomo?bpm=80`, `/escalas?root=C&type=major`).
 - Frontmatter validado con zod en build; slug referenciado inexistente = build rojo.
 - Skills `add-lesson`, `add-wiki` y `content-curator` en `.claude/skills`.
+- El curso **no termina en 12 semanas**: el tronco (A, B, C) está hecho y la
+  hoja de ruta son especialidades de años (blues, jazz, rock, fingerstyle,
+  funk, fusión, flamenco, improvisación, directo, mantenimiento). Ver
+  "Currículo a largo plazo" en `content/BACKLOG.md` antes de planear contenido.

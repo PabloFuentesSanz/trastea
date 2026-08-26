@@ -125,6 +125,77 @@ público; canciones con copyright siguen con `external_tab_url`):
   disminuida sobre V7, rearmonización, chord melody, repertorio exigente.
   Depende de las wiki P3 de teoría avanzada y técnica.
 
+## 🎯 Currículo a largo plazo: de 12 semanas a varios años
+
+Las 12 semanas del seed son **el arranque, no el techo**. Trastea tiene que dar
+de comer durante años: cuando alguien termina el módulo C no se ha acabado el
+curso, empieza la especialización. Este es el mapa completo (no se escribe
+todavía; se irá abriendo módulo a módulo).
+
+### Tronco común (hecho)
+
+| Módulo | Semanas | Estado |
+|---|---|---|
+| Pre — Desde cero | 4 | ⬜ placeholder |
+| A — Cimientos | 4 | ✅ |
+| B — Armonía y arpegios | 4 | ✅ |
+| C — Lenguaje y velocidad | 4 | ✅ |
+
+### Especialidades (itinerarios, no cola lineal)
+
+Después del tronco, el estudiante **elige por dónde seguir** según lo que
+quiera tocar. No es una fila india: son caminos paralelos que se pueden
+compaginar o encadenar durante años.
+
+| Módulo | Semanas | Qué cubre |
+|---|---|---|
+| D — Blues en profundidad | 8 | Shuffle y slow blues, Texas/Chicago, turnarounds, vocabulario de los tres King, SRV, blues jazz, dinámicas y tono |
+| E — Jazz y standards | 12 | Comping y voicings drop-2/drop-3, walking bass, chord melody, rhythm changes, sustituciones, transcripción sistemática, repertorio de 10 standards |
+| F — Rock y metal | 8 | Riffs y construcción, alternate picking rápido, palm mute avanzado, armonías gemelas, afinaciones bajas, escalas para metal, solos melódicos |
+| G — Fingerstyle y acústica | 8 | Independencia del pulgar, Travis picking, arreglos a solo guitar, percusión sobre la caja, capo y afinaciones abiertas |
+| H — Funk, soul y R&B | 6 | Semicorcheas con notas fantasma, novenas y comping, wah, cortes y silencios, tocar "atrás del tiempo" |
+| I — Fusión y guitarra moderna | 8 | Modos aplicados de verdad, tapping, sweep, poliritmias, prog y compases mixtos, sonido moderno |
+| J — Flamenco y latino | 6 | Rumba, bulerías básicas, rasgueos, bossa y samba, clave y acompañamiento latino |
+| K — Improvisación avanzada | 8 | Targeting y voice leading, motivos y desarrollo temático, outside playing, tocar sobre cambios rápidos, dúos e interacción |
+| L — Repertorio y directo | continuo | Montar temas enteros, setlists, tocar con otros, ensayo eficiente, nervios y escenario |
+| M — Mantenimiento | indefinido | "Temporadas" de repaso: rutinas cortas que reciclan el tronco y lo que ya estudiaste |
+
+Total estimado si se abren todos: **~70-80 semanas más ≈ 350-400 lecciones-día**,
+más el mantenimiento indefinido. Eso son años de práctica diaria.
+
+### Orden sugerido de apertura
+
+1. **D — Blues** (es la continuación natural del módulo C y la que más gente pide).
+2. **E — Jazz** (el itinerario más largo y el que más aprovecha la wiki actual).
+3. **Pre — Desde cero** (abre la app a otro público, requiere wiki nivel 0).
+4. **F — Rock y metal** y **H — Funk** (grandes y muy motivadores).
+5. El resto según lo que pida el uso real.
+
+### Lo que el sistema necesita para soportarlo (deuda de producto)
+
+Hoy el curso es **una única fila lineal** (`getOrderedLessons` + `nextLessonSlug`)
+y `/hoy` avanza por ella. Con especialidades paralelas eso se queda corto:
+
+- [ ] **Itinerarios**: `module.mdx` con `track` (tronco | especialidad) y
+  `prerequisites: [module_slug]`; el curso deja de ser una lista y pasa a ser
+  un grafo. `/curso` muestra "elige tu camino" tras el tronco.
+- [ ] **Lección de hoy con criterio**: `/hoy` debe elegir dentro del itinerario
+  activo del perfil, no del array global. Añadir `active_track` a `profiles`.
+- [ ] **Repaso espaciado del curso**: reciclar lecciones antiguas (el módulo M
+  vive de esto). Reutilizar el motor SRS cuando exista.
+- [ ] **Rendimiento del build**: 145 páginas hoy; con ~400 lecciones conviene
+  medir y quizá pasar las lecciones a render dinámico con `generateStaticParams`
+  parcial o ISR.
+- [ ] **Navegación del curso**: con 15 módulos, `/curso` necesita filtros y
+  progreso por itinerario, no una lista infinita de tarjetas.
+- [ ] **content:audit**: añadir validación de `prerequisites` (grafo sin ciclos)
+  y aviso de módulos inalcanzables.
+
+Nada de esto bloquea escribir contenido: los módulos D-M se pueden ir creando
+como módulos normales con `order` correlativo, y la capa de itinerarios se
+añade cuando haya 2-3 especialidades abiertas y el orden lineal empiece a
+estorbar de verdad.
+
 ## Contenido ligado a features futuras (no escribir aún)
 
 - **SRS** (`/entrenar`): los datos salen de `/src/data`, no necesita MDX; solo
@@ -150,5 +221,8 @@ público; canciones con copyright siguen con `external_tab_url`):
 | Tabs | ~14 alphatex (bloqueado por player AlphaTab) | ⬜ |
 | Frontera | 2 módulos (~40 lecciones más) | ⬜ |
 
-El curso de 12 semanas está **completo: 60 lecciones**. Con la wiki pendiente
-la enciclopedia ronda las **85 fichas**; tabs y módulos frontera redondean.
+| Especialidades D-M | ~70-80 semanas ≈ 350-400 lecciones | ⬜ futuro |
+
+El curso de 12 semanas (el tronco común) está **completo: 60 lecciones**. Con la
+wiki pendiente la enciclopedia ronda las **85 fichas**. Las especialidades D-M
+son el plan de años: ver "Currículo a largo plazo" arriba.
