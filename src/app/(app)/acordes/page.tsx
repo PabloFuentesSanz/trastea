@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
-import { FormulaExplorer } from "@/components/fretboard/formula-explorer";
-import type { FretboardLabels } from "@/components/fretboard/fretboard";
-import { CHORDS } from "@/data/chords";
+import {
+  ChordExplorer,
+  type ChordView,
+  type InversionFilter,
+} from "@/components/fretboard/chord-explorer";
+import type { ChordDiagramLabels } from "@/components/fretboard/chord-diagram";
 import { PRACTICAL_ROOTS } from "@/lib/music/notes";
 
 export const metadata: Metadata = { title: "Acordes" };
-
-const LABELS = new Set(["note", "solfege", "interval", "none"]);
 
 export default async function AcordesPage({
   searchParams,
@@ -14,31 +15,34 @@ export default async function AcordesPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const params = await searchParams;
-  const rawRoot = typeof params.root === "string" ? params.root : "C";
+  const get = (key: string) =>
+    typeof params[key] === "string" ? params[key] : undefined;
+
+  const rawRoot = get("root") ?? "C";
   const root = PRACTICAL_ROOTS.includes(rawRoot) ? rawRoot : "C";
-  const type = typeof params.type === "string" ? params.type : "maj7";
-  const rawLabels = typeof params.labels === "string" ? params.labels : "note";
-  const labels = (LABELS.has(rawLabels) ? rawLabels : "note") as FretboardLabels;
+  const view: ChordView = get("view") === "triads" ? "triads" : "chords";
+  const inv: InversionFilter = get("inv") === "root" ? "root" : "all";
+  const rawLabels = get("labels");
+  const labels: ChordDiagramLabels =
+    rawLabels === "note" || rawLabels === "none" ? rawLabels : "interval";
 
   return (
-    <main className="mx-auto w-full max-w-4xl px-4 py-8">
+    <main className="mx-auto w-full max-w-5xl px-4 py-8">
       <h1 className="text-3xl font-semibold tracking-tight">Acordes</h1>
       <p className="mt-1 text-muted-foreground">
-        Las notas del acorde por todo el mástil. Los voicings llegan en la
-        siguiente iteración; el esqueleto ya es tuyo.
+        Todas las formas tocables del acorde por el diapasón: abiertas, cejilla,
+        inversiones y tríadas por grupos de cuerdas.
       </p>
       <div className="mt-6">
-        <FormulaExplorer
-          kind="chord"
-          basePath="/acordes"
-          options={Object.values(CHORDS).map((c) => ({
-            id: c.id,
-            name: `${c.name} (${c.symbol || "maj"})`,
-            intervals: c.intervals,
-          }))}
-          initialRoot={root}
-          initialType={type}
-          initialLabels={labels}
+        <ChordExplorer
+          initial={{
+            root,
+            type: get("type") ?? "major",
+            view,
+            inv,
+            set: get("set") ?? "all",
+            labels,
+          }}
         />
       </div>
     </main>

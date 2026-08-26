@@ -2,7 +2,7 @@
 
 Tu sistema de estudio de guitarra: curso diario por lecciones, sesión de
 práctica con timer y metrónomo, escalas y acordes visuales, wiki de teoría y
-registro de progreso. El nombre juega con *trastes* y *trastear*: cercana y
+registro de progreso. El nombre juega con _trastes_ y _trastear_: cercana y
 juguetona en los textos, seria y precisa como herramienta.
 
 ![Dashboard](docs/screenshots/dashboard.png)
@@ -24,17 +24,17 @@ juguetona en los textos, seria y precisa como herramienta.
 
 ## Qué hace
 
-| Módulo | Ruta | Qué es |
-| --- | --- | --- |
-| **Dashboard** | `/` | Racha, minutos de la semana, progreso del curso, últimos bpm y accesos rápidos |
-| **Sesión de hoy** | `/hoy` | Atajo directo a la lección-día que te toca |
-| **Curso** | `/curso` | Módulos → semanas → lecciones-día con player interactivo |
-| **Metrónomo** | `/metronomo?bpm=80&sig=4/4&sub=2&accent=24` | Standalone y embebido en lecciones, con presets por URL |
-| **Escalas** | `/escalas?root=F&type=minor-pentatonic&labels=interval` | Explorador con audio, deletreo correcto por tonalidad |
-| **Acordes** | `/acordes?root=G&type=maj7` | Notas del acorde por todo el mástil, con audio |
-| **Wiki** | `/wiki` | Teoría sin humo, con interlinks y backlinks automáticos |
-| **Progreso** | `/progreso` | Gráfica de bpm por ejercicio e historial de sesiones |
-| **Perfil** | `/perfil` | Nivel, lección actual, cierre de sesión |
+| Módulo            | Ruta                                                    | Qué es                                                                                                                       |
+| ----------------- | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| **Dashboard**     | `/`                                                     | Racha, minutos de la semana, progreso del curso, últimos bpm y accesos rápidos                                               |
+| **Sesión de hoy** | `/hoy`                                                  | Atajo directo a la lección-día que te toca                                                                                   |
+| **Curso**         | `/curso`                                                | Módulos → semanas → lecciones-día con player interactivo                                                                     |
+| **Metrónomo**     | `/metronomo?bpm=80&sig=4/4&sub=2&accent=24`             | Standalone y embebido en lecciones, con presets por URL                                                                      |
+| **Escalas**       | `/escalas?root=F&type=minor-pentatonic&labels=interval` | Explorador con audio, deletreo correcto por tonalidad                                                                        |
+| **Acordes**       | `/acordes?root=G&type=maj7&view=triads`                 | Diagramas verticales de todas las formas tocables (abiertas, cejilla, inversiones, tríadas por grupos de cuerdas), con audio |
+| **Wiki**          | `/wiki`                                                 | Teoría sin humo, con interlinks y backlinks automáticos                                                                      |
+| **Progreso**      | `/progreso`                                             | Gráfica de bpm por ejercicio e historial de sesiones                                                                         |
+| **Perfil**        | `/perfil`                                               | Nivel, lección actual, cierre de sesión                                                                                      |
 
 El **estado de las herramientas vive en la URL**: cualquier lección puede
 enlazar una configuración exacta (metrónomo a 70 bpm en 2 y 4, la pentatónica
@@ -121,7 +121,7 @@ En el móvil la navegación pasa a una barra inferior con targets grandes:
   **incremento automático** (+X bpm cada N compases hasta un tope).
 - Todo el estado va a la URL: `/metronomo?bpm=92&sub=2&inc=4&every=8&max=120`
   es un preset compartible.
-- El audio usa *lookahead scheduling* sobre el reloj de WebAudio: no se
+- El audio usa _lookahead scheduling_ sobre el reloj de WebAudio: no se
   desincroniza aunque el navegador vaya cargado.
 
 ### 4. Escalas y acordes
@@ -129,6 +129,9 @@ En el móvil la navegación pasa a una barra inferior con targets grandes:
 ![Explorador de escalas](docs/screenshots/escalas.png)
 
 - Elige raíz, escala/acorde y etiquetas (notas, Do-Re-Mi, grados o nada).
+- En acordes: **diagramas verticales clásicos** con número de traste, ordenados
+  por las zonas del mástil (CAGED): abiertos, cejilla e inversiones; pestaña de
+  **tríadas** por grupos de cuerdas (1-2-3, 2-3-4…). Cada forma se puede escuchar.
 - **Escuchar** reproduce la escala ascendente o el acorde arpegiado.
 - La raíz es el cuadrado ámbar (forma **y** color, apto para daltonismo);
   3ª, 5ª y 7ª llevan colores propios.
@@ -146,14 +149,14 @@ En el móvil la navegación pasa a una barra inferior con targets grandes:
 
 ## Comandos
 
-| Comando | Qué hace |
-| --- | --- |
-| `pnpm dev` | servidor de desarrollo |
-| `pnpm build` / `pnpm start` | build y servidor de producción |
-| `pnpm test` / `pnpm test:watch` | tests unitarios (Vitest + Testing Library) |
-| `pnpm lint` / `pnpm typecheck` / `pnpm format` | calidad |
-| `pnpm content:audit` | valida `/content` y regenera `content/STATE.md` |
-| `pnpm check` | lint + typecheck + test + content:audit — **debe estar verde antes de mergear** |
+| Comando                                        | Qué hace                                                                        |
+| ---------------------------------------------- | ------------------------------------------------------------------------------- |
+| `pnpm dev`                                     | servidor de desarrollo                                                          |
+| `pnpm build` / `pnpm start`                    | build y servidor de producción                                                  |
+| `pnpm test` / `pnpm test:watch`                | tests unitarios (Vitest + Testing Library)                                      |
+| `pnpm lint` / `pnpm typecheck` / `pnpm format` | calidad                                                                         |
+| `pnpm content:audit`                           | valida `/content` y regenera `content/STATE.md`                                 |
+| `pnpm check`                                   | lint + typecheck + test + content:audit — **debe estar verde antes de mergear** |
 
 ---
 
@@ -165,10 +168,10 @@ MDX · Vitest**. Las decisiones están documentadas como ADRs cortos en
 [`ARCHITECTURE.md`](ARCHITECTURE.md); las más importantes:
 
 - **Tres capas de datos que nunca se mezclan**:
-  1. *Datos de usuario* → Supabase, RLS por `auth.uid()` en todas las tablas
+  1. _Datos de usuario_ → Supabase, RLS por `auth.uid()` en todas las tablas
      (`supabase/migrations/`).
-  2. *Contenido educativo* → MDX versionado en git (`/content`).
-  3. *Datos musicales* → fórmulas de intervalos en `/src/data`
+  2. _Contenido educativo_ → MDX versionado en git (`/content`).
+  3. _Datos musicales_ → fórmulas de intervalos en `/src/data`
      (`scales.ts`, `chords.ts`, `tunings.ts`). Las herramientas **calculan**
      posiciones; añadir una escala = añadir una entrada de datos.
 - **Lógica pura separada del render y testeada**: teoría musical y enarmonías
