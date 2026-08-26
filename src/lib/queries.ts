@@ -77,7 +77,10 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
 
   const sessions = sessionsRes.data ?? [];
   // último registro por ejercicio
-  const latest = new Map<string, { exercise_slug: string; bpm: number; recorded_at: string }>();
+  const latest = new Map<
+    string,
+    { exercise_slug: string; bpm: number; recorded_at: string }
+  >();
   for (const r of recordsRes.data ?? []) {
     if (!latest.has(r.exercise_slug)) latest.set(r.exercise_slug, r);
   }
@@ -215,4 +218,79 @@ export async function getTrainingDeck(
     ...stats,
     learned: progress.filter((p) => p.reps > 0 && p.intervalDays >= 1).length,
   };
+}
+
+export interface ModuleAssessmentSnapshot {
+  quizPassed: boolean;
+  checklistDone: string[];
+  hasRecording: boolean;
+}
+
+/** Estado de la evaluación de un módulo: quiz, checklist y grabación. */
+export async function getModuleAssessment(
+  userId: string,
+  moduleSlug: string,
+): Promise<ModuleAssessmentSnapshot> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("assessments")
+    .select("type, passed, data")
+    .eq("user_id", userId)
+    .eq("module_slug", moduleSlug);
+
+  const rows = data ?? [];
+  const checklistRow = rows.find((r) => r.type === "checklist");
+  const checklistData = checklistRow?.data as { done?: unknown } | null;
+
+  return {
+    quizPassed: rows.some((r) => r.type === "quiz" && r.passed),
+    checklistDone: Array.isArray(checklistData?.done)
+      ? (checklistData.done as unknown[]).filter(
+          (item): item is string => typeof item === "string",
+        )
+      : [],
+    hasRecording: rows.some((r) => r.type === "recording"),
+  };
+}
+
+export interface RecordingItem {
+  id: string;
+  title: string;
+  storagePath: string;
+  lessonSlug: string | null;
+  durationS: number | null;
+  createdAt: string;
+  /** URL firmada, válida un rato */
+  url: string | null;
+}
+
+export async function getRecordings(userId: string): Promise<RecordingItem[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("recordings")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(100);
+
+  const rows = data ?? [];
+  if (rows.length === 0) return [];
+
+  const { data: signed } = await supabase.storage.from("recordings").createSignedUrls(
+    rows.map((r) => r.storage_path),
+    60 * 60,
+  );
+  const urlByPath = new Map(
+    (signed ?? []).map((s) => [s.path ?? "", s.signedUrl ?? null]),
+  );
+
+  return rows.map((row) => ({
+    id: row.id,
+    title: row.title,
+    storagePath: row.storage_path,
+    lessonSlug: row.lesson_slug,
+    durationS: row.duration_s,
+    createdAt: row.created_at,
+    url: urlByPath.get(row.storage_path) ?? null,
+  }));
 }

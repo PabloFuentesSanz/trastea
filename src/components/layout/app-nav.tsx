@@ -7,6 +7,7 @@ import {
   Brain,
   ListMusic,
   BookOpen,
+  Mic,
   Grip,
   GraduationCap,
   Home,
@@ -31,17 +32,25 @@ const MAIN_ITEMS = [
   { href: "/metronomo", label: "Metrónomo", icon: Timer, exact: false },
 ] as const;
 
+// Herramientas con sitio propio en la barra de escritorio.
 const TOOL_ITEMS = [
   { href: "/entrenar", label: "Entrenar", icon: Brain, exact: false },
   { href: "/escalas", label: "Escalas", icon: AudioWaveform, exact: false },
   { href: "/acordes", label: "Acordes", icon: Grip, exact: false },
+] as const;
+
+// El resto vive en el desplegable "Más": la barra no da para once enlaces.
+const EXTRA_ITEMS = [
   { href: "/canciones", label: "Canciones", icon: ListMusic, exact: false },
   { href: "/wiki", label: "Wiki", icon: BookOpen, exact: false },
+  { href: "/grabaciones", label: "Grabaciones", icon: Mic, exact: false },
   { href: "/progreso", label: "Progreso", icon: LineChart, exact: false },
 ] as const;
 
+// En móvil, "Más" recoge todo lo que no cabe en la barra inferior.
 const MORE_ITEMS = [
   ...TOOL_ITEMS,
+  ...EXTRA_ITEMS,
   { href: "/perfil", label: "Perfil", icon: User, exact: false },
 ] as const;
 
@@ -52,6 +61,17 @@ function isActive(pathname: string, href: string, exact: boolean): boolean {
 export function AppNav() {
   const pathname = usePathname();
   const moreActive = MORE_ITEMS.some((item) => isActive(pathname, item.href, item.exact));
+  const extraActive = EXTRA_ITEMS.some((item) =>
+    isActive(pathname, item.href, item.exact),
+  );
+
+  const barLink = (active: boolean) =>
+    cn(
+      "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors",
+      active
+        ? "bg-accent text-accent-foreground"
+        : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+    );
 
   return (
     <>
@@ -72,17 +92,37 @@ export function AppNav() {
               key={href}
               href={href}
               aria-current={isActive(pathname, href, exact) ? "page" : undefined}
-              className={cn(
-                "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors",
-                isActive(pathname, href, exact)
-                  ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground hover:bg-secondary hover:text-foreground",
-              )}
+              className={barLink(isActive(pathname, href, exact))}
             >
               <Icon className="size-4" aria-hidden />
               {label}
             </Link>
           ))}
+
+          <DropdownMenu>
+            <DropdownMenuTrigger className={barLink(extraActive)}>
+              <MoreHorizontal className="size-4" aria-hidden />
+              Más
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-44">
+              {EXTRA_ITEMS.map(({ href, label, icon: Icon, exact }) => (
+                <DropdownMenuItem key={href} asChild>
+                  <Link
+                    href={href}
+                    aria-current={isActive(pathname, href, exact) ? "page" : undefined}
+                    className={cn(
+                      "flex items-center gap-2",
+                      isActive(pathname, href, exact) && "text-primary",
+                    )}
+                  >
+                    <Icon className="size-4" aria-hidden />
+                    {label}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <Link
             href="/perfil"
             aria-label="Perfil"

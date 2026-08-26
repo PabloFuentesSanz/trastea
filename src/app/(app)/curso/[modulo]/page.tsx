@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Check, Circle, Play } from "lucide-react";
+import { ArrowRight, Check, Circle, Play, Trophy } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Mdx } from "@/components/content/mdx";
 import { getCourse, getModule } from "@/lib/content/loader";
 import { getLessonProgressMap, getUserContext } from "@/lib/queries";
@@ -104,6 +105,29 @@ export default async function ModuloPage({
           </section>
         ))}
       </div>
+
+      {mod.frontmatter.assessment && (
+        <section
+          aria-label="Evaluación del módulo"
+          className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-lg border border-primary/40 bg-accent/30 p-4"
+        >
+          <div className="min-w-0">
+            <h2 className="flex items-center gap-2 font-medium">
+              <Trophy className="size-4 text-primary" aria-hidden />
+              Evaluación del módulo
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Quiz, checklist de autoevaluación y una grabación para comparar dentro de
+              unos meses.
+            </p>
+          </div>
+          <Button asChild>
+            <Link href={`/curso/${mod.frontmatter.slug}/evaluacion`}>
+              Ir a la evaluación <ArrowRight aria-hidden />
+            </Link>
+          </Button>
+        </section>
+      )}
     </main>
   );
 }

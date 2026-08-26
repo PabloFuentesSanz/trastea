@@ -35,6 +35,8 @@ juguetona en los textos, seria y precisa como herramienta.
 | **Canciones**     | `/canciones`                                            | Repertorio del curso: propósito pedagógico, tono, referencias y en qué lecciones aparece                                     |
 | **Entrenar**      | `/entrenar`                                             | SRS de notas del mástil: te pregunta lo que peor llevas, 5 minutos al día                                                    |
 | **Wiki**          | `/wiki`                                                 | 48 fichas en profundidad con buscador: sonoridad, origen, canciones, estudio y errores comunes                               |
+| **Evaluación**    | `/curso/[modulo]/evaluacion`                            | Cierre de módulo: quiz corregido en servidor, checklist de autoevaluación y grabación de la prueba real                      |
+| **Grabaciones**   | `/grabaciones`                                          | Tus grabaciones con URL firmada: el espejo para comparar cómo tocabas hace tres meses                                        |
 | **Progreso**      | `/progreso`                                             | Gráfica de bpm por ejercicio e historial de sesiones                                                                         |
 | **Perfil**        | `/perfil`                                               | Nivel, lección actual, cierre de sesión                                                                                      |
 
@@ -78,7 +80,7 @@ pnpm dev                     # http://localhost:3000
      tocar las plantillas de email.
 
 > ¿Prefieres probar sin confirmar el correo? En `Authentication → Sign In / Up
-> → Email` desactiva "Confirm email" y el registro entra directo.
+→ Email` desactiva "Confirm email" y el registro entra directo.
 
 ### Vercel (deploy)
 
@@ -159,6 +161,23 @@ En el móvil la navegación pasa a una barra inferior con targets grandes:
   artículo aparece en…" generado automáticamente desde las lecciones.
 - `/progreso` dibuja la curva de bpm de cada ejercicio y tu historial de
   sesiones. Lo que se mide, mejora.
+
+### 6. Evaluaciones de módulo
+
+Cada módulo se cierra en `/curso/[modulo]/evaluacion`, con tres patas que pesan
+lo mismo en la barra de progreso:
+
+- **La teoría**: un quiz de opción múltiple. Las respuestas correctas **nunca
+  viajan al navegador**: el cliente recibe las preguntas sin `answer` y la
+  corrección ocurre en un server action. Intentos ilimitados.
+- **Las manos**: un checklist de autoevaluación que se guarda según lo marcas.
+- **La prueba real**: te grabas tocando el reto del módulo. Sin intentos
+  perfectos: la gracia es tener el antes y el después.
+
+Las grabaciones usan `MediaRecorder` (con fallback de códec para Safari) y se
+suben a un bucket **privado** de Supabase Storage bajo `{tu-id}/…`, así que la
+política de RLS solo te deja leer y borrar las tuyas. Al listarlas se generan
+URLs firmadas de una hora. Todas juntas están en `/grabaciones`.
 
 ---
 

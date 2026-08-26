@@ -8,12 +8,14 @@ import {
   exerciseFrontmatterSchema,
   lessonFrontmatterSchema,
   moduleFrontmatterSchema,
+  quizFrontmatterSchema,
   songFrontmatterSchema,
   weekFrontmatterSchema,
   wikiFrontmatterSchema,
   type ExerciseFrontmatter,
   type LessonFrontmatter,
   type ModuleFrontmatter,
+  type QuizFrontmatter,
   type SongFrontmatter,
   type WeekFrontmatter,
   type WikiFrontmatter,
@@ -83,7 +85,12 @@ export const getCourse = cache((): ModuleEntry[] => {
         });
       }
       lessons.sort((a, b) => a.frontmatter.order - b.frontmatter.order);
-      weeks.push({ frontmatter: weekFm, moduleSlug: frontmatter.slug, dir: weekDir, lessons });
+      weeks.push({
+        frontmatter: weekFm,
+        moduleSlug: frontmatter.slug,
+        dir: weekDir,
+        lessons,
+      });
     }
     weeks.sort((a, b) => a.frontmatter.order - b.frontmatter.order);
     modules.push({ frontmatter, body, dir: moduleDir, weeks });
@@ -135,7 +142,9 @@ function loadFlatDir<T>(
 }
 
 export const getExercises = cache(() =>
-  loadFlatDir("exercises", (d): ExerciseFrontmatter => exerciseFrontmatterSchema.parse(d)),
+  loadFlatDir("exercises", (d): ExerciseFrontmatter =>
+    exerciseFrontmatterSchema.parse(d),
+  ),
 );
 
 export const getExercise = cache((slug: string) => {
@@ -156,6 +165,14 @@ export const getWikiArticles = cache(() =>
 
 export const getWikiArticle = cache((slug: string) => {
   return getWikiArticles().find((w) => w.frontmatter.slug === slug) ?? null;
+});
+
+export const getQuizzes = cache(() =>
+  loadFlatDir("quizzes", (d): QuizFrontmatter => quizFrontmatterSchema.parse(d)),
+);
+
+export const getQuiz = cache((slug: string) => {
+  return getQuizzes().find((q) => q.frontmatter.slug === slug) ?? null;
 });
 
 export interface WikiBacklink {
@@ -190,7 +207,11 @@ export const getWikiBacklinks = cache((wikiSlug: string): WikiBacklink[] => {
   }
   for (const song of getSongs()) {
     if (song.frontmatter.wiki_refs.includes(wikiSlug)) {
-      links.push({ kind: "song", slug: song.frontmatter.slug, title: song.frontmatter.title });
+      links.push({
+        kind: "song",
+        slug: song.frontmatter.slug,
+        title: song.frontmatter.title,
+      });
     }
   }
   return links;
