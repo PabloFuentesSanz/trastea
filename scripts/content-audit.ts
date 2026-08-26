@@ -24,6 +24,7 @@ import {
   type WeekFrontmatter,
   type WikiFrontmatter,
 } from "../src/lib/content/schemas";
+import { parseFormulaSpec } from "../src/lib/music/spec";
 
 const ROOT = process.cwd();
 const CONTENT = path.join(ROOT, "content");
@@ -296,6 +297,27 @@ function checkMdxExpressions(file: string, body: string) {
   });
 }
 
+// specs musicales del contenido: un id o cifrado que no existe reventaría en
+// runtime con un 500, así que se caza aquí.
+const MASTIL_SPEC = /<Mastil\b[^>]*?\b(escala|acorde)="([^"]+)"/g;
+const ACORDE_SPEC = /<Acorde\b[^>]*?\bnombre="([^"]+)"/g;
+
+function checkMusicSpecs(file: string, body: string) {
+  const seen: [string, "scale" | "chord"][] = [];
+  for (const m of body.matchAll(MASTIL_SPEC)) {
+    seen.push([m[2], m[1] === "escala" ? "scale" : "chord"]);
+  }
+  for (const m of body.matchAll(ACORDE_SPEC)) seen.push([m[1], "chord"]);
+
+  for (const [spec, kind] of seen) {
+    try {
+      parseFormulaSpec(spec, kind);
+    } catch (e) {
+      errors.push({ file: rel(file), message: (e as Error).message });
+    }
+  }
+}
+
 function walkMdx(dir: string): string[] {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const full = path.join(dir, entry.name);
@@ -305,7 +327,9 @@ function walkMdx(dir: string): string[] {
 }
 
 for (const file of walkMdx(CONTENT)) {
-  checkMdxExpressions(file, readMdx(file).body);
+  const { body } = readMdx(file);
+  checkMdxExpressions(file, body);
+  checkMusicSpecs(file, body);
 }
 
 // avisos: semanas sin 5 días, wiki huérfana

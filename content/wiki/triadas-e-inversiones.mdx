@@ -7,58 +7,124 @@ related: [intervalos, campo-armonico, cifrado-americano, escala-mayor]
 summary: "Tres notas bastan para hacer un acorde — y saber darles la vuelta convierte tus acordes de fogata en comping de verdad."
 ---
 
-Una **tríada** es un acorde de tres notas: raíz, 3ª y 5ª, apiladas por
-terceras ([[intervalos]]). Es la molécula mínima de la armonía — todos los
-acordes con nombres aparatosos (Cmaj9#11...) son tríadas con propina.
+<Ficha
+  queEs="Raíz + 3ª + 5ª, apiladas por terceras"
+  porQueImporta="Es la molécula mínima de la armonía"
+  loDemas="Cmaj9#11 y compañía son tríadas con propina"
+  loQueDecide="La 3ª: una sola nota separa mayor de menor"
+/>
 
-**Los cuatro sabores**, según qué 3ª y qué 5ª uses:
+## Los cuatro sabores
 
-- **Mayor**: 3ª mayor + 5ª justa (C-E-G). Estable y luminosa.
-- **Menor**: 3ª menor + 5ª justa (C-Eb-G). Estable y sombría.
-- **Disminuida**: 3ª menor + 5ª disminuida (C-Eb-Gb). Inquieta, pide
-  resolver ya.
-- **Aumentada**: 3ª mayor + 5ª aumentada (C-E-G#). Flotante, de banda
-  sonora de sueño raro.
+Según qué 3ª y qué 5ª uses ([[intervalos]]):
 
-Fíjate: entre mayor y menor solo cambia **una nota**, la 3ª, y con ella
-cambia todo el carácter. En [[cifrado-americano]] tienes cómo se escriben
-(C, Cm, C°, Caug) y en [[campo-armonico]] verás que la escala mayor fabrica
-tres mayores, tres menores y una disminuida, todas ellas gratis.
+<Ficha
+  mayor="3ª mayor + 5ª justa (C-E-G). Estable y luminosa."
+  menor="3ª menor + 5ª justa (C-Eb-G). Estable y sombría."
+  disminuida="3ª menor + 5ª disminuida (C-Eb-Gb). Inquieta, pide resolver ya."
+  aumentada="3ª mayor + 5ª aumentada (C-E-G#). Flotante, de sueño raro."
+/>
 
-**Inversiones: la misma tríada, otro orden.** Una tríada no está obligada a
-llevar la raíz abajo:
+<Acordes>
+  <Acorde nombre="C" zona="3" pie="mayor" />
+  <Acorde nombre="Cm" zona="3" pie="menor" />
+  <Acorde nombre="Cdim" zona="3" pie="disminuida" />
+  <Acorde nombre="Caug" zona="3" pie="aumentada" />
+</Acordes>
 
-- **Estado fundamental**: raíz en el bajo (C-E-G).
-- **1ª inversión**: la 3ª en el bajo (E-G-C).
-- **2ª inversión**: la 5ª en el bajo (G-C-E).
+Entre mayor y menor solo cambia **una nota**, y con ella todo el carácter. En
+[[cifrado-americano]] tienes cómo se escriben, y en [[campo-armonico]] verás
+que la escala mayor fabrica tres mayores, tres menores y una disminuida, todas
+gratis.
 
-Mismas tres notas, mismo acorde, distinto color y — clave en guitarra —
-**distinta zona del mástil**.
+## Inversiones: la misma tríada, otro orden
 
-**Grupos de cuerdas.** En guitarra las tríadas viven en grupos de tres
-cuerdas adyacentes. El grupo estrella para empezar: cuerdas 1-2-3. Do mayor
-en sus tres formas, de grave a agudo:
+Una tríada no está obligada a llevar la raíz abajo.
 
-- Fundamental: 3ª cuerda traste 5 (C), 2ª traste 5 (E), 1ª traste 3 (G)
-- 1ª inversión: 3ª cuerda traste 9 (E), 2ª traste 8 (G), 1ª traste 8 (C)
-- 2ª inversión: 3ª cuerda traste 12 (G), 2ª traste 13 (C), 1ª traste 12 (E)
+<Ficha
+  fundamental="Raíz en el bajo (C-E-G)"
+  primeraInversion="La 3ª en el bajo (E-G-C)"
+  segundaInversion="La 5ª en el bajo (G-C-E)"
+  loQueCambia="El color y —clave en guitarra— la zona del mástil"
+/>
 
-Tres maneras de decir "Do mayor" repartidas por el mástil. Para el menor,
-baja un traste la nota E allá donde esté (la 3ª, siempre la 3ª).
+## Grupos de cuerdas
 
-**Por qué son el esqueleto del comping.** Acompañar no es rasguear el mismo
-acorde abierto de seis cuerdas todo el rato: es elegir _qué_ Do mayor tocar
-y _dónde_, sin pisar al cantante ni al bajista. Las tríadas en cuerdas
-agudas te dan voicings pequeños, movibles y limpios; las inversiones te
-permiten pasar de C a F moviendo los dedos dos trastes en vez de saltar
-medio mástil. Los grandes rítmicos (piensa en el funk, en Motown) son
-básicamente maestros de la tríada pequeña bien colocada.
+En guitarra las tríadas viven en grupos de tres cuerdas adyacentes. El grupo
+estrella para empezar: **1-2-3**. Do mayor en sus tres formas, subiendo:
 
-**Para trastear**:
+<Acordes>
+  <Acorde nombre="C" cuerdas="3, 2, 1" inversion="0" pie="fundamental" />
+  <Acorde nombre="C" cuerdas="3, 2, 1" inversion="1" zona="7" pie="1ª inversión" />
+  <Acorde nombre="C" cuerdas="3, 2, 1" inversion="2" zona="11" pie="2ª inversión" />
+</Acordes>
 
-1. Toca las tres formas de Do mayor en las cuerdas 1-2-3 subiendo por el
-   mástil (trastes 3-5, 8-9, 12-13) y vuelve a bajar. Luego conviértelas en
-   Do menor bajando un traste cada E.
-2. Bucle C→F→G→C usando solo cuerdas 1-2-3, eligiendo siempre la forma más
-   cercana a la anterior. Con click: [/metronomo?bpm=60](/metronomo?bpm=60),
-   un acorde por compás.
+Tres maneras de decir "Do mayor" repartidas por el mástil. Para el menor, baja
+un traste la 3ª allá donde esté.
+
+<Acordes>
+  <Acorde nombre="Cm" cuerdas="3, 2, 1" inversion="0" pie="Cm fundamental" />
+  <Acorde nombre="Cm" cuerdas="3, 2, 1" inversion="1" zona="7" pie="Cm 1ª inv." />
+  <Acorde nombre="Cm" cuerdas="3, 2, 1" inversion="2" zona="10" pie="Cm 2ª inv." />
+</Acordes>
+
+<Aviso tipo="truco">
+  Fíjate en qué dedo se mueve al pasar de mayor a menor. **Siempre es el mismo papel: la
+  3ª.** Si la localizas en cada forma, te ahorras memorizar el doble de dibujos.
+</Aviso>
+
+## Por qué son el esqueleto del comping
+
+Acompañar no es rasguear el mismo acorde abierto de seis cuerdas todo el rato:
+es elegir **qué** Do mayor tocar y **dónde**, sin pisar al cantante ni al
+bajista.
+
+<Ficha
+  loQueDan="Voicings pequeños, movibles y limpios"
+  elAhorro="Con inversiones pasas de C a F moviendo dos trastes, no medio mástil"
+  quienLoDomina="El funk y la Motown son maestros de la tríada pequeña bien colocada"
+/>
+
+## Cómo estudiarlas
+
+<Rutina>
+  <Paso dias="1-3" min="8" bpm="60" tool="/metronomo?bpm=60">
+    Las tres formas de Do mayor en las cuerdas 1-2-3 subiendo por el mástil y volviendo a
+    bajar.
+  </Paso>
+  <Paso dias="4-6" min="8" bpm="60">
+    Conviértelas en Do menor bajando un traste cada 3ª. Alterna mayor y menor en la misma
+    forma.
+  </Paso>
+  <Paso dias="7-14" min="10" bpm="60" tool="/metronomo?bpm=60">
+    Bucle C → F → G → C usando solo cuerdas 1-2-3, eligiendo **siempre la forma más
+    cercana** a la anterior. Un acorde por compás.
+  </Paso>
+</Rutina>
+
+## Dónde practicarlas
+
+<Canciones titulo="Tríadas pequeñas haciendo todo el trabajo">
+  <Cancion
+    titulo="Superstition"
+    artista="Stevie Wonder"
+    nivel="3"
+    que="El comping de guitarra son tríadas cortas en las cuerdas agudas, con muteo entre golpes."
+    como="Dos compases en bucle a 90 bpm. Lo difícil es la mano derecha, no los acordes."
+  />
+  <Cancion
+    titulo="Let's Stay Together"
+    artista="Al Green"
+    nivel="2"
+    que="Motown puro: tríadas en cuerdas 1-2-3 moviéndose lo mínimo entre acordes."
+    como="Toca la progresión eligiendo cada vez la inversión más cercana. Es el ejercicio del artículo con música encima."
+  />
+  <Cancion
+    titulo="Little Wing"
+    artista="Jimi Hendrix"
+    nivel="4"
+    desde="0:00"
+    que="La intro son tríadas adornadas con notas de paso: el paso siguiente a este artículo."
+    como="Los dos primeros compases, muy lento. Identifica la tríada debajo de cada adorno."
+  />
+</Canciones>

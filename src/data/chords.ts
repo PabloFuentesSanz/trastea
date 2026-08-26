@@ -38,6 +38,13 @@ export const CHORDS: Record<string, ChordDef> = {
     intervals: ["1", "3", "#5"],
     category: "triada",
   },
+  power: {
+    id: "power",
+    name: "Acorde de quinta (power chord)",
+    symbol: "5",
+    intervals: ["1", "5"],
+    category: "triada",
+  },
   sus2: {
     id: "sus2",
     name: "Suspendido 2",

@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { Fretboard, type FretboardLabels } from "@/components/fretboard/fretboard";
 import { ChordDiagram } from "@/components/fretboard/chord-diagram";
 import { formulaPositions } from "@/lib/music/fretboard";
-import { parseFormulaSpec, windowPositions } from "@/lib/music/spec";
+import { parseFormulaSpec, stringIndex, windowPositions } from "@/lib/music/spec";
 import { spellFormula, type NoteName } from "@/lib/music/notes";
 import { generateVoicings } from "@/lib/music/voicings";
 import { getTuning } from "@/data/tunings";
@@ -152,20 +152,35 @@ export function Acordes({ children }: { children: ReactNode }) {
 export function Acorde({
   nombre,
   zona,
+  cuerdas,
+  inversion,
   etiquetas = "interval",
   pie,
 }: {
   nombre: string;
   /** traste por el que buscar la forma: 0 = la más grave disponible */
   zona?: Numerico;
+  /** grupo de cuerdas contiguas en numeración musical, p. ej. "3, 2, 1" */
+  cuerdas?: string | number[];
+  /** 0 = fundamental en el bajo, 1 = primera inversión… */
+  inversion?: Numerico;
   etiquetas?: "interval" | "note" | "none";
   pie?: string;
 }) {
   const spec = parseFormulaSpec(nombre, "chord");
+  const grupo = nums(cuerdas);
+  // el autor escribe "3, 2, 1"; el generador quiere índices 0 = 6ª cuerda
+  const stringSet: [number, number] | undefined = grupo
+    ? [Math.min(...grupo.map(stringIndex)), Math.max(...grupo.map(stringIndex))]
+    : undefined;
+
   const voicings = generateVoicings({
     root: spec.root,
     intervals: spec.intervals,
     tuningMidi: STANDARD,
+    ...(stringSet && grupo
+      ? { stringSet, minStrings: grupo.length, maxStrings: grupo.length }
+      : {}),
   });
 
   const names = spellFormula(spec.root, spec.intervals);
@@ -176,7 +191,11 @@ export function Acorde({
 
   // la primera forma cuyo traste base llega a `zona`
   const desdeTraste = num(zona) ?? 0;
-  const voicing = voicings.find((v) => v.baseFret >= desdeTraste) ?? voicings[0];
+  const inv = num(inversion);
+  const candidatas =
+    inv === undefined ? voicings : voicings.filter((v) => v.inversion === inv);
+  const voicing =
+    candidatas.find((v) => v.baseFret >= desdeTraste) ?? candidatas[0] ?? voicings[0];
   if (!voicing) throw new Error(`Sin formas tocables para "${nombre}"`);
 
   return (

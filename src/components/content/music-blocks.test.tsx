@@ -105,3 +105,49 @@ describe("<Ficha />", () => {
     expect(container.querySelectorAll("dt")).toHaveLength(1);
   });
 });
+
+describe("<Acorde />", () => {
+  async function diagrama(node: React.ReactElement) {
+    const { container } = render(node);
+    const svg = container.querySelector("svg");
+    return {
+      label: svg?.getAttribute("aria-label") ?? "",
+      puntos: container.querySelectorAll("circle, rect").length,
+    };
+  }
+
+  it("dibuja una forma del acorde pedido", async () => {
+    const { Acorde } = await import("./music-blocks");
+    expect((await diagrama(<Acorde nombre="C" />)).label).toContain("Do");
+  });
+
+  it("restringido a un grupo de cuerdas, las otras tres quedan muteadas", async () => {
+    const { Acorde } = await import("./music-blocks");
+    const { container } = render(<Acorde nombre="C" cuerdas="3, 2, 1" />);
+    const mudas = [...container.querySelectorAll("svg text")].filter(
+      (t) => t.textContent === "✕",
+    );
+    expect(mudas).toHaveLength(3);
+  });
+
+  it("sin restringir usa formas de más cuerdas", async () => {
+    const { Acorde } = await import("./music-blocks");
+    const { container } = render(<Acorde nombre="C" />);
+    const mudas = [...container.querySelectorAll("svg text")].filter(
+      (t) => t.textContent === "✕",
+    );
+    expect(mudas.length).toBeLessThan(3);
+  });
+
+  it("acepta pedir una inversión concreta", async () => {
+    const { Acorde } = await import("./music-blocks");
+    expect(
+      (await diagrama(<Acorde nombre="C" cuerdas="3, 2, 1" inversion="1" />)).label,
+    ).toContain("Do");
+  });
+
+  it("un acorde inexistente revienta en vez de dibujar otro", async () => {
+    const { Acorde } = await import("./music-blocks");
+    expect(() => render(<Acorde nombre="Cxyz" />)).toThrow();
+  });
+});
