@@ -40,7 +40,9 @@ export default async function PerfilPage() {
           <CardDescription>
             {ctx.userId
               ? "Tu cuenta y preferencias."
-              : "Sin Supabase configurado no hay cuenta; el progreso no se guarda."}
+              : ctx.configured
+                ? "No has iniciado sesión. Entra para guardar tu progreso."
+                : "Sin Supabase configurado no hay cuenta; el progreso no se guarda."}
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
@@ -60,10 +62,20 @@ export default async function PerfilPage() {
           </div>
 
           <div className="mt-2 flex flex-wrap gap-3">
-            <Button asChild variant="outline">
-              <Link href="/onboarding">Cambiar nivel / nombre</Link>
-            </Button>
-            <SignOutButton />
+            {ctx.userId ? (
+              <>
+                <Button asChild variant="outline">
+                  <Link href="/onboarding">Cambiar nivel / nombre</Link>
+                </Button>
+                <SignOutButton />
+              </>
+            ) : (
+              ctx.configured && (
+                <Button asChild>
+                  <Link href="/login">Entrar</Link>
+                </Button>
+              )
+            )}
           </div>
         </CardContent>
       </Card>
