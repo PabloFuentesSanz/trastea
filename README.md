@@ -5,7 +5,7 @@ práctica con timer y metrónomo, escalas y acordes visuales, wiki de teoría y
 registro de progreso. El nombre juega con *trastes* y *trastear*: cercana y
 juguetona en los textos, seria y precisa como herramienta.
 
-![Dashboard](docs/screenshots/dashboard.svg)
+![Dashboard](docs/screenshots/dashboard.png)
 
 ---
 
@@ -93,7 +93,7 @@ Puedes cambiar nivel y nombre cuando quieras desde `/perfil`.
 ~40 minutos en 5 bloques (técnica, diapasón, oído/ritmo, aplicación,
 repertorio):
 
-![Player de lección](docs/screenshots/leccion.svg)
+![Player de lección](docs/screenshots/leccion.png)
 
 - Abre un bloque: tiene su **timer** con los minutos asignados, su ejercicio
   con instrucciones y, si toca, el **metrónomo embebido ya configurado**.
@@ -106,11 +106,11 @@ repertorio):
 
 En el móvil la navegación pasa a una barra inferior con targets grandes:
 
-<img src="docs/screenshots/leccion-movil.svg" width="320" alt="Player de lección en móvil" />
+<img src="docs/screenshots/leccion-movil.png" width="320" alt="Player de lección en móvil" />
 
 ### 3. El metrónomo, con y sin mirar
 
-![Metrónomo](docs/screenshots/metronomo.svg)
+![Metrónomo](docs/screenshots/metronomo.png)
 
 - `Espacio` arranca/para · `↑/↓` o `+/-` ajustan ±1 bpm (con `Shift`, ±5) ·
   `T` tap tempo.
@@ -125,7 +125,7 @@ En el móvil la navegación pasa a una barra inferior con targets grandes:
 
 ### 4. Escalas y acordes
 
-![Explorador de escalas](docs/screenshots/escalas.svg)
+![Explorador de escalas](docs/screenshots/escalas.png)
 
 - Elige raíz, escala/acorde y etiquetas (notas, Do-Re-Mi, grados o nada).
 - **Escuchar** reproduce la escala ascendente o el acorde arpegiado.
