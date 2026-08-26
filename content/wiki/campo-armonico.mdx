@@ -7,55 +7,116 @@ related: [escala-mayor, triadas-e-inversiones, cifrado-americano, circulo-de-cua
 summary: "Los siete acordes que nacen de una escala mayor y por qué C-Am-F-G lleva sesenta años sonando a 'casa'."
 ---
 
-¿De dónde salen los acordes de una canción? No del azar: de la escala. El
-**campo armónico** es la familia de acordes que se construye apilando notas
-de una misma [[escala-mayor]], y explica por qué ciertos acordes "van
-juntos" y otros suenan a intruso.
+<Ficha
+  laPregunta="¿De dónde salen los acordes de una canción?"
+  laRespuesta="De la escala. Apilando terceras sobre cada uno de sus grados."
+  elPatron="I · ii · iii · IV · V · vi · vii°"
+  esIdentico="En las 12 tonalidades. Mayúscula = mayor, minúscula = menor."
+  paraQueSirve="Reduce los sospechosos de 'cualquier acorde' a siete"
+/>
 
-**La receta.** Sobre cada grado de la escala, apila terceras usando _solo
-notas de la escala_ (nota, la siguiente saltando una, y otra vez). En Do:
+## La receta
 
-- Sobre C: C-E-G → **C** (mayor)
-- Sobre D: D-F-A → **Dm** (menor)
-- Sobre E: E-G-B → **Em** (menor)
-- Sobre F: F-A-C → **F** (mayor)
-- Sobre G: G-B-D → **G** (mayor)
-- Sobre A: A-C-E → **Am** (menor)
-- Sobre B: B-D-F → **B°** (disminuido)
+Sobre cada grado, apila terceras usando **solo notas de la escala**. En Do:
 
-Nadie decidió que el ii fuera menor: **sale menor solo**, porque las
-distancias entre notas de la escala lo obligan ([[triadas-e-inversiones]]
-explica qué hace mayor o menor a una tríada).
+<Ficha
+  sobreDo="C-E-G → C (mayor)"
+  sobreRe="D-F-A → Dm (menor)"
+  sobreMi="E-G-B → Em (menor)"
+  sobreFa="F-A-C → F (mayor)"
+  sobreSol="G-B-D → G (mayor)"
+  sobreLa="A-C-E → Am (menor)"
+  sobreSi="B-D-F → B° (disminuido)"
+/>
 
-**El patrón — apréndetelo con números romanos**: I, ii, iii, IV, V, vi,
-vii° (mayúscula = mayor, minúscula = menor). Es idéntico en las 12
-tonalidades. En Sol: G, Am, Bm, C, D, Em, F#°. Mismo esqueleto, otra ropa.
-Por eso los músicos hablan de "un I-IV-V" sin decir tonalidad: los números
-son la canción; las notas, un detalle ([[circulo-de-cuartas]] te dice qué
-notas tocan en cada tonalidad).
+<Acordes>
+  <Acorde nombre="C" zona="0" pie="I" />
+  <Acorde nombre="Dm" zona="0" pie="ii" />
+  <Acorde nombre="Em" zona="0" pie="iii" />
+  <Acorde nombre="F" zona="1" pie="IV" />
+  <Acorde nombre="G" zona="3" pie="V" />
+  <Acorde nombre="Am" zona="0" pie="vi" />
+  <Acorde nombre="Bdim" zona="2" pie="vii°" />
+</Acordes>
 
-**Por qué C-Am-F-G suena a "casa".** Es I-vi-IV-V, la progresión de miles
-de canciones de los 50 para acá. Funciona porque cuenta una historia: el
-I es casa, el vi es casa con nostalgia (comparte dos notas con el I), el
-IV abre la puerta, y el V crea la tensión que pide volver al I — su nota B
-es la sensible de la escala, y tira hacia C como un imán. Tu oído lleva
-toda la vida escuchando ese viaje: reconoce "casa" aunque no sepa por qué.
+<Aviso tipo="truco">
+  Nadie decidió que el ii fuera menor: **sale menor solo**, porque las distancias entre
+  notas de la escala lo obligan ([[triadas-e-inversiones]]).
+</Aviso>
 
-**En el mástil**, con acordes abiertos: C (5ª cuerda traste 3 de raíz),
-Am (5ª al aire), F (4ª cuerda traste 3, o la cejilla si hay valor), G (6ª
-cuerda traste 3). Tócalos en bucle, dos compases cada uno, y escucha cómo
-el G _empuja_ de vuelta al C. Esa gravedad es el campo armónico trabajando.
+En Sol el esqueleto es idéntico: G, Am, Bm, C, D, Em, F#°. Por eso los músicos
+hablan de "un I-IV-V" sin decir tonalidad: **los números son la canción; las
+notas, un detalle**.
 
-Cuando escuches una canción y quieras sacar sus acordes
-([[como-transcribir]]), el campo armónico reduce los sospechosos de
-"cualquier acorde del universo" a siete. Es tu lista de sospechosos
-habituales.
+## Por qué C-Am-F-G suena a casa
 
-**Para trastear**:
+Es **I-vi-IV-V**, la progresión de miles de canciones de los 50 para acá.
+Funciona porque cuenta una historia:
 
-1. Toca los siete acordes del campo de Do en orden (C-Dm-Em-F-G-Am-B°... el
-   disminuido perdónalo si aún no lo tienes) diciendo el grado en voz alta:
-   "uno, dos menor, tres menor...".
-2. Bucle de I-vi-IV-V con metrónomo suave
-   ([/metronomo?bpm=70](/metronomo?bpm=70)) y prueba a _parar en el G_ sin
-   resolver. Siente el mono de volver al C: eso es la dominante.
+<Ficha
+  elI="Casa"
+  elVi="Casa con nostalgia: comparte dos notas con el I"
+  elIV="Abre la puerta"
+  elV="La tensión que pide volver. Su Si es la sensible y tira hacia Do como un imán."
+/>
+
+<Mastil
+  escala="C major"
+  desde="0"
+  hasta="5"
+  pie="Las siete notas de las que sale todo el campo de Do"
+/>
+
+## Cómo estudiarlo
+
+<Rutina>
+  <Paso dias="1-3" min="8">
+    Los siete acordes del campo de Do en orden, **diciendo el grado en voz alta**: "uno,
+    dos menor, tres menor…". El disminuido perdónalo si aún no lo tienes.
+  </Paso>
+  <Paso dias="4-7" min="8" bpm="70" tool="/metronomo?bpm=70">
+    Bucle de I-vi-IV-V, dos compases cada uno. Prueba a **parar en el V** sin resolver y
+    aguanta: esa incomodidad es el campo armónico trabajando.
+  </Paso>
+  <Paso dias="8-14" min="10">
+    El mismo bucle en Sol y en Re. Mismos números, otras formas: ahí es donde los grados
+    dejan de ser teoría.
+  </Paso>
+</Rutina>
+
+## Dónde practicarlo
+
+<Canciones titulo="El mismo puñado de grados, cuatro décadas">
+  <Cancion
+    titulo="Stand by Me"
+    artista="Ben E. King"
+    nivel="1"
+    que="I-vi-IV-V puro y a tempo lento. La progresión del artículo, sin adornos."
+    como="Cuatro acordes en bucle diciendo el grado en voz alta mientras los tocas."
+  />
+  <Cancion
+    titulo="Let It Be"
+    artista="The Beatles"
+    nivel="1"
+    que="I-V-vi-IV: la misma familia con los grados barajados."
+    como="Compárala con Stand by Me. Mismos acordes, distinto orden, distinta sensación."
+  />
+  <Cancion
+    titulo="Knockin' on Heaven's Door"
+    artista="Bob Dylan"
+    nivel="1"
+    que="I-V-ii y I-V-IV: el vi cambiado por el ii, para oír la diferencia entre dos menores."
+    como="Toca la secuencia y para en el acorde menor. ¿Suena a nostalgia o a apertura?"
+  />
+  <Cancion
+    titulo="Creep"
+    artista="Radiohead"
+    nivel="2"
+    que="I-III-IV-iv: el tercer acorde está fuera del campo, y por eso llama tanto la atención."
+    como="Toca primero la versión 'correcta' (I-iii) y luego la real. Oirás por qué funciona salirse."
+  />
+</Canciones>
+
+Cuando quieras sacar los acordes de una canción de oído ([[como-transcribir]]),
+esta es tu lista de sospechosos habituales. Y [[circulo-de-cuartas]] te dice
+qué notas tocan en cada tonalidad.

@@ -7,52 +7,109 @@ related: [escala-mayor, cifrado-americano, campo-armonico, intervalos]
 summary: "El mapa de las 12 tonalidades y la ruta de práctica favorita de los músicos que quieren dominarlas todas, no solo Do."
 ---
 
-Ordena las 12 notas subiendo de 4ª justa en 4ª justa ([[intervalos]]) y
-vuelves al punto de partida tras pasar por todas:
+<Ficha
+  elOrden="C → F → Bb → Eb → Ab → Db → Gb → B → E → A → D → G → C"
+  queEs="Las 12 notas subiendo de 4ª justa en 4ª justa"
+  alReves="Leído al contrario es el círculo de quintas. Mismo anillo, otro sentido."
+  cadaPasoEnCuartas="Añade un bemol a la armadura"
+  cadaPasoEnQuintas="Añade un sostenido"
+/>
 
-**C → F → Bb → Eb → Ab → Db → Gb → B → E → A → D → G → C**
+## Por qué se practica en este orden
 
-Eso es el **círculo de cuartas**. Leído al revés es el círculo de quintas
-(C-G-D-A...): son el mismo anillo recorrido en sentido contrario. Aquí lo
-recorremos en cuartas, y no por capricho.
+<Ficha
+  razon1="Es como se mueve la música real: la resolución V→I es un salto de cuarta"
+  donde="Progresiones de jazz, turnarounds de blues, Autumn Leaves: cadenas de cuartas"
+  razon2="Mata el favoritismo"
+  porQue="Subiendo cromáticamente el cerebro va en piloto automático; en cuartas cada raíz cae en otro sitio y no hay dónde esconderse"
+/>
 
-**Por qué los músicos practican en ciclo de cuartas.** Dos razones:
+O te sabes la escala en Lab o no te la sabes.
 
-1. **Es como se mueve la música real.** La resolución más fuerte que existe,
-   V→I ([[campo-armonico]]), es un salto de cuarta: G→C, D→G, A→D. Las
-   progresiones de jazz, los turnarounds de blues, el "Autumn Leaves" de
-   turno: cadenas de cuartas. Practicar en este orden es ensayar los
-   movimientos que luego aparecen en las canciones.
-2. **Mata el favoritismo.** Si practicas subiendo cromáticamente, cada
-   posición se parece a la anterior y el cerebro va en piloto automático. En
-   cuartas, cada raíz te cae en un sitio distinto del mástil y no hay dónde
-   esconderse: o te sabes la escala en Ab o no te la sabes.
+## En el mástil es un regalo
 
-**En el mástil el ciclo es un regalo**: subir una 4ª = mismo traste, una
-cuerda más aguda (así está afinada la guitarra). Raíces del ciclo casi sin
-moverte del traste 3: 5ª cuerda traste 3 (C) → 4ª cuerda traste 3 (F) →
-3ª cuerda traste 3 (Bb) → 2ª cuerda traste 4 (Eb — un traste más por el
-desfase de la cuerda B, [[intervalos]]). Cuatro paradas del ciclo sin mover
-la mano.
+Subir una 4ª = **mismo traste, una cuerda más aguda** (así está afinada la
+guitarra).
 
-**El círculo como chuleta de tonalidades.** Cada paso en cuartas añade
-**un bemol** a la armadura: C (0) → F (1: Bb) → Bb (2: Bb, Eb) → Eb (3)...
-Cada paso en el sentido contrario (quintas) añade **un sostenido**:
-G (1: F#) → D (2) → A (3)... El círculo es literalmente el índice de las
-armaduras: cuenta los pasos desde C y sabes cuántas alteraciones tiene la
-tonalidad y cuáles son. Los nombres de los acordes que vas a leer por el
-camino están en [[cifrado-americano]], y de dónde salen las alteraciones,
-en [[escala-mayor]].
+<Mastil
+  notas="5:3, 4:3, 3:3, 2:4"
+  desde="0"
+  hasta="7"
+  pie="Cuatro paradas del ciclo sin mover la mano: Do, Fa, Sib, Mib"
+/>
 
-¿Hay que memorizarlo? Sí, pero se memoriza solo: úsalo como ruta de
-práctica dos semanas y lo recitarás sin querer.
+<Aviso tipo="ojo">
+  El Mib cae un traste más adelante por el desfase de la 2ª cuerda ([[intervalos]]). Es la
+  misma trampa de siempre.
+</Aviso>
 
-**Para trastear**:
+## El círculo como chuleta de armaduras
 
-1. Toca la raíz de cada tonalidad siguiendo el ciclo completo
-   (C-F-Bb-Eb-Ab-Db-Gb-B-E-A-D-G), diciendo el nombre en voz alta, buscando
-   cada nota en la 6ª o la 5ª cuerda. Con click tranquilo:
-   [/metronomo?bpm=60](/metronomo?bpm=60), una nota por compás.
-2. Cuando controles las raíces, sube el reto: la escala mayor de cada parada
-   ([/escalas?root=F&type=major](/escalas?root=F&type=major) para empezar
-   con la primera).
+Cuenta los pasos desde Do y sabes cuántas alteraciones tiene la tonalidad:
+
+<Ficha
+  do="0 alteraciones"
+  fa="1 bemol (Sib)"
+  siBemol="2 bemoles (Sib, Mib)"
+  miBemol="3 bemoles"
+  sol="1 sostenido (Fa#)"
+  re="2 sostenidos"
+/>
+
+De dónde salen esas alteraciones está en [[escala-mayor]]; cómo se escriben
+los acordes, en [[cifrado-americano]].
+
+## Cómo estudiarlo
+
+<Rutina>
+  <Paso dias="Semana 1" min="8" bpm="60" tool="/metronomo?bpm=60">
+    Solo las **raíces**, ciclo completo, diciendo el nombre en voz alta y buscando cada
+    nota en la 6ª o la 5ª cuerda. Una nota por compás.
+  </Paso>
+  <Paso dias="Semana 2" min="10" bpm="60" tool="/escalas?root=F&type=major">
+    La escala mayor de cada parada. Empieza por Fa y no pases a la siguiente hasta que la
+    anterior salga sin pensar.
+  </Paso>
+  <Paso dias="Semana 3" min="12" bpm="70">
+    Un acorde por parada: todos los maj7 del ciclo, luego todos los 7, luego todos los m7.
+    Un tipo por vuelta.
+  </Paso>
+</Rutina>
+
+<Aviso tipo="truco">
+  ¿Hay que memorizarlo? Sí, pero **se memoriza solo**: úsalo como ruta de práctica dos
+  semanas y lo recitarás sin querer.
+</Aviso>
+
+## Dónde oírlo funcionando
+
+<Canciones titulo="Canciones que son literalmente el ciclo">
+  <Cancion
+    titulo="Fly Me to the Moon"
+    artista="Bart Howard"
+    nivel="3"
+    que="Una vuelta entera por el círculo de cuartas. El ciclo convertido en canción."
+    como="Toca solo las raíces siguiendo la progresión. Vas a reconocer el ciclo del artículo."
+  />
+  <Cancion
+    titulo="Autumn Leaves"
+    artista="Joseph Kosma"
+    nivel="3"
+    que="Cadenas de cuartas encadenadas en ii-V-I."
+    como="Marca en el papel cada salto de cuarta antes de tocar. Están casi todos."
+  />
+  <Cancion
+    titulo="I Will Survive"
+    artista="Gloria Gaynor"
+    nivel="2"
+    que="Fuera del jazz: la progresión entera baja por el ciclo de cuartas."
+    como="Cuatro acordes en bucle. Es la prueba de que el ciclo no es cosa de standards."
+  />
+  <Cancion
+    titulo="Hey Joe"
+    artista="Jimi Hendrix"
+    nivel="2"
+    que="C-G-D-A-E: cinco pasos seguidos del círculo, en sentido de quintas."
+    como="Tócala mirando el círculo. Cada acorde es el siguiente en el anillo."
+  />
+</Canciones>
