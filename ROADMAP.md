@@ -15,22 +15,26 @@
 - [x] Tokens y dirección visual inicial en `DESIGN.md` (oscuro, ámbar, números display)
 - [ ] Revisión de direcciones alternativas con el plugin `frontend-design` (requiere sesión local)
 
-## Fase 1 — MVP usable para practicar (prioridad)
+## Fase 1 — MVP usable para practicar ✅
 
-- [ ] Auth + onboarding (nivel → lección de inicio)
-- [ ] Curso módulo A completo (20 lecciones-día desde el seed)
-- [ ] Player de lección: checklist de bloques, timers, metrónomo embebido, registro bpm, completar → sesión
-- [ ] `/hoy` + modo focus
-- [ ] Metrónomo completo (tap, acentos, solo 2y4, auto-incremento, presets URL)
-- [ ] Dashboard: racha, progreso, últimos bpm
-- [ ] Wiki con ~10 artículos del módulo A
-- [ ] `content:audit` + `STATE.md` en CI
+- [x] Auth + onboarding (nivel → lección de inicio)
+- [x] Curso completo: módulos A, B y C — 60 lecciones-día desde el seed
+- [x] Player de lección: checklist de bloques, timers, metrónomo embebido, registro bpm, completar → sesión
+- [x] `/hoy` + modo focus
+- [x] Metrónomo completo (tap, acentos, solo 2y4, auto-incremento, presets URL)
+- [x] Dashboard: racha, progreso, últimos bpm
+- [x] Wiki con 48 fichas en profundidad + buscador
+- [x] `content:audit` + `STATE.md` en CI
 
-## Fase 2 — Herramientas visuales + resto del curso
+## Fase 2 — Herramientas visuales + resto del curso (en curso)
 
-`<Fretboard />` + Escalas + Acordes con audio · AlphaTab · Canciones ·
-SRS de notas del mástil (SM-2) · Módulos B y C (40 lecciones) · resto de wiki ·
-Storybook.
+- [x] `<Fretboard />` SVG + Escalas y Acordes con audio y deep links
+- [x] Acordes: diagramas verticales de todas las formas tocables + tríadas
+- [x] Módulos B y C completos (40 lecciones-día)
+- [x] Canciones con ficha completa (`/canciones`)
+- [ ] Tablaturas con AlphaTab (player estilo Songsterr) + tabs propias
+- [ ] Entrenamiento SRS de notas del mástil (SM-2 simplificado)
+- [ ] Storybook
 
 ## Fase 3 — Progreso profundo
 

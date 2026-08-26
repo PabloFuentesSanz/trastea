@@ -28,10 +28,11 @@ juguetona en los textos, seria y precisa como herramienta.
 | ----------------- | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | **Dashboard**     | `/`                                                     | Racha, minutos de la semana, progreso del curso, últimos bpm y accesos rápidos                                               |
 | **Sesión de hoy** | `/hoy`                                                  | Atajo directo a la lección-día que te toca                                                                                   |
-| **Curso**         | `/curso`                                                | Módulos → semanas → lecciones-día con player interactivo                                                                     |
+| **Curso**         | `/curso`                                                | 3 módulos · 12 semanas · 60 lecciones-día con player interactivo                                                             |
 | **Metrónomo**     | `/metronomo?bpm=80&sig=4/4&sub=2&accent=24`             | Standalone y embebido en lecciones, con presets por URL                                                                      |
 | **Escalas**       | `/escalas?root=F&type=minor-pentatonic&labels=interval` | Explorador con audio, deletreo correcto por tonalidad                                                                        |
 | **Acordes**       | `/acordes?root=G&type=maj7&view=triads`                 | Diagramas verticales de todas las formas tocables (abiertas, cejilla, inversiones, tríadas por grupos de cuerdas), con audio |
+| **Canciones**     | `/canciones`                                            | Repertorio del curso: propósito pedagógico, tono, referencias y en qué lecciones aparece                                     |
 | **Wiki**          | `/wiki`                                                 | 48 fichas en profundidad con buscador: sonoridad, origen, canciones, estudio y errores comunes                               |
 | **Progreso**      | `/progreso`                                             | Gráfica de bpm por ejercicio e historial de sesiones                                                                         |
 | **Perfil**        | `/perfil`                                               | Nivel, lección actual, cierre de sesión                                                                                      |
