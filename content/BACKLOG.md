@@ -6,7 +6,7 @@
 > en verde, PR. Lo hecho se tacha, no se borra: la historia también documenta.
 >
 > Estado actual: **60 lecciones (módulos A, B y C) · 46 ejercicios ·
-> 15 canciones · 0 tabs · 48 wiki · 3 quizzes**. El curso de 12 semanas del
+> 304 canciones · 0 tabs · 48 wiki · 3 quizzes**. El curso de 12 semanas del
 > seed está COMPLETO.
 
 ---
@@ -32,6 +32,45 @@ picos-velocidad), 7 canciones (chameleon, master-of-puppets, take-five, spain,
 blues-lento-en-do, tema-estilo-plini, funk-16ths-e), quiz `modulo-c` y
 `module.mdx` real. La w12-d5 cierra el curso con checklist global y las dos
 grabaciones finales.
+
+## ✅ Catálogo de canciones (15 → 304) — HECHO
+
+Repertorio navegable por nivel, estilo, técnica que se practica, colección
+temática y acordes que ya sabes. Vocabulario cerrado en
+`src/lib/content/song-taxonomy.ts` (26 estilos, 51 técnicas, 26 colecciones),
+filtrado puro y testeado en `song-filter.ts`, `/canciones` con facetas y estado
+en la URL, y `content:audit` avisando de colecciones o técnicas sin repertorio.
+
+## P0 — Verificar los metadatos musicales del catálogo
+
+Las 304 fichas se escribieron de memoria. El texto pedagógico y la
+clasificación son sólidos; los **datos duros no están verificados uno a uno** y
+son justo los que se ven en la app y alimentan los filtros.
+
+- [ ] Repasar `key` contra una fuente fiable. Convención a fijar y aplicar:
+      `key` = tonalidad real de la grabación, y `capo` describe las formas.
+      Ahora mismo hay fichas con capo donde `key` es la del _shape_, no la que
+      suena (`perfect`, `photograph`, `free-fallin`, `sound-of-silence`…).
+- [ ] Repasar `bpm` (alimenta el botón "Metrónomo a N") y `capo`.
+- [ ] Repasar `chords` en las fichas de nivel 1-2, que son las que sostienen el
+      filtro "acordes que ya sé". Si hay duda, borrar el campo antes que dejarlo
+      mal: sin `chords` la canción simplemente no aparece en ese filtro.
+- [ ] Comprobar `tuning` en el repertorio de metal y grunge.
+
+Sugerencia: hacerlo por lotes de una colección, con la grabación delante.
+
+## P1 — Enganchar el catálogo al curso
+
+El repertorio ya es consultable por técnica y nivel, pero las 60 lecciones
+existentes siguen apuntando a las 15 canciones originales.
+
+- [ ] Revisar los bloques `repertorio` de A/B/C y ofrecer alternativas del
+      catálogo para el mismo objetivo (misma técnica, mismo nivel).
+- [ ] Deep links desde las lecciones: `/canciones?tecnica=palm-mute&nivel=2`.
+- [ ] Skill `add-song` en `.claude/skills`, hermana de `add-lesson`/`add-wiki`.
+- [ ] Tabs propias (`/content/tabs`) para la colección
+      `clasica-dominio-publico`: son las únicas que pueden vivir completas
+      dentro de Trastea.
 
 ## P1 (ahora) — Wiki: siguientes ~38 fichas
 

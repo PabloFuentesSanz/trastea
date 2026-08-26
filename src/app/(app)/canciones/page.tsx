@@ -1,52 +1,42 @@
-import Link from "next/link";
+import { Suspense } from "react";
 import type { Metadata } from "next";
-import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { SongBrowser } from "@/components/content/song-browser";
 import { getSongs } from "@/lib/content/loader";
+import type { SongCard } from "@/lib/content/song-filter";
 
 export const metadata: Metadata = { title: "Canciones" };
 
 export default function CancionesPage() {
-  const songs = [...getSongs()].sort(
-    (a, b) =>
-      a.frontmatter.level - b.frontmatter.level ||
-      a.frontmatter.title.localeCompare(b.frontmatter.title, "es"),
-  );
+  const songs: SongCard[] = getSongs().map(({ frontmatter }) => ({
+    slug: frontmatter.slug,
+    title: frontmatter.title,
+    artist: frontmatter.artist,
+    level: frontmatter.level,
+    key: frontmatter.key,
+    purpose: frontmatter.purpose,
+    style: frontmatter.style,
+    techniques: frontmatter.techniques,
+    collections: frontmatter.collections,
+    chords: frontmatter.chords,
+    progression: frontmatter.progression,
+    year: frontmatter.year,
+    bpm: frontmatter.bpm,
+    tuning: frontmatter.tuning,
+    capo: frontmatter.capo,
+  }));
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-8">
       <h1 className="text-3xl font-semibold tracking-tight">Canciones</h1>
       <p className="mt-1 text-muted-foreground">
-        El repertorio del curso: cada canción está aquí por una razón pedagógica concreta,
-        no de relleno.
+        {songs.length} canciones, cada una con una razón para estar aquí. Filtra por lo
+        que quieras practicar hoy: una técnica, un estilo, un nivel — o directamente por
+        los acordes que ya te sabes.
       </p>
-
-      <ul className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
-        {songs.map(({ frontmatter: song }) => (
-          <li key={song.slug}>
-            <Link
-              href={`/canciones/${song.slug}`}
-              className="flex h-full flex-col gap-1.5 rounded-xl border bg-card p-4 transition-colors hover:border-primary/50 hover:bg-secondary"
-            >
-              <span className="flex items-start justify-between gap-2">
-                <span className="font-medium">{song.title}</span>
-                <Badge variant="outline" className="shrink-0">
-                  N{song.level}
-                </Badge>
-              </span>
-              <span className="text-sm text-muted-foreground">{song.artist}</span>
-              <span className="mt-1 flex flex-wrap gap-1.5">
-                <Badge variant="secondary">{song.style}</Badge>
-                <Badge variant="secondary" className="font-mono">
-                  {song.key}
-                </Badge>
-              </span>
-              <span className="mt-1 line-clamp-2 text-sm text-muted-foreground">
-                {song.purpose}
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <Suspense fallback={<Skeleton className="mt-6 h-96 w-full" />}>
+        <SongBrowser songs={songs} />
+      </Suspense>
     </main>
   );
 }

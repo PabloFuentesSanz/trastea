@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { SONG_COLLECTIONS, SONG_STYLES, SONG_TECHNIQUES } from "./song-taxonomy";
 
 /**
  * Frontmatter de todo el contenido MDX, validado en build y en content:audit.
@@ -118,7 +119,22 @@ export const songFrontmatterSchema = z.object({
   level: z.number().int().min(1).max(5),
   purpose: z.string().min(1),
   key: z.string().min(1),
-  style: z.string().min(1),
+  style: z.enum(SONG_STYLES),
+  /** qué se practica tocándola: el eje por el que el curso pide repertorio */
+  techniques: z.array(z.enum(SONG_TECHNIQUES)).min(1),
+  /** temáticas curadas a las que pertenece (al menos una) */
+  collections: z.array(z.enum(SONG_COLLECTIONS)).min(1),
+  /** acordes que exige, en cifrado americano: "¿qué puedo tocar con lo que sé?" */
+  chords: z.array(z.string()).default([]),
+  /** progresión principal en grados, p. ej. "I-V-vi-IV" */
+  progression: z.string().optional(),
+  year: z.number().int().min(1500).max(2100).optional(),
+  /** tempo aproximado del original, para el metrónomo */
+  bpm: z.number().int().min(20).max(300).optional(),
+  /** afinación; ausente = estándar (E A D G B E) */
+  tuning: z.string().optional(),
+  /** traste del capo; ausente o 0 = sin capo */
+  capo: z.number().int().min(0).max(12).optional(),
   youtube_url: z.string().url().optional(),
   backing_track_url: z.string().url().optional(),
   /** tab propia (alphaTex) en /content/tabs */

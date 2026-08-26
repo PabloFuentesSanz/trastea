@@ -9,6 +9,12 @@ import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
 import {
+  SONG_COLLECTIONS,
+  SONG_TECHNIQUES,
+  collectionLabel,
+  techniqueLabel,
+} from "../src/lib/content/song-taxonomy";
+import {
   exerciseFrontmatterSchema,
   lessonFrontmatterSchema,
   moduleFrontmatterSchema,
@@ -341,6 +347,27 @@ for (const w of weeks) {
     });
   }
 }
+// cobertura del repertorio: una colección o una técnica sin canciones es un
+// hueco del catálogo, no un error — el curso no puede pedir lo que no existe.
+const songsByCollection = new Map<string, number>();
+const songsByTechnique = new Map<string, number>();
+const songsByLevel = new Map<number, number>();
+for (const { fm } of songs) {
+  songsByLevel.set(fm.level, (songsByLevel.get(fm.level) ?? 0) + 1);
+  for (const c of fm.collections)
+    songsByCollection.set(c, (songsByCollection.get(c) ?? 0) + 1);
+  for (const t of fm.techniques)
+    songsByTechnique.set(t, (songsByTechnique.get(t) ?? 0) + 1);
+}
+const emptyCollections = SONG_COLLECTIONS.filter((c) => !songsByCollection.has(c));
+const emptyTechniques = SONG_TECHNIQUES.filter((t) => !songsByTechnique.has(t));
+for (const c of emptyCollections) {
+  warnings.push({ file: "content/songs", message: `colección sin canciones: "${c}"` });
+}
+for (const t of emptyTechniques) {
+  warnings.push({ file: "content/songs", message: `técnica sin canciones: "${t}"` });
+}
+
 const orphanWikis = wikis.filter((w) => !wikiIncoming.has(w.fm.slug));
 for (const w of orphanWikis) {
   warnings.push({ file: rel(w.file), message: `artículo wiki huérfano (sin backlinks)` });
@@ -397,6 +424,31 @@ if (warnings.length > 0) {
   }
   lines.push("");
 }
+
+lines.push("## Repertorio");
+lines.push("");
+lines.push("| Nivel | Canciones |");
+lines.push("|---|---|");
+for (const level of [1, 2, 3, 4, 5]) {
+  lines.push(`| ${level} | ${songsByLevel.get(level) ?? 0} |`);
+}
+lines.push("");
+lines.push("### Colecciones");
+lines.push("");
+for (const c of [...SONG_COLLECTIONS].sort(
+  (a, b) => (songsByCollection.get(b) ?? 0) - (songsByCollection.get(a) ?? 0),
+)) {
+  lines.push(`- ${collectionLabel(c)} (\`${c}\`): ${songsByCollection.get(c) ?? 0}`);
+}
+lines.push("");
+lines.push("### Técnicas sin repertorio");
+lines.push("");
+lines.push(
+  emptyTechniques.length === 0
+    ? "- Ninguna: todas las técnicas del vocabulario tienen al menos una canción."
+    : emptyTechniques.map((t) => `- ${techniqueLabel(t)} (\`${t}\`)`).join("\n"),
+);
+lines.push("");
 
 lines.push("## Cobertura wiki");
 lines.push("");
