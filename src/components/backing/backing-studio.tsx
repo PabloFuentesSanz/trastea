@@ -6,7 +6,7 @@ import { Pause, Play, Repeat } from "lucide-react";
 import { useBacking } from "@/hooks/use-backing";
 import { BACKING_STYLES, STYLE_LABELS, type BackingStyle } from "@/lib/backing/groove";
 import { parseGrid } from "@/lib/music/grid";
-import { transposeGrid } from "@/lib/music/transpose";
+import { cycleKeys, transposeGrid, type CycleStep } from "@/lib/music/transpose";
 import { MAX_BPM, MIN_BPM } from "@/lib/metronome/pattern";
 import { PRACTICAL_ROOTS, type NoteName } from "@/lib/music/notes";
 import {
@@ -51,6 +51,8 @@ export function BackingStudio({
 
   const [progressionId, setProgressionId] = useState(initialProgression);
   const [key, setKey] = useState<NoteName>(initialKey);
+  /** cambiar de tono en cada vuelta: así se estudia una forma en los doce */
+  const [cycle, setCycle] = useState<CycleStep | "no">("no");
 
   const progression = getProgression(progressionId) ?? PROGRESSIONS[0];
 
@@ -64,6 +66,10 @@ export function BackingStudio({
     bars,
     initialBpm,
     initialStyle,
+    onCycle: () => {
+      if (cycle === "no") return;
+      setKey((actual) => cycleKeys(actual, 2, cycle)[1]);
+    },
   });
 
   /** El estado vive en la URL para poder enlazar una base desde una lección. */
@@ -231,6 +237,23 @@ export function BackingStudio({
           </Select>
           <p className="text-xs text-muted-foreground">
             La rejilla se reescribe como manda la tonalidad, no con enarmonías raras.
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="bases-ciclo">Cambiar de tono</Label>
+          <Select value={cycle} onValueChange={(v) => setCycle(v as CycleStep | "no")}>
+            <SelectTrigger id="bases-ciclo">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="no">No, quedarse en {key}</SelectItem>
+              <SelectItem value="cuarta">Cada vuelta, por cuartas</SelectItem>
+              <SelectItem value="semitono">Cada vuelta, por semitonos</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">
+            Por cuartas es como se estudia una forma en los doce tonos: C, F, Bb, Eb…
           </p>
         </div>
 

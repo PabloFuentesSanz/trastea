@@ -16,6 +16,8 @@ export interface UsePlayerOptions {
   initialBpm?: number;
   beatsPerBar?: number;
   countInBars?: number;
+  /** se llama al empezar cada vuelta después de la primera */
+  onCycle?: () => void;
 }
 
 export interface UsePlayer {
@@ -40,6 +42,7 @@ export function usePlayer({
   initialBpm = 80,
   beatsPerBar = 4,
   countInBars = 1,
+  onCycle,
 }: UsePlayerOptions): UsePlayer {
   const [bpm, setBpmState] = useState(initialBpm);
   const [loop, setLoop] = useState(true);
@@ -55,6 +58,11 @@ export function usePlayer({
     loop,
     volume: 0.8,
   });
+  /** en una ref para que el motor llame siempre a la versión de ahora */
+  const onCycleRef = useRef(onCycle);
+  useEffect(() => {
+    onCycleRef.current = onCycle;
+  }, [onCycle]);
   useEffect(() => {
     configRef.current = {
       ...configRef.current,
@@ -64,6 +72,7 @@ export function usePlayer({
       beatsPerBar,
       countIn: countInBars,
       loop,
+      onCycle: () => onCycleRef.current?.(),
     };
   }, [notes, length, bpm, beatsPerBar, countInBars, loop]);
 

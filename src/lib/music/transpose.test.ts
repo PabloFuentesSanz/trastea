@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { transposeChord, transposeGrid } from "./transpose";
+import { cycleKeys, transposeChord, transposeGrid } from "./transpose";
+import { PRACTICAL_ROOTS } from "./notes";
 
 describe("transposeChord", () => {
   it("mueve la fundamental y respeta la cualidad", () => {
@@ -63,6 +64,36 @@ describe("transposeGrid", () => {
       expect(i).toBe(`${tono}maj7`);
       expect(ii.endsWith("m7")).toBe(true);
       expect(v.endsWith("7")).toBe(true);
+    }
+  });
+});
+
+describe("cycleKeys", () => {
+  it("baja de cuarta en cuarta y vuelve al principio en doce", () => {
+    const ciclo = cycleKeys("C", 12);
+    expect(ciclo[0]).toBe("C");
+    expect(ciclo[1]).toBe("F");
+    expect(ciclo[2]).toBe("Bb");
+    expect(ciclo).toHaveLength(12);
+    expect(new Set(ciclo).size).toBe(12);
+  });
+
+  it("deletrea con bemoles, salvo donde la app usa la otra enarmonía", () => {
+    // el selector de tono ofrece F#, no Gb: el ciclo usa la misma lista
+    expect(cycleKeys("C", 7)).toEqual(["C", "F", "Bb", "Eb", "Ab", "Db", "F#"]);
+  });
+
+  it("arranca donde se le diga", () => {
+    expect(cycleKeys("G", 3)).toEqual(["G", "C", "F"]);
+  });
+
+  it("puede subir por semitonos en vez de por cuartas", () => {
+    expect(cycleKeys("C", 4, "semitono")).toEqual(["C", "Db", "D", "Eb"]);
+  });
+
+  it("se queda en las tonalidades prácticas", () => {
+    for (const tono of cycleKeys("B", 12)) {
+      expect(PRACTICAL_ROOTS).toContain(tono);
     }
   });
 });

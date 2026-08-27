@@ -10,6 +10,8 @@ export interface UseBackingOptions {
   initialBpm?: number;
   initialStyle?: BackingStyle;
   beatsPerBar?: number;
+  /** se llama al empezar cada vuelta después de la primera */
+  onCycle?: () => void;
 }
 
 export interface UseBacking extends UsePlayer {
@@ -25,6 +27,7 @@ export function useBacking({
   initialBpm = 80,
   initialStyle = "recto",
   beatsPerBar = 4,
+  onCycle,
 }: UseBackingOptions): UseBacking {
   const [style, setStyle] = useState<BackingStyle>(initialStyle);
 
@@ -34,7 +37,7 @@ export function useBacking({
   );
   const length = useMemo(() => backingLength(bars, { beatsPerBar }), [bars, beatsPerBar]);
 
-  const player = usePlayer({ notes, length, initialBpm, beatsPerBar });
+  const player = usePlayer({ notes, length, initialBpm, beatsPerBar, onCycle });
 
   return {
     ...player,

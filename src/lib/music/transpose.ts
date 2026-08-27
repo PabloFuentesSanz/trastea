@@ -9,7 +9,15 @@
  * que hace cada acorde.
  */
 
-import { intervalBetween, transpose, type NoteName } from "./notes";
+import {
+  intervalBetween,
+  mod12,
+  parseNote,
+  pcToName,
+  PRACTICAL_ROOTS,
+  transpose,
+  type NoteName,
+} from "./notes";
 
 /** Letra más alteraciones al principio, o null si no empieza por nota. */
 function leadingRoot(input: string): { root: NoteName; rest: string } | null {
@@ -63,4 +71,30 @@ export function transposeGrid(spec: string, fromKey: NoteName, toKey: NoteName):
         .join(" "),
     )
     .join(" | ");
+}
+
+/** Cómo avanza el ciclo de tonalidades al practicar una forma en todos. */
+export type CycleStep = "cuarta" | "semitono";
+
+/**
+ * Las tonalidades por las que ir pasando, empezando en `from`.
+ *
+ * Por cuartas es como se estudia de verdad —C, F, Bb, Eb…— porque es el
+ * movimiento de la armonía tonal; el ciclo se deletrea con bemoles, que es
+ * como aparece en cualquier método.
+ */
+export function cycleKeys(
+  from: NoteName,
+  count: number,
+  step: CycleStep = "cuarta",
+): NoteName[] {
+  const salto = step === "cuarta" ? 5 : 1;
+  const inicio = parseNote(from).pc;
+  return Array.from({ length: count }, (_, i) => {
+    if (i === 0) return from;
+    const pc = mod12(inicio + i * salto);
+    // se escribe como lo escribe el resto de la app: el selector de tono solo
+    // ofrece estas doce, y un "Gb" que no está en la lista rompería el enlace
+    return PRACTICAL_ROOTS.find((n) => parseNote(n).pc === pc) ?? pcToName(pc, true);
+  });
 }

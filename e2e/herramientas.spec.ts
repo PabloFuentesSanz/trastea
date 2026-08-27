@@ -51,3 +51,16 @@ test.describe("/canciones", () => {
     expect(botones, "demasiados controles a la vista").toBeLessThan(60);
   });
 });
+
+test("/bases puede ir cambiando de tono en cada vuelta", async ({ page }) => {
+  await page.goto("/bases?prog=ii-v-i&tono=C&bpm=200");
+  const rejilla = page.locator("ol").first();
+  await expect(rejilla).toContainText("Cmaj7");
+
+  await page.getByLabel(/cambiar de tono/i).click();
+  await page.getByRole("option", { name: /por cuartas/i }).click();
+  await page.getByRole("button", { name: /tocar la base/i }).click();
+
+  // a 200 bpm la vuelta de cuatro compases dura ~5 s: el tono siguiente es Fa
+  await expect(rejilla).toContainText("Fmaj7", { timeout: 20_000 });
+});

@@ -34,6 +34,8 @@ export interface BackingEngineConfig {
   beatsPerBar: number;
   loop: boolean;
   volume: number;
+  /** se llama al empezar cada vuelta después de la primera */
+  onCycle?: () => void;
 }
 
 export interface BackingEngine {
@@ -188,6 +190,7 @@ export function createBackingEngine(getConfig: () => BackingEngineConfig): Backi
         }
         cycleStart += config.length * secondsPerBeat;
         cursor = 0;
+        config.onCycle?.();
       }
     }
   }

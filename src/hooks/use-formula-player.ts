@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import { midiToFrequency } from "@/lib/music/fretboard";
-import { audioContext, audioNow, resumeAudio } from "@/lib/audio/context";
+import { audioContext, resumeAudio } from "@/lib/audio/context";
 
 /** Reproduce secuencias (escala) o bloques (acorde) con osciladores simples. */
 export function useFormulaPlayer() {
