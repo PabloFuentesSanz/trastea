@@ -404,7 +404,6 @@ function checkMdxExpressions(file: string, body: string) {
 const MASTIL_SPEC = /<Mastil\b[^>]*?\b(escala|acorde)="([^"]+)"/g;
 const ACORDE_SPEC = /<Acorde\b[^>]*?\bnombre="([^"]+)"/g;
 const ACORDE_TAG = /<Acorde\b[^>]*?\/>/g;
-const NOTAS_SPEC = /<Mastil\b[^>]*?\bnotas="([^"]+)"/g;
 const REJILLA_SPEC = /<Rejilla\b[^>]*?\bcompases="([^"]+)"/g;
 const TAB_TAG = /<Tab\b[\s\S]*?\/>/g;
 // Una caja NO es un rectángulo de trastes: recortarla con desde/hasta se come

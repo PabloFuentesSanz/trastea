@@ -1,0 +1,180 @@
+"use client";
+
+/**
+ * Motor de la base de acompañamiento: agenda por delante del reloj de
+ * WebAudio las notas que decide groove.ts (puro). Mismo reparto que en el
+ * metrónomo — aquí no se decide qué suena, solo cuándo y con qué timbre.
+ */
+
+import * as Tone from "tone";
+import { midiToFrequency } from "@/lib/music/fretboard";
+import type { BackingNote } from "./groove";
+
+const LOOKAHEAD_S = 0.15;
+const SCHEDULER_INTERVAL_MS = 25;
+/** margen antes del primer sonido, para no llegar tarde al arranque */
+const START_PADDING_S = 0.12;
+
+export interface BackingEngineConfig {
+  notes: readonly BackingNote[];
+  /** pulsos que dura una vuelta */
+  length: number;
+  bpm: number;
+  /** compases de claqueta antes de la primera vuelta */
+  countIn: number;
+  beatsPerBar: number;
+  loop: boolean;
+  volume: number;
+}
+
+export interface BackingEngine {
+  start(): Promise<void>;
+  stop(): void;
+  isRunning(): boolean;
+  /** pulso en curso, o null si aún está la claqueta (para el resalte visual) */
+  currentBeat(): number | null;
+  dispose(): void;
+}
+
+/** Cuerda pulsada de andar por casa: dos ondas y una envolvente corta. */
+function pluck(time: number, midi: number, duration: number, gainValue: number) {
+  const ctx = Tone.getContext().rawContext;
+  const freq = midiToFrequency(midi);
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0, time);
+  gain.gain.linearRampToValueAtTime(gainValue, time + 0.008);
+  gain.gain.exponentialRampToValueAtTime(0.0001, time + Math.max(duration, 0.12));
+  gain.connect(ctx.destination);
+
+  for (const [type, detune, mix] of [
+    ["triangle", 0, 1],
+    ["sawtooth", 4, 0.35],
+  ] as const) {
+    const osc = ctx.createOscillator();
+    const oscGain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    osc.detune.value = detune;
+    oscGain.gain.value = mix;
+    osc.connect(oscGain);
+    oscGain.connect(gain);
+    osc.start(time);
+    osc.stop(time + Math.max(duration, 0.12) + 0.05);
+  }
+}
+
+/** Claqueta: el mismo click seco del metrónomo. */
+function click(time: number, accent: boolean, gainValue: number) {
+  const ctx = Tone.getContext().rawContext;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = "square";
+  osc.frequency.value = accent ? 1568 : 1047;
+  gain.gain.setValueAtTime(0, time);
+  gain.gain.linearRampToValueAtTime(gainValue * 0.5, time + 0.001);
+  gain.gain.exponentialRampToValueAtTime(0.001, time + 0.05);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(time);
+  osc.stop(time + 0.06);
+}
+
+export function createBackingEngine(getConfig: () => BackingEngineConfig): BackingEngine {
+  let running = false;
+  let schedulerId: ReturnType<typeof setInterval> | null = null;
+  /** tiempo de audio del pulso 0 de la vuelta actual */
+  let cycleStart = 0;
+  /** pulso ya agendado (relativo a la vuelta) */
+  let cursor = 0;
+  let countInLeft = 0;
+
+  function scheduleAhead() {
+    if (!running) return;
+    const config = getConfig();
+    const secondsPerBeat = 60 / config.bpm;
+    const now = Tone.getContext().rawContext.currentTime;
+    const horizon = now + LOOKAHEAD_S;
+
+    // claqueta: un click por pulso antes de que empiece la base
+    while (countInLeft > 0) {
+      const time = cycleStart - countInLeft * secondsPerBeat;
+      if (time >= horizon) return;
+      const restantes = countInLeft - 1;
+      click(
+        time,
+        restantes % config.beatsPerBar === config.beatsPerBar - 1,
+        config.volume,
+      );
+      countInLeft -= 1;
+    }
+
+    while (cycleStart + cursor * secondsPerBeat < horizon) {
+      const desde = cursor;
+      // se agenda pulso a pulso: así un cambio de bpm entra en la vuelta
+      const hasta = desde + 1;
+      for (const note of config.notes) {
+        if (note.beat < desde || note.beat >= hasta) continue;
+        pluck(
+          cycleStart + note.beat * secondsPerBeat,
+          note.midi,
+          note.duration * secondsPerBeat,
+          note.velocity * config.volume * (note.voice === "bajo" ? 0.5 : 0.22),
+        );
+      }
+      cursor = hasta;
+
+      if (cursor >= config.length) {
+        if (!config.loop) {
+          // deja sonar la última nota y para
+          const fin = cycleStart + config.length * secondsPerBeat;
+          setTimeout(
+            () => {
+              if (Tone.getContext().rawContext.currentTime >= fin - 0.05) stop();
+            },
+            Math.max((fin - now) * 1000, 0),
+          );
+          return;
+        }
+        cycleStart += config.length * secondsPerBeat;
+        cursor = 0;
+      }
+    }
+  }
+
+  function stop() {
+    running = false;
+    if (schedulerId !== null) clearInterval(schedulerId);
+    schedulerId = null;
+    countInLeft = 0;
+  }
+
+  return {
+    async start() {
+      if (running) return;
+      const config = getConfig();
+      await Tone.start();
+      running = true;
+      cursor = 0;
+      countInLeft = config.countIn * config.beatsPerBar;
+      const now = Tone.getContext().rawContext.currentTime;
+      cycleStart = now + START_PADDING_S + (countInLeft * 60) / config.bpm;
+      scheduleAhead();
+      schedulerId = setInterval(scheduleAhead, SCHEDULER_INTERVAL_MS);
+    },
+    stop,
+    isRunning() {
+      return running;
+    },
+    currentBeat() {
+      if (!running) return null;
+      const config = getConfig();
+      const now = Tone.getContext().rawContext.currentTime;
+      if (now < cycleStart) return null;
+      const beat = (now - cycleStart) / (60 / config.bpm);
+      return config.loop ? beat % config.length : Math.min(beat, config.length);
+    },
+    dispose() {
+      stop();
+    },
+  };
+}

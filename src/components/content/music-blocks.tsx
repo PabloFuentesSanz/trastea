@@ -3,6 +3,8 @@ import type { ReactNode } from "react";
 import { Fretboard, type FretboardLabels } from "@/components/fretboard/fretboard";
 import { ChordDiagram } from "@/components/fretboard/chord-diagram";
 import { Tablature } from "@/components/fretboard/tablature";
+import { PlayableGrid } from "@/components/backing/playable-grid";
+import type { BackingStyle } from "@/lib/backing/groove";
 import { formulaPositions } from "@/lib/music/fretboard";
 import { boxCount, boxWindow, scaleBox } from "@/lib/music/boxes";
 import { parseGrid } from "@/lib/music/grid";
@@ -221,41 +223,67 @@ export function Rejilla({
   compases,
   pie,
   porLinea,
+  bpm,
+  estilo = "recto",
+  tocable = "si",
 }: {
   compases: string;
   pie?: string;
   porLinea?: Numerico;
+  /** tempo con el que arranca la base */
+  bpm?: Numerico;
+  /** groove de la base: recto, swing, shuffle, bossa o funk */
+  estilo?: BackingStyle;
+  /** "no" para una rejilla que solo ilustra y no se toca */
+  tocable?: string;
 }) {
   const bars = parseGrid(compases);
   const columnas = num(porLinea) ?? 4;
 
+  if (tocable === "no") {
+    return (
+      <figure className="not-prose my-5">
+        <ol
+          className="grid gap-px overflow-hidden rounded-lg border bg-border"
+          style={{ gridTemplateColumns: `repeat(${columnas}, minmax(0, 1fr))` }}
+        >
+          {bars.map((bar, i) => (
+            <li
+              key={i}
+              className="flex min-h-14 flex-col justify-between bg-card px-2 py-1.5"
+            >
+              <span className="text-[10px] text-muted-foreground">{i + 1}</span>
+              <span className="flex flex-wrap gap-x-2 text-sm font-medium">
+                {bar.chords.length === 0 ? (
+                  <span
+                    className="text-muted-foreground"
+                    aria-label="repite el compás anterior"
+                  >
+                    %
+                  </span>
+                ) : (
+                  bar.chords.map((chord, j) => <span key={j}>{chord}</span>)
+                )}
+              </span>
+            </li>
+          ))}
+        </ol>
+        {pie && (
+          <figcaption className="mt-1.5 text-xs text-muted-foreground">{pie}</figcaption>
+        )}
+      </figure>
+    );
+  }
+
   return (
     <figure className="not-prose my-5">
-      <ol
-        className="grid gap-px overflow-hidden rounded-lg border bg-border"
-        style={{ gridTemplateColumns: `repeat(${columnas}, minmax(0, 1fr))` }}
-      >
-        {bars.map((bar, i) => (
-          <li
-            key={i}
-            className="flex min-h-14 flex-col justify-between bg-card px-2 py-1.5"
-          >
-            <span className="text-[10px] text-muted-foreground">{i + 1}</span>
-            <span className="flex flex-wrap gap-x-2 text-sm font-medium">
-              {bar.chords.length === 0 ? (
-                <span
-                  className="text-muted-foreground"
-                  aria-label="repite el compás anterior"
-                >
-                  %
-                </span>
-              ) : (
-                bar.chords.map((chord) => <span key={chord}>{chord}</span>)
-              )}
-            </span>
-          </li>
-        ))}
-      </ol>
+      <PlayableGrid
+        bars={bars}
+        columnas={columnas}
+        bpm={num(bpm) ?? 80}
+        estilo={estilo}
+        id={`rejilla-${compases.slice(0, 12).replace(/\W+/g, "")}`}
+      />
       {pie && (
         <figcaption className="mt-1.5 text-xs text-muted-foreground">{pie}</figcaption>
       )}

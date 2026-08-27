@@ -179,7 +179,30 @@ ordenada por lo que el curso B/C tocará antes. Todas con la plantilla
 - [ ] `como-usar-backing-tracks` — dónde, cómo, a qué tempo
 - [ ] `como-montar-tu-rutina` — para después del curso: diseñar tu semana
 
-## P2 (ahora) — Tabs alphaTex (bloqueado por feature: player AlphaTab, Fase 2)
+## Sonido: plan en tres fases
+
+El agujero no era la notación, era que nada sonaba. Orden acordado:
+
+- [x] **Fase 1 — bases de acompañamiento.** `<Rejilla>` se toca: bajo,
+      acompañamiento con voces conducidas, cinco grooves, tempo, bucle y
+      claqueta. Sin dependencias nuevas (Tone.js). Las 35 rejillas del
+      repositorio son ya 35 bases.
+- [ ] **Fase 2 — duraciones en nuestra notación de tab.** Hoy `<Tab>` son
+      columnas sin tiempo: por eso no suena ni dibuja ritmo. Añadir
+      `cuerda:traste:figura`, dibujar plicas y reproducir con bucle y tempo.
+      Desbloquea el módulo C (acentos desplazados, funk, charleston) y una
+      regla de audit nueva: que las figuras de cada compás sumen.
+- [ ] **Fase 3 — AlphaTab, acotado.** Solo para `/content/tabs/*.alphatex`:
+      piezas completas, varias voces, notación estándar. Cargado con
+      `import()` dinámico para no pagar el bundle en las otras ~145 páginas.
+      Antes de comprometerse: medir el peso real de AlphaTab **más su
+      SoundFont**, y confirmar la licencia.
+
+No se sustituye `<Tab>` por AlphaTab: perderíamos las reglas de
+`content:audit` que validan cada nota contra su escala o su acorde, y
+meteríamos un motor de notación en 106 páginas que hoy son SVG sin JS.
+
+## P2 — Tabs alphaTex (bloqueado por Fase 3)
 
 Hoy `/content/tabs` está vacío y no hay player. Cuando el `<Tab />` con
 AlphaTab exista, este es el lote inicial (solo material propio o dominio
