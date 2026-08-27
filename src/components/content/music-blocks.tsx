@@ -2,9 +2,11 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Fretboard, type FretboardLabels } from "@/components/fretboard/fretboard";
 import { ChordDiagram } from "@/components/fretboard/chord-diagram";
+import { Tablature } from "@/components/fretboard/tablature";
 import { formulaPositions } from "@/lib/music/fretboard";
 import { boxCount, boxWindow, scaleBox } from "@/lib/music/boxes";
 import { parseGrid } from "@/lib/music/grid";
+import { parseTab } from "@/lib/music/tab";
 import {
   parseFormulaSpec,
   parseNoteSpec,
@@ -600,5 +602,38 @@ export function Paso({
         </Link>
       )}
     </li>
+  );
+}
+
+/**
+ * Tablatura desde MDX:
+ *
+ *   <Tab notas="6:5 6:6 6:7 6:8 | 5:5 5:6 5:7 5:8" figuras="corcheas" />
+ *
+ * La notación completa está en src/lib/music/tab.ts. Si el parser no entiende
+ * algo revienta aquí y en `content:audit`, que es justo lo que se quiere: una
+ * tab mal escrita no debe llegar a la página con notas inventadas.
+ */
+export function Tab({
+  notas,
+  figuras,
+  pie,
+  titulo,
+}: {
+  notas: string;
+  figuras?: string;
+  pie?: string;
+  titulo?: string;
+}) {
+  const bars = parseTab(notas);
+  const compases = bars.length === 1 ? "1 compás" : `${bars.length} compases`;
+  return (
+    <Figure caption={pie}>
+      <Tablature
+        bars={bars}
+        subdivision={figuras}
+        title={titulo ?? pie ?? `Tablatura de ${compases}`}
+      />
+    </Figure>
   );
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { render } from "@testing-library/react";
-import { Mastil, num, nums } from "./music-blocks";
+import { Mastil, num, nums, Tab } from "./music-blocks";
 
 function board(container: HTMLElement) {
   const svg = container.querySelector("svg");
@@ -237,5 +237,47 @@ describe("<Mastil caja> y <Cajas>", () => {
     expect(() => render(<Mastil escala="A minor-pentatonic" caja="9" />)).toThrow(
       /caja/i,
     );
+  });
+});
+
+describe("<Tab />", () => {
+  it("dibuja un número de traste por nota", () => {
+    const { container } = render(<Tab notas="6:5 6:7 5:5" />);
+    const numeros = [...container.querySelectorAll("text")].map((t) => t.textContent);
+    expect(numeros).toContain("5");
+    expect(numeros).toContain("7");
+  });
+
+  it("numera los compases cuando hay más de uno", () => {
+    const { container } = render(<Tab notas="6:5 | 6:7" />);
+    const textos = [...container.querySelectorAll("text")].map((t) => t.textContent);
+    expect(textos).toContain("1");
+    expect(textos).toContain("2");
+  });
+
+  it("marca un tramo seguido de palm mute con una sola etiqueta", () => {
+    const { container } = render(<Tab notas="6:0. 6:0. 6:0." />);
+    const textos = [...container.querySelectorAll("text")].map((t) => t.textContent);
+    expect(textos.filter((t) => t === "P.M.")).toHaveLength(1);
+  });
+
+  it("etiqueta cada tramo de palm mute por separado", () => {
+    const { container } = render(<Tab notas="6:0. 6:0. 6:3 6:0. 6:0." />);
+    const textos = [...container.querySelectorAll("text")].map((t) => t.textContent);
+    expect(textos.filter((t) => t === "P.M.")).toHaveLength(2);
+  });
+
+  it("pone la figuración cuando se le da", () => {
+    const { container } = render(<Tab notas="6:5 6:7" figuras="corcheas" />);
+    expect(container.textContent).toContain("corcheas");
+  });
+
+  it("usa el pie como descripción accesible si no hay título", () => {
+    const { container } = render(<Tab notas="6:5" pie="Cromático" />);
+    expect(container.querySelector("svg")?.getAttribute("aria-label")).toBe("Cromático");
+  });
+
+  it("revienta con una tab que no se entiende, no la dibuja a medias", () => {
+    expect(() => render(<Tab notas="6-5" />)).toThrow(/6-5/);
   });
 });

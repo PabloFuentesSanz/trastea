@@ -13,6 +13,7 @@ import {
   PorCuerdas,
   Rejilla,
   Rutina,
+  Tab,
 } from "./music-blocks";
 import { Cancion, Canciones } from "./song-blocks";
 
@@ -77,6 +78,7 @@ const components = {
   Aviso,
   Rutina,
   Paso,
+  Tab,
   Canciones,
   Cancion,
 };

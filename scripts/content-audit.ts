@@ -33,6 +33,7 @@ import {
 import { parseFormulaSpec, parseNoteSpec } from "../src/lib/music/spec";
 import { validateGrid } from "../src/lib/music/grid";
 import { parseFretSpec, voicingFromFrets } from "../src/lib/music/voicing-from-frets";
+import { parseTab } from "../src/lib/music/tab";
 import { getTuning } from "../src/data/tunings";
 
 const STANDARD_TUNING = getTuning("standard").midi;
@@ -366,6 +367,7 @@ const ACORDE_SPEC = /<Acorde\b[^>]*?\bnombre="([^"]+)"/g;
 const ACORDE_TAG = /<Acorde\b[^>]*?\/>/g;
 const NOTAS_SPEC = /<Mastil\b[^>]*?\bnotas="([^"]+)"/g;
 const REJILLA_SPEC = /<Rejilla\b[^>]*?\bcompases="([^"]+)"/g;
+const TAB_SPEC = /<Tab\b[^>]*?\bnotas="([^"]+)"/g;
 // Una caja NO es un rectángulo de trastes: recortarla con desde/hasta se come
 // notas de la vecina y pierde las propias. Se escribe `caja="2"`.
 const MASTIL_TAG = /<Mastil\b[^>]*?\/>/g;
@@ -421,6 +423,14 @@ function checkMusicSpecs(file: string, body: string) {
       parseNoteSpec(m[1]);
     } catch (e) {
       errors.push({ file: rel(file), message: (e as Error).message });
+    }
+  }
+
+  for (const m of body.matchAll(TAB_SPEC)) {
+    try {
+      parseTab(m[1]);
+    } catch (e) {
+      errors.push({ file: rel(file), message: `<Tab>: ${(e as Error).message}` });
     }
   }
 
