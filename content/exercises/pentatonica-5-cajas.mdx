@@ -5,33 +5,63 @@ category: tecnica
 bpm_start: 70
 bpm_target: 96
 links:
-  scale: "/escalas?root=A&type=minor-pentatonic"
+  scale: "/escalas?root=A&type=minor-pentatonic&view=cajas"
   wiki: [pentatonica-menor, caged]
-  tool: "/escalas?root=A&type=minor-pentatonic"
+  tool: "/escalas?root=A&type=minor-pentatonic&view=cajas"
 ---
 
-La pentatónica menor de La en sus 5 posiciones, y —lo importante— las
-costuras entre ellas. Las cajas no son cinco licks distintos: son la misma
-escala vista desde cinco ventanas del sistema CAGED.
+<Ficha
+  queEs="La pentatónica menor de La en sus 5 posiciones"
+  loImportante="Las costuras entre ellas, no las cajas sueltas"
+  laIdea="No son cinco licks distintos: es la misma escala vista desde cinco ventanas"
+  elAncla="En cada caja, dónde están las raíces (La). Sin ellas es un dibujo, con ellas es una escala."
+  losCambios="Con deslizamiento del índice o del meñique. Nunca con salto en el aire."
+/>
 
-**Rutina (8 min):**
+## Las cinco
 
-1. 2 min — repasa las cajas 1 y 2 (trastes 5 y 7) subiendo y bajando en
-   corcheas con metrónomo.
-2. 3 min — recorrido completo: sube por la caja 1, cambia a la 2 por la
-   costura (desliza el índice), sigue subiendo caja a caja hasta la 5 y baja
-   por el mismo camino.
-3. 3 min — recorrido diagonal: dos cuerdas por caja, avanzando de posición en
-   cada par de cuerdas, del traste 5 al 17.
+<Cajas escala="A minor-pentatonic" notasPorCuerda="2" />
 
-**Qué mirar:**
+<ToolLink href="/escalas?root=A&type=minor-pentatonic&view=cajas">
+  Recorrerlas en /escalas
+</ToolLink>
 
-1. En cada caja, localiza dónde están las raíces (La): son el ancla; sin
-   ellas es un dibujo, con ellas es una escala.
-2. Los cambios de posición van con deslizamiento del índice o del meñique,
-   nunca con salto en el aire.
-3. Púa alterna continua también al cambiar de caja: el tempo no se entera de
-   tus mudanzas.
+## La costura entre la 1 y la 2
+
+<Tab
+  notas="6:5 6:8 5:5 5:7 | 5:7 5:10 4:7 4:10"
+  escala="A minor-pentatonic"
+  figuras="corcheas"
+  pie="Compás 1 en la caja 1, compás 2 en la caja 2. La nota puente (5ª cuerda traste 7, un Mi) está en las dos."
+/>
+
+## El recorrido diagonal
+
+<Tab
+  notas="6:5 6:8 5:5 5:7 | 5:7 5:10 4:7 4:10 | 4:10 4:12 3:9 3:12 | 3:12 3:14 2:13 2:15"
+  escala="A minor-pentatonic"
+  figuras="corcheas · dos cuerdas por caja"
+  pie="Del traste 5 al 17 avanzando de posición cada par de cuerdas. Esto es el mástil, no una caja."
+/>
+
+## Rutina
+
+<Rutina>
+  <Paso min="2" bpm="70" tool="/metronomo?bpm=70">
+    **Cajas 1 y 2** (trastes 5 y 7) subiendo y bajando en corcheas.
+  </Paso>
+  <Paso min="3" bpm="70">
+    **Recorrido completo**: sube por la caja 1, cambia a la 2 por la costura, sigue hasta
+    la 5 y baja por el mismo camino.
+  </Paso>
+  <Paso min="3" bpm="70">
+    **Recorrido diagonal**: dos cuerdas por caja, del traste 5 al 17.
+  </Paso>
+</Rutina>
+
+<Aviso tipo="ojo">
+  Púa alterna continua también al cambiar de caja: el tempo no se entera de tus mudanzas.
+</Aviso>
 
 **Progresión**: +4 bpm cuando el recorrido completo salga sin trompicones.
 Objetivo de la semana: 96 bpm en corcheas. Luego repítelo todo en Mi.

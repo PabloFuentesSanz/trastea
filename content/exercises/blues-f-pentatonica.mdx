@@ -5,23 +5,58 @@ category: aplicacion
 bpm_start: 70
 bpm_target: 90
 links:
-  scale: "/escalas?root=F&type=minor-pentatonic"
-  wiki: [pentatonicas]
-  tool: "/metronomo?bpm=70"
+  scale: "/escalas?root=F&type=minor-pentatonic&view=cajas"
+  wiki: [pentatonicas, blues-de-12-compases]
+  tool: "/metronomo?bpm=70&only24=1"
 ---
 
-Improvisación con propósito sobre el blues de 12 compases en Fa
-(F7 · Bb7 · F7 · F7 / Bb7 · Bb7 · F7 · F7 / C7 · Bb7 · F7 · C7).
+<Ficha
+  laForma="Blues de 12 en Fa"
+  elMaterial="Pentatónica menor de Fa, caja 1 (traste 1)"
+  laReglaDeHoy="Frases de 2 compases y 2 compases de SILENCIO"
+  pregunta="Frase que sube o queda abierta"
+  respuesta="Frase que baja y cierra en Fa"
+  sinBackingTrack="Metrónomo en 2 y 4 y a cantar el groove. Suena más crudo y te hace más fuerte."
+/>
 
-Pentatónica menor de Fa en posición 1 (traste 1). La regla de hoy: **frases de
-2 compases, luego 2 compases de silencio**. Pregunta (frase que sube o queda
-abierta) y respuesta (frase que baja y cierra en Fa).
+## La forma
 
-**Niveles del ejercicio:**
+<Rejilla
+  compases="F7 | Bb7 | F7 | F7 | Bb7 | Bb7 | F7 | F7 | C7 | Bb7 | F7 | C7"
+  pie="Los 12 compases. Sin turnaround jazz: el blues de toda la vida."
+/>
 
-1. Solo 3 notas (Fa, Lab, Sib): frases de ritmo, no de dedos.
-2. Toda la caja 1, manteniendo el esquema pregunta-respuesta.
-3. Termina cada respuesta en la raíz (Fa: cuerda 6 traste 1, cuerda 4 traste 3).
+## La caja
 
-No hay backing track todavía: metrónomo en 2 y 4 y a cantar el groove. Suena
-más crudo y te hace más fuerte.
+<Mastil
+  escala="F minor-pentatonic"
+  caja="1"
+  pie="Pentatónica menor de Fa, caja 1. Las raíces marcadas son donde aterrizan las respuestas."
+/>
+
+<ToolLink href="/escalas?root=F&type=minor-pentatonic&view=cajas">
+  Las 5 cajas en /escalas
+</ToolLink>
+
+## Los tres niveles
+
+<Rutina>
+  <Paso min="3" bpm="70" tool="/metronomo?bpm=70&only24=1">
+    **Solo 3 notas** — Fa, Lab y Sib. Frases de ritmo, no de dedos. Con tres notas no
+    queda otra que ser interesante rítmicamente.
+  </Paso>
+  <Paso min="4" bpm="70">
+    **Toda la caja 1**, manteniendo el esquema pregunta-respuesta.
+  </Paso>
+  <Paso min="3" bpm="70">
+    **Aterriza en la raíz**: cada respuesta termina en Fa (6ª cuerda traste 1, 4ª cuerda
+    traste 3).
+  </Paso>
+</Rutina>
+
+<Tab
+  notas="4:3 4:6 3:3 3:5 | 3:3 4:6 4:3 - | - - - - | - - - -"
+  escala="F minor-pentatonic"
+  figuras="corcheas · 2 compases de frase, 2 de silencio"
+  pie="Ejemplo de pregunta-respuesta. El silencio de después es parte del ejercicio."
+/>

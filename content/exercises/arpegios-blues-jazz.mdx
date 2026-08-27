@@ -6,30 +6,51 @@ bpm_start: 70
 bpm_target: 85
 links:
   wiki: [acordes-de-septima, blues-de-12-compases]
-  tool: "/metronomo?bpm=70"
+  tool: "/metronomo?bpm=70&only24=1"
 ---
 
-El blues jazz en Fa, pero ahora el solo lo construyes con el arpegio del
-acorde que suena en cada compás: F7 sobre F7, Bb7 sobre Bb7, Gm7 sobre Gm7…
-Es improvisar diciendo la armonía en voz alta, nota a nota.
+<Ficha
+  laIdea="El solo lo construyes con el arpegio del acorde que suena en cada compás"
+  esDecir="Improvisar diciendo la armonía en voz alta, nota a nota"
+  laPruebaDelAlgodon="El cambio de acorde debe oírse aunque nadie toque el acompañamiento"
+  elAtajoQueSuenaAJazz="Empezar las frases en la 3ª o la 7ª, no en la raíz"
+  siTePierdes="Deja de tocar y canta los acordes una vuelta"
+/>
 
-**Rutina (10 min):**
+## La forma
 
-1. 2 min — repasa la forma y localiza el arpegio de cada acorde en la zona de
-   los trastes 1-6, sin metrónomo.
-2. 3 min — corcheas mecánicas: sube el arpegio del acorde del compás, empieza
-   el siguiente desde la nota del nuevo arpegio más cercana (no vuelvas a la
-   raíz).
-3. 3 min — frases: 2 compases de frase con notas del arpegio, 2 de silencio.
-4. 2 min — remata cada frase en la 3ª del acorde en curso.
+<Rejilla
+  compases="F7 | Bb7 | F7 | F7 | Bb7 | Bb7 | F7 | D7 | Gm7 | C7 | F7 | Gm7 C7"
+  pie="Blues jazz en Fa"
+/>
 
-**Qué mirar:**
+## Los arpegios en la zona 1-6
 
-1. El cambio de acorde debe oírse aunque nadie toque el acompañamiento: esa
-   es la prueba del algodón.
-2. Empezar frases en notas que no sean la raíz (3ª o 7ª) suena a jazz al
-   instante.
-3. Si te pierdes en la forma, deja de tocar y canta los acordes una vuelta.
+<Mastil acorde="F7" desde="0" hasta="6" pie="F7 — 1 3 5 b7" />
+
+<Mastil acorde="Bb7" desde="0" hasta="6" pie="Bb7" />
+
+<Mastil acorde="Gm7" desde="1" hasta="6" pie="Gm7" />
+
+<Mastil acorde="C7" desde="1" hasta="6" pie="C7" />
+
+## Rutina
+
+<Rutina>
+  <Paso min="2">
+    **Localiza** el arpegio de cada acorde en los trastes 1-6, sin metrónomo.
+  </Paso>
+  <Paso min="3" bpm="70" tool="/metronomo?bpm=70&only24=1">
+    **Corcheas mecánicas**: sube el arpegio del compás y empieza el siguiente desde la
+    nota más cercana del arpegio nuevo. **No vuelvas a la raíz.**
+  </Paso>
+  <Paso min="3" bpm="70">
+    **Frases**: 2 compases con notas del arpegio, 2 de silencio.
+  </Paso>
+  <Paso min="2" bpm="70">
+    **Remata** cada frase en la 3ª del acorde en curso.
+  </Paso>
+</Rutina>
 
 **Progresión**: +5 bpm cuando la vuelta mecánica salga sin huecos. El reto de
 la semana es encadenar los arpegios de todo el blues a 80 bpm.

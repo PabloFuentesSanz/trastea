@@ -5,29 +5,69 @@ category: aplicacion
 bpm_start: 70
 bpm_target: 90
 links:
+  scale: "/escalas?root=D&type=dorian&view=cajas"
   wiki: [modo-dorico, caged]
-  tool: "/escalas?root=D&type=dorian"
+  tool: "/escalas?root=D&type=dorian&view=cajas"
 ---
 
-Sobre un vamp dórico en Re (estilo So What), improvisa frases que empiecen en
-una posición y terminen en otra. El objetivo no es tocar más notas: es que el
-mástil deje de ser una colección de cajas y se convierta en un solo mapa.
+<Ficha
+  sobreQue="Un vamp dórico en Re, estilo So What"
+  elObjetivo="No tocar más notas: que el mástil deje de ser cajas sueltas y sea un solo mapa"
+  laRegla="Cada frase empieza en una posición y termina en otra"
+  elPuente="Elige una cuerda concreta (la 3ª o la 2ª) por la que cruzar hoy"
+  dondeAterrizar="Re, Fa o La: las notas del acorde"
+/>
 
-**Rutina (10 min):**
+## El vamp
 
-1. 2' — toca Re dórico en 2 posiciones vecinas, mirando dónde se solapan.
-2. 4' — frases de 2 compases que crucen de una posición a la otra por una
-   cuerda concreta (elige la 3ª o la 2ª como puente del día).
-3. 4' — improvisación libre sobre el vamp con una regla: cada frase termina
-   en una zona distinta de donde empezó.
+<Rejilla
+  compases="Dm7 | % | % | %"
+  pie="Dos acordes en toda la pieza, y a veces solo uno. Todo el interés está en la melodía."
+/>
 
-**Qué mirar:**
+## Dos posiciones vecinas y su solape
 
-1. El desplazamiento cae en un ligado o en una nota larga — que no se oiga la
-   costura.
-2. Sigues cantando lo que tocas: si la frase solo existe en los dedos, es un
-   ejercicio, no música.
-3. Remata las frases en Re, Fa o La (notas del acorde) para que aterricen.
+<Mastil escala="D dorian" caja="1" notasPorCuerda="2" pie="Posición 1" />
 
-**Progresión**: +5 bpm cuando cruces posiciones sin mirarte la mano izquierda.
-Cambia el puente de cuerda cada día.
+<Mastil
+  escala="D dorian"
+  caja="2"
+  notasPorCuerda="2"
+  pie="Posición 2. Mira dónde comparten notas: ahí está el puente."
+/>
+
+<ToolLink href="/escalas?root=D&type=dorian&view=cajas">
+  Todas las posiciones en /escalas
+</ToolLink>
+
+## Una frase que cruza
+
+<Tab
+  notas="5:5 5:7 4:3 4:5 | 4:7 3:5 3:7 s 3:9"
+  escala="D dorian"
+  figuras="corcheas"
+  pie="Empieza abajo, cruza por la 3ª cuerda con un slide y acaba arriba. La costura no se oye."
+/>
+
+## Rutina
+
+<Rutina>
+  <Paso min="2">**Las dos posiciones**, mirando dónde se solapan.</Paso>
+  <Paso min="4" bpm="70" tool="/metronomo?bpm=70">
+    **Frases de 2 compases** que crucen de una a otra por la cuerda-puente del día.
+  </Paso>
+  <Paso min="4" bpm="70">
+    **Improvisación libre** con una regla: cada frase termina en una zona distinta de
+    donde empezó.
+  </Paso>
+</Rutina>
+
+## Qué mirar
+
+<Ficha
+  elDesplazamiento="Cae en un ligado o en una nota larga, para que no se oiga la costura"
+  sigueCantando="Si la frase solo existe en los dedos, es un ejercicio, no música"
+/>
+
+**Progresión**: +5 bpm cuando cruces sin mirarte la mano izquierda. Cambia la
+cuerda-puente cada día.

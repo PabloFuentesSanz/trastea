@@ -294,6 +294,28 @@ for (const { file, fm, body } of wikis) {
   }
 }
 
+// Regla de contenido: un ejercicio se dibuja, no se narra. Si pide tocar
+// algo, tiene que enseñarlo en un mástil, en una tab o en un diagrama de
+// acorde; y la rutina va en <Rutina>, no en una lista numerada de prosa.
+const DIBUJA = ["Mastil", "Tab", "Acorde", "Acordes", "Cajas", "PorCuerdas", "Rejilla"];
+for (const { file, body } of exercises) {
+  const dibuja = DIBUJA.some((tag) => new RegExp(`<${tag}\\b`).test(body));
+  if (!dibuja) {
+    errors.push({
+      file: rel(file),
+      message:
+        "no dibuja nada: un ejercicio necesita al menos un <Mastil>, <Tab> o <Acorde> que enseñe qué hay que tocar",
+    });
+  }
+  if (!/<Rutina\b/.test(body)) {
+    errors.push({
+      file: rel(file),
+      message:
+        "no tiene <Rutina>: los pasos con sus minutos y su bpm no pueden ir en prosa",
+    });
+  }
+}
+
 // Secuenciación: un módulo no puede pedir canciones por encima de su techo.
 // Es lo que dejaba un estándar de jazz de nivel 3 en la semana 1.
 const songLevel = new Map(songs.map((s) => [s.fm.slug, s.fm.level]));

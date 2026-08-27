@@ -5,27 +5,57 @@ category: tecnica
 bpm_start: 60
 bpm_target: 80
 links:
+  chord: "/acordes?root=C&type=major"
   wiki: [triadas-e-inversiones]
   tool: "/metronomo?bpm=60"
 ---
 
-Tres notas, tres órdenes posibles: fundamental (1 en el bajo), primera
-inversión (3 en el bajo), segunda inversión (5 en el bajo). En el grupo de
-cuerdas 3-2-1, Do mayor son estas tres formas: **5-5-3** (fundamental),
-**9-8-8** (1ª inversión) y **12-13-12** (2ª inversión, o 0-1-0 abajo del
-todo). El mismo acorde, tres vecindarios.
+<Ficha
+  tresNotas="Tres órdenes posibles, según qué nota queda abajo"
+  fundamental="La 1 en el bajo"
+  primeraInversion="La 3 en el bajo"
+  segundaInversion="La 5 en el bajo"
+  elGrupo="Cuerdas 3-2-1: el vecindario donde vive el acompañamiento sin cejillas"
+  loQueMata="Este ejercicio es el que acaba con las cejillas de una vez"
+/>
 
-**Rutina (8 min):**
+## Do mayor, las tres
 
-1. **Subir el mástil** (3'): las 3 inversiones de Do en cuerdas 1-2-3, de
-   grave a agudo y vuelta, en blancas con el click. Di en voz alta qué nota
-   está en el bajo ("Do… Mi… Sol…"). Repite con Sol y con Fa.
-2. **Acorde más cercano** (3'): encadena C → F → G → C usando SIEMPRE la
-   inversión más próxima (mover cada dedo lo mínimo, nunca más de 2 trastes).
-   Este es el ejercicio que mata las cejillas de una vez.
-3. **Grupo 2-3-4** (2'): repite el punto 1 en las cuerdas 2-3-4, aunque sea
-   solo con Do. Formas nuevas, misma lógica.
+<Acordes>
+  <Acorde nombre="C" trastes="x,x,x,5,5,3" pie="Fundamental — Do en el bajo" />
+  <Acorde nombre="C" trastes="x,x,x,9,8,8" pie="1ª inversión — Mi en el bajo" />
+  <Acorde nombre="C" trastes="x,x,x,12,13,12" pie="2ª inversión — Sol en el bajo" />
+</Acordes>
 
-**Progresión**: 60→80 bpm en la semana, un acorde por compás en el punto 2.
-Limpio = las 3 cuerdas suenan, ninguna zumba, y el cambio cae EN el tiempo,
-no después.
+El mismo acorde, tres vecindarios. La segunda inversión también vive abajo del
+todo (0-1-0), que es la misma forma doce trastes antes.
+
+<Tab
+  notas="3:5+2:5+1:3 - 3:9+2:8+1:8 - | 3:12+2:13+1:12 - 3:9+2:8+1:8 -"
+  figuras="blancas"
+  pie="Subiendo y bajando por el mástil. Di en voz alta qué nota está en el bajo."
+/>
+
+## Rutina
+
+<Rutina>
+  <Paso min="3" bpm="60" tool="/metronomo?bpm=60">
+    **Subir el mástil**: las 3 inversiones de Do en blancas, de grave a agudo y vuelta,
+    diciendo el bajo ("Do… Mi… Sol…"). Repite con Sol y con Fa.
+  </Paso>
+  <Paso min="3" bpm="60">
+    **Acorde más cercano**: encadena C → F → G → C usando SIEMPRE la inversión más
+    próxima. Ningún dedo se mueve más de 2 trastes.
+  </Paso>
+  <Paso min="2" bpm="60">
+    **Grupo 2-3-4**: lo mismo en las cuerdas 2-3-4, aunque sea solo con Do. Formas nuevas,
+    misma lógica.
+  </Paso>
+</Rutina>
+
+<Aviso tipo="ojo">
+  Limpio significa tres cosas: las 3 cuerdas suenan, ninguna zumba, y el cambio cae EN el
+  tiempo, no después.
+</Aviso>
+
+**Progresión**: 60→80 bpm en la semana, un acorde por compás.

@@ -5,27 +5,55 @@ category: aplicacion
 bpm_start: 60
 bpm_target: 80
 links:
+  scale: "/escalas?root=A&type=blues&view=cajas"
   wiki: [blues-de-12-compases, escala-blues]
+  tool: "/grabaciones"
 ---
 
-Un solo entero de 12 compases con arquitectura: pregunta (compases 1-4),
-respuesta (5-8) y remate (9-12). Y una regla innegociable: después de cada
-frase, un silencio de verdad. Tocar es fácil; callarse a tiempo es lenguaje.
+<Ficha
+  laArquitectura="Pregunta (compases 1-4), respuesta (5-8), remate (9-12)"
+  laReglaInnegociable="Después de cada frase, un silencio de verdad"
+  laRespuesta="Se parece a la pregunta: mismo motivo, distinto final"
+  elRemate="Aterriza en los compases 9-10 (la zona del V) y cierra en la tónica"
+  laVerdad="Tocar es fácil; callarse a tiempo es lenguaje"
+/>
 
-**Rutina (10 min):**
+## El plano
 
-1. 2' — canta (sin guitarra) un solo de 12 compases sobre la base, con la
-   estructura pregunta-respuesta-remate.
-2. 5' — tócalo: 3 o 4 vueltas, cada una un solo completo con esa estructura.
-   Máximo una frase por cada 2 compases.
-3. 3' — grábate una vuelta y escúchala: ¿se oye la pregunta? ¿hay espacio?
+<Rejilla
+  compases="A7 | D7 | A7 | A7 | D7 | D7 | A7 | A7 | E7 | D7 | A7 | E7"
+  pie="1-4 pregunta · 5-8 respuesta · 9-12 remate"
+/>
 
-**Qué mirar:**
+## Una frase y su eco
 
-1. La respuesta se parece a la pregunta — mismo motivo, distinto final.
-2. El remate aterriza en los compases 9-10 (la zona del V) y cierra en la tónica.
-3. El espacio es parte del solo: si al escucharte no hay huecos, hay ruido.
-4. Menos notas, más intención: un bend bien puesto vale por dieciséis semicorcheas.
+<Tab
+  notas="4:7 3:5 3:7 - | - - - - | 4:7 3:5 3:5 s 3:7 | - - - -"
+  escala="A blues"
+  figuras="corcheas"
+  pie="Pregunta (compases 1-2) y respuesta (3-4): el mismo motivo, otro final. Y el hueco que hay entre las dos."
+/>
+
+## Rutina
+
+<Rutina>
+  <Paso min="2">
+    **Canta** un solo de 12 compases sobre la base, con la estructura completa. Sin
+    guitarra.
+  </Paso>
+  <Paso min="5" bpm="60" tool="/metronomo?bpm=60&only24=1">
+    **Tócalo**: 3 o 4 vueltas, cada una un solo completo. Máximo una frase por cada 2
+    compases.
+  </Paso>
+  <Paso min="3" tool="/grabaciones">
+    **Grábate una vuelta y escúchala**: ¿se oye la pregunta? ¿hay espacio?
+  </Paso>
+</Rutina>
+
+<Aviso tipo="error">
+  Llenar. Si al escucharte no hay huecos, no hay solo: hay ruido. Un bend bien puesto vale
+  por dieciséis semicorcheas.
+</Aviso>
 
 **Progresión**: +5 bpm cuando 2 vueltas seguidas tengan estructura clara y
 silencios reales. Después, la misma disciplina sobre un blues lento en 12/8.

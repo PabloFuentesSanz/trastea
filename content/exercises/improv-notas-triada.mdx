@@ -9,24 +9,50 @@ links:
   tool: "/metronomo?bpm=80"
 ---
 
-La restricción más productiva del módulo: improvisar sobre C-Am-F-G usando
-**solo las notas de la tríada del acorde que suena**. Sobre C, solo C-E-G;
-sobre Am, solo A-C-E; sobre F, solo F-A-C; sobre G, solo G-B-D. Doce notas
-posibles en total, y aún así suena a música — porque TODO son dianas.
+<Ficha
+  laRestriccion="Solo las notas de la tríada del acorde que suena"
+  sobreC="C - E - G"
+  sobreAm="A - C - E"
+  sobreF="F - A - C"
+  sobreG="G - B - D"
+  porQueSuena="Doce notas en total y aún así es música, porque TODO son dianas"
+/>
 
-**Rutina (10 min):**
+## El vamp
 
-1. **Arpegio informativo** (3'): con el vamp sonando (o el click), toca 1-3-5
-   de cada acorde en su compás, dentro de una sola zona del mástil. No es
-   música todavía, es reconocimiento del terreno.
-2. **Frases de tríada** (4'): improvisa con esas mismas notas: cambia el
-   orden, repite notas, juega con el ritmo, deja silencios. Prohibido salirse
-   de las notas del acorde del momento.
-3. **Nota común** (3'): busca las notas compartidas entre acordes vecinos
-   (C-Am comparten Do y Mi; Am-F comparten La y Do…) y construye frases que
-   se queden quietas mientras la armonía se mueve por debajo. Es el truco más
-   elegante que existe y cuesta cero técnica.
+<Rejilla compases="C | Am | F | G" pie="Cuatro acordes en bucle" />
 
-Cuando esto se quede pequeño, mezcla: notas de tríada en los tiempos fuertes,
-notas de la escala de Do para caminar entre ellas. Eso ya es improvisar con
-intención.
+## Las tríadas, en una zona
+
+<Mastil acorde="C" desde="0" hasta="5" pie="Do mayor: 1 3 5" />
+
+<Mastil acorde="Am" desde="0" hasta="5" pie="La menor: 1 b3 5" />
+
+<Mastil acorde="F" desde="0" hasta="5" pie="Fa mayor" />
+
+<Mastil acorde="G" desde="0" hasta="5" pie="Sol mayor" />
+
+## Rutina
+
+<Rutina>
+  <Paso min="3" bpm="80" tool="/metronomo?bpm=80">
+    **Arpegio informativo**: 1-3-5 de cada acorde en su compás, dentro de una sola zona.
+    No es música todavía: es reconocimiento del terreno.
+  </Paso>
+  <Paso min="4" bpm="80">
+    **Frases de tríada**: cambia el orden, repite notas, juega con el ritmo, deja
+    silencios. Prohibido salirse de las notas del acorde del momento.
+  </Paso>
+  <Paso min="3" bpm="80">
+    **Nota común**: C y Am comparten Do y Mi; Am y F comparten La y Do. Construye frases
+    que se queden quietas mientras la armonía se mueve por debajo.
+  </Paso>
+</Rutina>
+
+<Aviso tipo="truco">
+  Lo de la nota común es el truco más elegante que existe y cuesta cero técnica: la misma
+  nota cambia de significado cuando cambia el acorde de debajo.
+</Aviso>
+
+Cuando esto se quede pequeño, mezcla: notas de tríada en los tiempos fuertes y
+notas de la escala para caminar entre ellas. Eso ya es improvisar con intención.
