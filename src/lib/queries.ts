@@ -140,6 +140,21 @@ export async function getRecentSessions(
   return data ?? [];
 }
 
+/** Minutos por día de los últimos `weeks` semanas, para el calendario. */
+export async function getPracticeCalendar(
+  userId: string,
+  weeks = 26,
+): Promise<{ date: string; minutes: number }[]> {
+  const supabase = await createClient();
+  const since = new Date(Date.now() - weeks * 7 * 86_400_000).toISOString().slice(0, 10);
+  const { data } = await supabase
+    .from("practice_sessions")
+    .select("date, duration_min")
+    .eq("user_id", userId)
+    .gte("date", since);
+  return (data ?? []).map((s) => ({ date: s.date, minutes: s.duration_min ?? 0 }));
+}
+
 export async function getBpmRecords(userId: string): Promise<ExerciseRecordRow[]> {
   const supabase = await createClient();
   const { data } = await supabase

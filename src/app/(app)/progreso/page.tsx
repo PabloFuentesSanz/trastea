@@ -8,16 +8,31 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BpmChart } from "@/components/progress/bpm-chart";
+import { PracticeHeatmap } from "@/components/progress/practice-heatmap";
 import { getExercises, getLesson } from "@/lib/content/loader";
-import { getBpmRecords, getRecentSessions, getUserContext } from "@/lib/queries";
+import {
+  getBpmRecords,
+  getPracticeCalendar,
+  getRecentSessions,
+  getUserContext,
+} from "@/lib/queries";
 
 export const metadata: Metadata = { title: "Progreso" };
 
+/** semanas que enseña el calendario: medio año cabe sin agobiar en móvil */
+const WEEKS = 26;
+
 export default async function ProgresoPage() {
   const ctx = await getUserContext();
-  const [records, sessions] = ctx.userId
-    ? await Promise.all([getBpmRecords(ctx.userId), getRecentSessions(ctx.userId)])
-    : [[], []];
+  const [records, sessions, calendar] = ctx.userId
+    ? await Promise.all([
+        getBpmRecords(ctx.userId),
+        getRecentSessions(ctx.userId),
+        getPracticeCalendar(ctx.userId, WEEKS),
+      ])
+    : [[], [], []];
+
+  const today = new Date().toISOString().slice(0, 10);
 
   const titles = Object.fromEntries(
     getExercises().map((e) => [e.frontmatter.slug, e.frontmatter.title]),
@@ -29,6 +44,18 @@ export default async function ProgresoPage() {
       <p className="mt-1 text-muted-foreground">
         Lo que se mide, mejora. Lo que no, se estanca (otra vez).
       </p>
+
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle>Calendario de práctica</CardTitle>
+          <CardDescription>
+            Medio año de un vistazo. Cada casilla, un día.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <PracticeHeatmap sessions={calendar} today={today} weeks={WEEKS} />
+        </CardContent>
+      </Card>
 
       <Card className="mt-6">
         <CardHeader>

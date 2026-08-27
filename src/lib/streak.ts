@@ -3,18 +3,13 @@
  * en la zona horaria del usuario (la calcula el cliente al guardar sesión).
  */
 
+import { daysBetween } from "./calendar";
+
+export { daysBetween };
+
 export interface StreakState {
   streakDays: number;
   lastPracticeDate: string | null;
-}
-
-function toUtcDate(day: string): number {
-  return Date.parse(`${day}T00:00:00Z`);
-}
-
-/** Días naturales entre dos fechas YYYY-MM-DD (b - a). */
-export function daysBetween(a: string, b: string): number {
-  return Math.round((toUtcDate(b) - toUtcDate(a)) / 86_400_000);
 }
 
 /**
