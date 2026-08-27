@@ -14,6 +14,8 @@ import {
   nextLessonSlug,
 } from "@/lib/content/loader";
 import { getLessonProgress, getUserContext } from "@/lib/queries";
+import { drillsForSkills } from "@/lib/train/catalog";
+import { isTrainSkill, levelFromWeek } from "@/lib/train/taxonomy";
 
 export function generateStaticParams() {
   return getCourse().flatMap((m) =>
@@ -65,12 +67,30 @@ export default async function LeccionPage({
           const resolvedTitle =
             exercise?.frontmatter.title ?? song?.frontmatter.title ?? null;
 
+          // el entrenamiento no se escribe en la lección: sale de lo que
+          // entrena el ejercicio y del nivel que le toca a esta semana
+          const drill = exercise
+            ? drillsForSkills(exercise.frontmatter.trains.filter(isTrainSkill))[0]
+            : undefined;
+          const nivel = levelFromWeek(lesson.weekOrder);
+          const train = drill
+            ? {
+                href: `/entrenar/${drill.slug}?nivel=${
+                  drill.levels.some((l) => l.level === nivel)
+                    ? nivel
+                    : drill.levels[drill.levels.length - 1].level
+                }`,
+                title: drill.title,
+              }
+            : null;
+
           return (
             <LessonBlockCard
               key={block.id}
               lessonSlug={lesson.frontmatter.slug}
               block={block}
               resolvedTitle={resolvedTitle}
+              train={train}
             >
               {exercise && (
                 <div className="mt-3 rounded-lg border bg-background/40 p-4">

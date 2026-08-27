@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DRILLS, getDrill, drillLevel, filterDrills } from "./catalog";
+import { DRILLS, drillsForSkills, getDrill, drillLevel, filterDrills } from "./catalog";
 import { cardId, parseCardId } from "./cards";
 import { isTrainLevel, isTrainSkill, isTrainTheme, isTrainMode } from "./taxonomy";
 
@@ -137,5 +137,33 @@ describe("filterDrills", () => {
 
   it("una combinación imposible devuelve una lista vacía, no todo", () => {
     expect(filterDrills(DRILLS, { theme: "oido", skill: "pua-alterna" })).toEqual([]);
+  });
+});
+
+describe("drillsForSkills", () => {
+  it("sin destrezas no propone nada", () => {
+    expect(drillsForSkills([])).toEqual([]);
+  });
+
+  it("propone lo que comparte destreza y nada más", () => {
+    const found = drillsForSkills(["oido-relativo"]);
+    expect(found.length).toBeGreaterThan(0);
+    expect(found.every((d) => d.skills.includes("oido-relativo"))).toBe(true);
+  });
+
+  it("primero el que comparte más destrezas, no el que salga antes", () => {
+    // "octavas" comparte las dos; "notas-del-mastil" solo una
+    const found = drillsForSkills(["nombres-de-notas", "octavas"]);
+    expect(found[0].slug).toBe("octavas");
+  });
+
+  it("el orden es estable: dos llamadas iguales dan lo mismo", () => {
+    const a = drillsForSkills(["digitaciones"]).map((d) => d.slug);
+    const b = drillsForSkills(["digitaciones"]).map((d) => d.slug);
+    expect(a).toEqual(b);
+  });
+
+  it("una destreza que ningún entrenamiento cubre no inventa nada", () => {
+    expect(drillsForSkills(["palm-mute"])).toEqual([]);
   });
 });

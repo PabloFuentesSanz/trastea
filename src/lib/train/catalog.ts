@@ -648,6 +648,26 @@ export function drillLevel(drill: Drill, level: TrainLevel): DrillLevel {
   return drill.levels.find((l) => l.level === level) ?? drill.levels[0];
 }
 
+/**
+ * Los entrenamientos que sirven para unas destrezas dadas, del que más
+ * comparte al que menos. Es lo que conecta una ficha de ejercicio —o un
+ * bloque de una lección— con su versión interactiva sin escribir el enlace a
+ * mano en el contenido: cambiar las destrezas de un ejercicio recoloca solo
+ * a dónde apunta.
+ */
+export function drillsForSkills(skills: readonly TrainSkill[]): Drill[] {
+  const buscadas = new Set(skills);
+  if (buscadas.size === 0) return [];
+  return DRILLS.map((drill, orden) => ({
+    drill,
+    orden,
+    comunes: drill.skills.filter((s) => buscadas.has(s)).length,
+  }))
+    .filter((x) => x.comunes > 0)
+    .sort((a, b) => b.comunes - a.comunes || a.orden - b.orden)
+    .map((x) => x.drill);
+}
+
 export interface DrillFilters {
   theme?: TrainTheme;
   skill?: TrainSkill;

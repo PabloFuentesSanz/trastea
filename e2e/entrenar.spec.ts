@@ -23,6 +23,20 @@ test.describe("el centro de entrenamiento", () => {
     await expect(page.locator("p[aria-live='polite']")).not.toBeEmpty();
   });
 
+  test("una lección lleva al entrenamiento de lo que toca ese día", async ({ page }) => {
+    await page.goto("/curso/a-cimientos/a-cimientos-w01-d1");
+    // el bloque de diapasón: se abre y aparece su versión interactiva
+    for (let i = 0; i < 8; i += 1) {
+      const boton = page.getByRole("button", { name: "Abrir bloque" }).first();
+      if ((await boton.count()) === 0) break;
+      await boton.click();
+    }
+    // el nivel sale de la semana, no está escrito en la lección: semana 1 → 1
+    await expect(
+      page.locator('a[href="/entrenar/notas-del-mastil?nivel=1"]'),
+    ).toHaveCount(1);
+  });
+
   test("cajas: se responde tocando el hueco en el mástil", async ({ page }) => {
     await page.goto("/entrenar/cajas-de-escala?nivel=1");
     // un hueco, y solo uno, dibujado a rayas

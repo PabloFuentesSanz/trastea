@@ -15,7 +15,7 @@ import {
   getWikiArticle,
 } from "@/lib/content/loader";
 import { getExerciseHistory, getUserContext } from "@/lib/queries";
-import { DRILLS } from "@/lib/train/catalog";
+import { drillsForSkills } from "@/lib/train/catalog";
 import { TRAIN_LEVEL_LABEL, TRAIN_SKILL_LABEL, isTrainSkill } from "@/lib/train/taxonomy";
 
 /** El historial depende del usuario. */
@@ -52,8 +52,7 @@ export default async function EjercicioPage({
 
   // los drills que entrenan alguna de las mismas destrezas: son la versión
   // interactiva de esta ficha, y es donde más rendimiento da el mismo rato
-  const propias = new Set(fm.trains);
-  const relacionados = DRILLS.filter((d) => d.skills.some((s) => propias.has(s)));
+  const relacionados = drillsForSkills(fm.trains.filter(isTrainSkill));
 
   const bpmStart = fm.bpm_start ?? 60;
   const bpmTarget = fm.bpm_target ?? Math.max(bpmStart, 100);

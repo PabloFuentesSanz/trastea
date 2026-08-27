@@ -2,7 +2,7 @@
 
 import { useState, useTransition, type ReactNode } from "react";
 import Link from "next/link";
-import { Check, ChevronDown, ExternalLink } from "lucide-react";
+import { Check, ChevronDown, Dumbbell, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -28,12 +28,15 @@ export function LessonBlockCard({
   lessonSlug,
   block,
   resolvedTitle,
+  train,
   children,
 }: {
   lessonSlug: string;
   block: LessonBlock;
   /** título del ejercicio/canción resuelto en servidor */
   resolvedTitle: string | null;
+  /** el entrenamiento interactivo de este bloque, deducido de sus destrezas */
+  train?: { href: string; title: string } | null;
   children?: ReactNode;
 }) {
   const player = useLessonPlayer();
@@ -116,13 +119,24 @@ export function LessonBlockCard({
         <div id={contentId} className="border-t px-4 pb-4">
           <div className="flex flex-wrap items-center justify-between gap-3 py-3">
             <BlockTimer minutes={block.min} />
-            {block.tool && !block.tool.startsWith("/metronomo") && (
-              <Button asChild variant="outline" size="sm">
-                <Link href={block.tool}>
-                  Abrir herramienta <ExternalLink aria-hidden />
-                </Link>
-              </Button>
-            )}
+            <div className="flex flex-wrap gap-2">
+              {block.tool && !block.tool.startsWith("/metronomo") && (
+                <Button asChild variant="outline" size="sm">
+                  <Link href={block.tool}>
+                    Abrir herramienta <ExternalLink aria-hidden />
+                  </Link>
+                </Button>
+              )}
+              {/* el mismo rato, pero preguntándotelo: el enlace no está escrito
+                  en la lección, sale de las destrezas que entrena el ejercicio */}
+              {train && (
+                <Button asChild variant="outline" size="sm">
+                  <Link href={train.href}>
+                    <Dumbbell aria-hidden /> {train.title}
+                  </Link>
+                </Button>
+              )}
+            </div>
           </div>
 
           {metronomeConfig && <EmbeddedMetronome initial={metronomeConfig} />}

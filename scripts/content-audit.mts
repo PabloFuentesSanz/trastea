@@ -37,6 +37,13 @@ import {
   pitchClassesOf,
 } from "../src/lib/music/spec";
 import { validateGrid } from "../src/lib/music/grid";
+import { DRILLS } from "../src/lib/train/catalog";
+import {
+  isTrainLevel,
+  isTrainMode,
+  isTrainSkill,
+  isTrainTheme,
+} from "../src/lib/train/taxonomy";
 import { parseFretSpec, voicingFromFrets } from "../src/lib/music/voicing-from-frets";
 import { foreignNotes, foreignPerBar, parseTab } from "../src/lib/music/tab";
 import { getTuning } from "../src/data/tunings";
@@ -44,7 +51,6 @@ import { SCALES } from "../src/data/scales";
 import { CHORDS } from "../src/data/chords";
 import { getProgression } from "../src/data/progressions";
 import { PRACTICAL_ROOTS } from "../src/lib/music/notes";
-import { isTrainSkill } from "../src/lib/train/taxonomy";
 import { clampBpm } from "../src/lib/metronome/pattern";
 import { capoCoherence } from "../src/lib/content/capo";
 
@@ -633,58 +639,115 @@ function checkMusicSpecs(file: string, body: string) {
  */
 const TOOL_LINK = /(?:href|tool)="(\/(?:escalas|acordes|bases|metronomo)\?[^"]+)"/g;
 
-function checkToolLinks(file: string, body: string) {
-  for (const m of body.matchAll(TOOL_LINK)) {
-    const href = m[1].replace(/&amp;/g, "&");
-    const [ruta, query = ""] = href.split("?");
-    const params = new URLSearchParams(query);
+/**
+ * Enlaces al centro de entrenamiento, con o sin query. Aquí se falla de las
+ * dos maneras: un slug que no existe es un 404 en mitad de una lección, y un
+ * filtro mal escrito deja la página en silencio con todo el catálogo.
+ */
+const TRAIN_LINK = /(?:href|tool)="(\/entrenar(?:\/[a-z0-9-]+)?(?:\?[^"]*)?)"/g;
 
-    const type = params.get("type");
-    if (type) {
-      const tabla = ruta === "/escalas" ? SCALES : CHORDS;
-      const decoded = decodeURIComponent(type);
-      if (!(decoded in tabla)) {
-        errors.push({
-          file: rel(file),
-          message: `${href}: no existe ${ruta === "/escalas" ? "la escala" : "el acorde"} "${decoded}"`,
-        });
-      }
-    }
+function checkTrainLink(file: string, raw: string) {
+  const href = raw.replace(/&amp;/g, "&");
+  const [ruta, query = ""] = href.split("?");
+  const params = new URLSearchParams(query);
+  const slug = ruta.slice("/entrenar".length).replace(/^\//, "");
 
-    const prog = params.get("prog");
-    if (prog && !getProgression(prog)) {
+  if (slug) {
+    const drill = DRILLS.find((d) => d.slug === slug);
+    if (!drill) {
       errors.push({
         file: rel(file),
-        message: `${href}: no existe la progresión "${prog}"`,
+        message: `${href}: no existe el entrenamiento "${slug}" (sería un 404)`,
       });
+      return;
     }
-
-    // el metrónomo también se queda callado: un `sub` que no es 1-4 se ignora
-    // y el lector oye negras donde el texto le prometía tresillos
-    if (ruta === "/metronomo") {
-      const bpm = Number(params.get("bpm"));
-      if (params.has("bpm") && (!Number.isFinite(bpm) || bpm !== clampBpm(bpm))) {
+    const nivel = params.get("nivel");
+    if (nivel !== null) {
+      const n = Number(nivel);
+      if (!isTrainLevel(n) || !drill.levels.some((l) => l.level === n)) {
         errors.push({
           file: rel(file),
-          message: `${href}: bpm fuera del rango del metrónomo`,
-        });
-      }
-      const sub = params.get("sub");
-      if (sub && ![1, 2, 3, 4].includes(Number(sub))) {
-        errors.push({
-          file: rel(file),
-          message: `${href}: subdivisión "${sub}" no existe (1-4)`,
+          message: `${href}: "${drill.title}" no tiene nivel ${nivel} (tiene ${drill.levels.map((l) => l.level).join(", ")})`,
         });
       }
     }
+    return;
+  }
 
-    const root = params.get("root") ?? params.get("tono");
-    if (root && !PRACTICAL_ROOTS.includes(decodeURIComponent(root))) {
+  // el hub: los filtros son vocabulario cerrado y uno inventado se ignora
+  const comprobaciones: [string, (v: string) => boolean, string][] = [
+    ["tema", isTrainTheme, "un tema"],
+    ["modo", isTrainMode, "una modalidad"],
+    ["destreza", isTrainSkill, "una destreza"],
+  ];
+  for (const [key, valido, que] of comprobaciones) {
+    const valor = params.get(key);
+    if (valor !== null && !valido(decodeURIComponent(valor))) {
       errors.push({
         file: rel(file),
-        message: `${href}: "${root}" no es una raíz de las que ofrece la herramienta`,
+        message: `${href}: "${valor}" no es ${que} del centro de entrenamiento`,
       });
     }
+  }
+  const nivel = params.get("nivel");
+  if (nivel !== null && !isTrainLevel(Number(nivel))) {
+    errors.push({
+      file: rel(file),
+      message: `${href}: nivel "${nivel}" no existe (1-5)`,
+    });
+  }
+}
+
+function checkToolLink(file: string, raw: string) {
+  const href = raw.replace(/&amp;/g, "&");
+  const [ruta, query = ""] = href.split("?");
+  const params = new URLSearchParams(query);
+
+  const type = params.get("type");
+  if (type) {
+    const tabla = ruta === "/escalas" ? SCALES : CHORDS;
+    const decoded = decodeURIComponent(type);
+    if (!(decoded in tabla)) {
+      errors.push({
+        file: rel(file),
+        message: `${href}: no existe ${ruta === "/escalas" ? "la escala" : "el acorde"} "${decoded}"`,
+      });
+    }
+  }
+
+  const prog = params.get("prog");
+  if (prog && !getProgression(prog)) {
+    errors.push({
+      file: rel(file),
+      message: `${href}: no existe la progresión "${prog}"`,
+    });
+  }
+
+  // el metrónomo también se queda callado: un `sub` que no es 1-4 se ignora
+  // y el lector oye negras donde el texto le prometía tresillos
+  if (ruta === "/metronomo") {
+    const bpm = Number(params.get("bpm"));
+    if (params.has("bpm") && (!Number.isFinite(bpm) || bpm !== clampBpm(bpm))) {
+      errors.push({
+        file: rel(file),
+        message: `${href}: bpm fuera del rango del metrónomo`,
+      });
+    }
+    const sub = params.get("sub");
+    if (sub && ![1, 2, 3, 4].includes(Number(sub))) {
+      errors.push({
+        file: rel(file),
+        message: `${href}: subdivisión "${sub}" no existe (1-4)`,
+      });
+    }
+  }
+
+  const root = params.get("root") ?? params.get("tono");
+  if (root && !PRACTICAL_ROOTS.includes(decodeURIComponent(root))) {
+    errors.push({
+      file: rel(file),
+      message: `${href}: "${root}" no es una raíz de las que ofrece la herramienta`,
+    });
   }
 }
 
@@ -715,12 +778,31 @@ async function checkMdxCompiles(file: string, body: string) {
   }
 }
 
+/**
+ * Todos los enlaces internos de un texto, vengan de un `href=` del cuerpo o
+ * de un `tool:` del frontmatter. Los del frontmatter llevaban desde el
+ * principio sin comprobarse —132 de ellos— porque la regla solo miraba el
+ * cuerpo: un `tool: "/metronomo?bpm=9999"` pasaba el audit tan tranquilo.
+ */
+function checkLink(file: string, href: string) {
+  if (/^\/entrenar(\/|\?|$)/.test(href)) checkTrainLink(file, href);
+  else if (/^\/(escalas|acordes|bases|metronomo)\?/.test(href)) checkToolLink(file, href);
+}
+
 for (const file of walkMdx(CONTENT)) {
   const { body } = readMdx(file);
   checkMdxExpressions(file, body);
   checkMusicSpecs(file, body);
-  checkToolLinks(file, body);
+  for (const m of body.matchAll(TOOL_LINK)) checkLink(file, m[1]);
+  for (const m of body.matchAll(TRAIN_LINK)) checkLink(file, m[1]);
   await checkMdxCompiles(file, body);
+}
+
+// los `tool:` de las lecciones: mismos enlaces, otra puerta
+for (const lesson of lessons) {
+  for (const block of lesson.fm.blocks) {
+    if (block.tool) checkLink(lesson.file, block.tool);
+  }
 }
 
 // avisos: semanas sin 5 días, wiki huérfana
