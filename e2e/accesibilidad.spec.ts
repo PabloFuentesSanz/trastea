@@ -8,6 +8,9 @@ const RUTAS = [
   "/wiki/pentatonica-menor",
   "/escalas",
   "/metronomo",
+  "/entrenar",
+  "/entrenar/reconocer-intervalos?nivel=3",
+  "/entrenar/intervalos-de-oido",
 ];
 
 /**

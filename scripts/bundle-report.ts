@@ -115,6 +115,26 @@ function main() {
     console.log(`  ${g.kb.toFixed(1).padStart(7)} kB  ${muestra}${resto}`);
   }
 
+  // Las rutas dinámicas no dejan HTML, así que este informe no las ve. Callarlo
+  // haría creer que todo está medido cuando media app se queda fuera.
+  const rutasApp: string[] = Object.values(
+    JSON.parse(
+      readFileSync(join(NEXT, "app-path-routes-manifest.json"), "utf8"),
+    ) as Record<string, string>,
+  );
+  const medidas = new Set(
+    pages.map((p) => "/" + p.route.replace(/\.html$/, "").replace(/^index$/, "")),
+  );
+  const sinMedir = rutasApp
+    .filter((r) => !r.startsWith("/_") && !r.includes("."))
+    .filter((r) => !medidas.has(r) && !r.includes("["));
+
+  if (sinMedir.length > 0) {
+    console.log(
+      `\nSin medir (se renderizan en cada visita, no dejan HTML): ${sinMedir.join(", ")}`,
+    );
+  }
+
   const excedidas = pages
     .map((p) => ({ ...p, budget: budgetFor(p.route) }))
     .filter((p) => p.kb > p.budget.kb);

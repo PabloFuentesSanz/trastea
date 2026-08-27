@@ -12,7 +12,13 @@
 
 import { CHORDS } from "@/data/chords";
 import { getTuning } from "@/data/tunings";
-import { mod12, parseNote, semitonesOf, type NoteName } from "@/lib/music/notes";
+import {
+  mod12,
+  parseInterval,
+  parseNote,
+  semitonesOf,
+  type NoteName,
+} from "@/lib/music/notes";
 
 export interface Position {
   /** índice de cuerda 0 = 6ª grave … 5 = 1ª aguda */
@@ -226,6 +232,17 @@ export function chordPitchClasses(root: NoteName, chordId: string): number[] {
   return [...new Set(semitonesOf(def.intervals).map((s) => mod12(rootPc + s)))].sort(
     (a, b) => a - b,
   );
+}
+
+/**
+ * Los semitonos del acorde SIN plegar la octava: la novena son 14, no 2. Es
+ * lo que hace falta para tocarlo, porque una novena por debajo de la tercera
+ * ya no es una novena.
+ */
+export function chordSemitones(chordId: string): number[] {
+  const def = CHORDS[chordId];
+  if (!def) return [];
+  return def.intervals.map((iv) => parseInterval(iv).semitones);
 }
 
 export function checkAnswer(

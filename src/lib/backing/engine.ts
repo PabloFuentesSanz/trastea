@@ -6,10 +6,9 @@
  * metrónomo — aquí no se decide qué suena, solo cuándo y con qué timbre.
  */
 
-import { midiToFrequency } from "@/lib/music/fretboard";
-import { pluckSamples } from "./string-synth";
 import type { BackingNote } from "./groove";
 import { audioContext, audioNow, resumeAudio } from "@/lib/audio/context";
+import { pluckAt, stringBuffer } from "@/lib/audio/pluck";
 
 const LOOKAHEAD_S = 0.15;
 const SCHEDULER_INTERVAL_MS = 25;
@@ -72,51 +71,6 @@ function deadNote(time: number, duration: number, gainValue: number) {
   noise.stop(time + 0.08);
 }
 
-/** Cola máxima de una cuerda: más allá ya no se oye. */
-const TAIL_S = 2.4;
-
-/**
- * Las cuerdas se sintetizan una vez por altura y se guardan. Generar el
- * modelo cuesta, pero solo la primera vez que suena esa nota; a partir de
- * ahí es reproducir un buffer.
- */
-const strings = new Map<number, AudioBuffer>();
-
-function stringBuffer(ctx: BaseAudioContext, midi: number): AudioBuffer {
-  const cached = strings.get(midi);
-  if (cached) return cached;
-
-  const samples = pluckSamples(ctx.sampleRate, midiToFrequency(midi), TAIL_S, {
-    seed: 1000 + midi,
-  });
-  const buffer = ctx.createBuffer(1, samples.length, ctx.sampleRate);
-  buffer.copyToChannel(samples, 0);
-  strings.set(midi, buffer);
-  return buffer;
-}
-
-/**
- * Una nota pulsada: la cuerda sintetizada, cortada con una envolvente que la
- * apaga cuando toca. Al soltar no se corta en seco —eso chasquea— sino que
- * se deja caer en unos milisegundos.
- */
-function pluck(time: number, midi: number, duration: number, gainValue: number) {
-  const ctx = audioContext();
-  const source = ctx.createBufferSource();
-  source.buffer = stringBuffer(ctx, midi);
-
-  const gain = ctx.createGain();
-  gain.gain.setValueAtTime(gainValue, time);
-  const release = Math.max(duration, 0.1);
-  gain.gain.setValueAtTime(gainValue, time + release);
-  gain.gain.exponentialRampToValueAtTime(0.0001, time + release + 0.09);
-
-  source.connect(gain);
-  gain.connect(ctx.destination);
-  source.start(time);
-  source.stop(time + release + 0.15);
-}
-
 /** Claqueta: el mismo click seco del metrónomo. */
 function click(time: number, accent: boolean, gainValue: number) {
   const ctx = audioContext();
@@ -172,7 +126,7 @@ export function createBackingEngine(getConfig: () => BackingEngineConfig): Backi
         const seconds = note.duration * secondsPerBeat;
         const gain = note.velocity * config.volume * (VOICE_GAIN[note.voice] ?? 0.3);
         if (note.voice === "muerta") deadNote(time, seconds, gain);
-        else pluck(time, note.midi, seconds, gain);
+        else pluckAt(time, note.midi, seconds, gain);
       }
       cursor = hasta;
 
