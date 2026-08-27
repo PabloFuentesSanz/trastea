@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { scaleBox, boxCount, type ScaleBoxOptions } from "./boxes";
+import { scaleBox, boxCount, boxWindow, type ScaleBoxOptions } from "./boxes";
 import { getTuning } from "@/data/tunings";
 import { getScale } from "@/data/scales";
 
@@ -258,5 +258,25 @@ describe("escalas que heredan la digitación", () => {
   it("las notas de la caja siguen ordenadas por altura", () => {
     const midis = bluesBox1().map((p) => p.midi);
     expect(midis).toEqual([...midis].sort((a, b) => a - b));
+  });
+});
+
+describe("boxWindow", () => {
+  it("enmarca la caja con un traste de aire a cada lado", () => {
+    expect(boxWindow(scaleBox(pentatonic(1)))).toEqual({ fromFret: 4, toFret: 9 });
+  });
+
+  it("no baja del traste 0", () => {
+    const caja = scaleBox({
+      root: "E",
+      intervals: getScale("minor-pentatonic").intervals,
+      tuningMidi: STANDARD,
+      box: 1,
+    });
+    expect(boxWindow(caja).fromFret).toBe(0);
+  });
+
+  it("sin posiciones devuelve el mástil entero", () => {
+    expect(boxWindow([])).toEqual({ fromFret: 0, toFret: 15 });
   });
 });

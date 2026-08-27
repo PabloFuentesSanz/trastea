@@ -197,3 +197,20 @@ function withExtraNotes(base: FretPosition[], options: ScaleBoxOptions): FretPos
 
   return [...base, ...extra].sort((a, b) => a.midi - b.midi);
 }
+
+
+/**
+ * Ventana de mástil que enmarca unas posiciones, con un traste de aire a
+ * cada lado. La usan tanto <Mastil caja> como el explorador de /escalas.
+ */
+export function boxWindow(positions: readonly FretPosition[]): {
+  fromFret: number;
+  toFret: number;
+} {
+  if (positions.length === 0) return { fromFret: 0, toFret: 15 };
+  const frets = positions.map((p) => p.fret);
+  return {
+    fromFret: Math.max(Math.min(...frets) - 1, 0),
+    toFret: Math.max(...frets) + 1,
+  };
+}

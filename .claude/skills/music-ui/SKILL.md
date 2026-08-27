@@ -23,8 +23,12 @@ description: APIs de los componentes musicales (Fretboard, ChordDiagram, Tab, Me
 - `<Metronome bpm sig sub accents autoIncrement embedded />` — el motor agenda
   con lookahead sobre el reloj de audio (ver `src/lib/metronome/`). La UI lee
   el tiempo agendado; nunca `setInterval` para el sonido.
-- `<Fretboard frets tuning highlights labels lefty interactive onFretClick />`
-  (Fase 2) — SVG accesible; lógica de posiciones pura en `src/lib/music`.
+- `<Fretboard positions frets fromFret labels lefty title />` — SVG accesible;
+  lógica de posiciones pura en `src/lib/music`. `fromFret` recorta una ventana
+  numerando los trastes reales.
+- `<FormulaExplorer kind basePath ... initialView initialNotesPerString />` —
+  el de `/escalas` tiene tres vistas (`view=mastil|cajas|cuerdas`) y, en
+  escalas de siete notas, `npc=2|3`. Todo en la URL.
 - `<ChordDiagram />` — svguitar. `<Tab />` — AlphaTab (cargar en cliente,
   pesa; lazy import).
 

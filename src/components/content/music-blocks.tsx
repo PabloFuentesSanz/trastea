@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { Fretboard, type FretboardLabels } from "@/components/fretboard/fretboard";
 import { ChordDiagram } from "@/components/fretboard/chord-diagram";
 import { formulaPositions } from "@/lib/music/fretboard";
-import { boxCount, scaleBox } from "@/lib/music/boxes";
+import { boxCount, boxWindow, scaleBox } from "@/lib/music/boxes";
 import { parseGrid } from "@/lib/music/grid";
 import {
   parseFormulaSpec,
@@ -166,13 +166,11 @@ export function Mastil({
 
   // La caja y las notas sueltas traen su propia extensión: la ventana se
   // ajusta a lo que hay que enseñar, con un traste de aire a cada lado.
-  const frets = positions.map((p) => p.fret);
-  const autoFrom = frets.length > 0 ? Math.max(Math.min(...frets) - 1, 0) : 0;
-  const autoTo = frets.length > 0 ? Math.max(...frets) + 1 : 15;
   const ajustada = parsed !== null || numeroCaja !== undefined;
+  const auto = boxWindow(positions);
 
-  const firstFret = from ?? (ajustada ? autoFrom : 0);
-  const lastFret = to ?? (ajustada ? autoTo : 15);
+  const firstFret = from ?? (ajustada ? auto.fromFret : 0);
+  const lastFret = to ?? (ajustada ? auto.toFret : 15);
 
   const titulo = spec?.label ?? "Notas en el mástil";
 
