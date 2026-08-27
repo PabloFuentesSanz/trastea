@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Fretboard, type FretboardLabels } from "@/components/fretboard/fretboard";
 import { ChordDiagram } from "@/components/fretboard/chord-diagram";
 import { Tablature } from "@/components/fretboard/tablature";
+import { PlayChord } from "./play-chord";
 import { PlayableGrid } from "@/components/backing/playable-grid";
 import { PlayableTab } from "@/components/backing/playable-tab";
 import { ChordChip } from "./chord-chip";
@@ -500,6 +501,7 @@ function DiagramaAcorde({
         labels={etiquetas}
         title={titulo}
       />
+      <PlayChord midis={voicing.midis} nombre={nombre} />
       {pie && (
         <figcaption className="mt-1 text-center text-xs text-muted-foreground">
           {pie}

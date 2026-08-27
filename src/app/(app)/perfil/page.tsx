@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { getLesson } from "@/lib/content/loader";
+import { InstrumentPicker } from "@/components/audio/instrument-picker";
 import { getUserContext } from "@/lib/queries";
 
 export const metadata: Metadata = { title: "Perfil" };
@@ -77,6 +78,20 @@ export default async function PerfilPage() {
               )
             )}
           </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle>Sonido</CardTitle>
+          <CardDescription>
+            Con qué instrumento suena todo: las bases, las rejillas y tabs del curso,
+            los acordes de la wiki y los ejercicios de oído. Se queda guardado en este
+            navegador.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <InstrumentPicker id="perfil-instrumento" />
         </CardContent>
       </Card>
 

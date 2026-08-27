@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, BookOpen } from "lucide-react";
+import { ArrowLeft, BookOpen, Dumbbell } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Mdx } from "@/components/content/mdx";
@@ -15,6 +15,7 @@ import {
   getWikiArticle,
 } from "@/lib/content/loader";
 import { getExerciseHistory, getUserContext } from "@/lib/queries";
+import { DRILLS } from "@/lib/train/catalog";
 import { TRAIN_LEVEL_LABEL, TRAIN_SKILL_LABEL, isTrainSkill } from "@/lib/train/taxonomy";
 
 /** El historial depende del usuario. */
@@ -48,6 +49,11 @@ export default async function EjercicioPage({
   const usos = getExerciseUses().get(slug) ?? [];
   const ctx = await getUserContext();
   const history = await getExerciseHistory(ctx.userId, slug);
+
+  // los drills que entrenan alguna de las mismas destrezas: son la versión
+  // interactiva de esta ficha, y es donde más rendimiento da el mismo rato
+  const propias = new Set(fm.trains);
+  const relacionados = DRILLS.filter((d) => d.skills.some((s) => propias.has(s)));
 
   const bpmStart = fm.bpm_start ?? 60;
   const bpmTarget = fm.bpm_target ?? Math.max(bpmStart, 100);
@@ -98,6 +104,30 @@ export default async function EjercicioPage({
       <article className="prose-trastea">
         <Mdx source={exercise.body} />
       </article>
+
+      {relacionados.length > 0 && (
+        <section aria-label="La versión interactiva" className="mt-10">
+          <h2 className="text-xl font-semibold tracking-tight">
+            La versión interactiva
+          </h2>
+          <p className="text-muted-foreground mt-1 text-sm">
+            Lo mismo que entrena esta ficha, pero preguntándotelo y llevándote la
+            cuenta de lo que fallas.
+          </p>
+          <ul className="mt-3 flex flex-wrap gap-2">
+            {relacionados.map((d) => (
+              <li key={d.slug}>
+                <Link
+                  href={`/entrenar/${d.slug}`}
+                  className="hover:bg-accent inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm"
+                >
+                  <Dumbbell className="size-3.5" aria-hidden /> {d.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <Separator className="my-8" />
 
