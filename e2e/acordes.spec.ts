@@ -68,6 +68,9 @@ test("desde la tarjeta se llega a /acordes", async ({ page }, testInfo) => {
     .getByRole("button", { name: /ver cómo se toca/i })
     .first()
     .hover();
+  // la tarjeta tiene retardo de apertura: sin esperar a que esté, con la
+  // máquina cargada se intenta el clic mientras aún se está abriendo
+  await expect(tarjeta(page)).toBeVisible();
   await tarjeta(page)
     .getByRole("link", { name: /más formas/i })
     .click();

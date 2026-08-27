@@ -248,7 +248,43 @@ for (const { file, fm } of songs) {
 // wiki → related e interlinks
 const INTERLINK = /\[\[([a-z0-9-]+)(?:\|[^\]]+)?\]\]/g;
 const wikiIncoming = new Map<string, number>();
+/**
+ * La fórmula que la ficha escribe en prosa contra la de `/src/data`.
+ *
+ * Una ficha de escala pone `formula="1 - b3 - 4 - 5 - b7"` a mano y declara
+ * de qué escala trata. Si alguien corrige la fórmula en un sitio y no en el
+ * otro, el mástil dibuja una escala y el texto enseña otra — y el lector se
+ * cree el texto. Solo se comprueban las fichas que declaran `scale`: una que
+ * describa la fórmula en palabras no tiene nada que comparar.
+ */
+function checkWikiFormula(file: string, scale: string | undefined, body: string) {
+  const escrita = /formula="([^"]+)"/.exec(body)?.[1];
+  if (!escrita || !scale) return;
+  const id = scale.trim().split(/\s+/).slice(1).join(" ");
+  const def = SCALES[id];
+  if (!def) return; // la propia spec de `scale` ya se valida aparte
+
+  const grados = escrita
+    .replace(/^[^0-9]*?(?=\d)/, "")
+    .split("-")
+    .map((g) => g.trim())
+    .filter(Boolean);
+  // fórmulas descriptivas ("las notas del acorde, una detrás de otra")
+  if (grados.length === 0) return;
+
+  const esperada = [...def.intervals];
+  const coincide =
+    grados.length === esperada.length && grados.every((g, i) => g === esperada[i]);
+  if (!coincide) {
+    errors.push({
+      file: rel(file),
+      message: `formula="${escrita}" no es la de ${id} en /src/data (${esperada.join(" - ")})`,
+    });
+  }
+}
+
 for (const { file, fm, body } of wikis) {
+  checkWikiFormula(file, fm.scale, body);
   for (const ref of fm.related) checkRef(file, "wiki", ref, wikiSlugs, brokenRefs);
   for (const match of body.matchAll(INTERLINK)) {
     checkRef(file, "wiki (interlink)", match[1], wikiSlugs, brokenRefs);
