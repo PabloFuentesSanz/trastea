@@ -19,7 +19,10 @@ test.use({
     args: [
       "--use-fake-device-for-media-stream",
       "--use-fake-ui-for-media-stream",
-      `--use-file-for-fake-audio-capture=${WAV}%noloop`,
+      // sin sufijo, Chromium repite el fichero en bucle. Con `%noloop` el WAV
+      // se acababa antes de que la página llegara a leerlo cuando la máquina
+      // iba cargada, y el test fallaba una vez de cada tres.
+      `--use-file-for-fake-audio-capture=${WAV}`,
     ],
   },
 });
@@ -27,6 +30,10 @@ test.use({
 test("el afinador oye una cuerda y dice cuánto le falta", async ({ page }) => {
   await page.goto("/afinador");
   await page.getByRole("button", { name: /escuchar con el micrófono/i }).click();
+
+  // el bucle tiene que aguantar más que el WAV: si se acaba, la lectura
+  // desaparece y el test se vuelve una moneda al aire
+  await page.waitForTimeout(7000);
 
   const panel = page.locator("[aria-live='polite']").first();
   // la nota y la cuerda

@@ -8,6 +8,7 @@ import type {
   LessonProgressRow,
   PracticeSessionRow,
   ProfileRow,
+  SrsCardType,
 } from "@/lib/supabase/types";
 
 export interface AppUserContext {
@@ -237,14 +238,31 @@ export interface SrsProgressRow {
   lapses: number;
 }
 
-/** Progreso SRS del usuario, indexado por id de tarjeta. */
-export async function getSrsProgress(userId: string): Promise<SrsProgressRow[]> {
+/**
+ * Progreso SRS del usuario.
+ *
+ * Filtraba por `card_type = 'fretboard_note'`, que era el único entrenamiento
+ * que existía cuando se escribió. Con nueve, los otros ocho nunca leían su
+ * progreso: `gradeCard` guardaba bien la fila y aquí no se recuperaba, así que
+ * todas las tarjetas salían siempre "sin estrenar", nunca volvía lo fallado y
+ * "consolidadas" se quedaba en cero para siempre. Solo se veía con la sesión
+ * iniciada, que es por donde no pasaba ninguna prueba.
+ *
+ * @param cardTypes si se dan, se acota a esos tipos — un mazo no necesita el
+ *   progreso de los demás entrenamientos.
+ */
+export async function getSrsProgress(
+  userId: string,
+  cardTypes?: readonly SrsCardType[],
+): Promise<SrsProgressRow[]> {
   const supabase = await createClient();
-  const { data } = await supabase
+  const consulta = supabase
     .from("srs_cards")
     .select("payload, due_at, reps, ease, interval_days, lapses")
-    .eq("user_id", userId)
-    .eq("card_type", "fretboard_note");
+    .eq("user_id", userId);
+  const { data } = await (cardTypes && cardTypes.length > 0
+    ? consulta.in("card_type", [...cardTypes])
+    : consulta);
 
   return (data ?? []).flatMap((row) => {
     const payload = row.payload as { id?: unknown } | null;
@@ -280,7 +298,8 @@ export async function getTrainingDeck(
   deck: readonly TrainCard[],
   sessionSize: number,
 ): Promise<TrainingDeck> {
-  const progress = userId ? await getSrsProgress(userId) : [];
+  const tipos = [...new Set(deck.map((card) => card.type))];
+  const progress = userId ? await getSrsProgress(userId, tipos) : [];
   const byId = new Map(progress.map((p) => [p.cardId, p]));
   const now = Date.now();
 

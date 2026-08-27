@@ -31,4 +31,11 @@ for f in "${migraciones[@]}"; do
 done
 
 "${PSQL[@]}" -d "${DB}" -f "${DIR}/verify-checks.sql"
+
+# Y lo que el código pide contra lo que la base tiene de verdad.
+ESQUEMA="$(mktemp -t trastea-schema-XXXXXX.json)"
+"${PSQL[@]}" -d "${DB}" -f "${DIR}/dump-schema.sql" > "${ESQUEMA}"
+(cd "${DIR}/.." && pnpm exec tsx scripts/verify-schema.mts "${ESQUEMA}")
+rm -f "${ESQUEMA}"
+
 psql -q -d postgres -c "drop database ${DB};"
