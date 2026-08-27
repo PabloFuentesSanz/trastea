@@ -117,6 +117,20 @@ Salieron dos cosas por el camino:
 - [ ] Categorías que siguen finas: historia tiene 4 fichas y da para más
       (country, funk, la guitarra en el soul); equipo podría llevar acústicas.
 
+## Afinador
+
+- [x] **Afinador con micrófono (`/afinador`).** Detección de tono con la NSDF
+      de McLeod en TS puro, sin dependencias: la autocorrelación normalizada
+      no se va a la octava, que es el fallo clásico cuando los armónicos de la
+      cuerda pesan más que el fundamental. Nueve afinaciones, aguja en cents,
+      y cada cuerda suena para afinar de oído sin dar permiso al micro.
+- [ ] **Enlazar la afinación de cada canción con el afinador.** Hoy `tuning`
+      en las fichas es texto libre ("Drop C", "Abierta (BDDDDD)") sin relación
+      con `/src/data/tunings.ts`. Ya están las nueve afinaciones comunes en los
+      datos; falta revisar canción por canción cuál le corresponde —incluidas
+      las raras, como el BDDDDD de Iris, que habría que modelar antes— y
+      convertir el campo en vocabulario cerrado con su `content:audit`.
+
 ## Sonido: plan en tres fases
 
 El agujero no era la notación, era que nada sonaba. Orden acordado:

@@ -4,6 +4,11 @@ export interface TuningDef {
   /**
    * Notas MIDI de cada cuerda, de la 6ª (grave) a la 1ª (aguda).
    * Estándar: E2=40, A2=45, D3=50, G3=55, B3=59, E4=64.
+   *
+   * El nombre lleva el deletreo entre paréntesis y `tunings.test.ts`
+   * comprueba que coincide con estos números: un MIDI mal tecleado daría una
+   * afinación con el nombre bien y las notas mal, y el afinador mandaría a
+   * quien lo use a otra nota.
    */
   midi: readonly number[];
 }
@@ -21,8 +26,18 @@ export const TUNINGS: Record<string, TuningDef> = {
   },
   "half-step-down": {
     id: "half-step-down",
-    name: "Medio tono abajo (Eb estándar)",
+    name: "Medio tono abajo (EbAbDbGbBbEb)",
     midi: [39, 44, 49, 54, 58, 63],
+  },
+  "drop-c": {
+    id: "drop-c",
+    name: "Drop C (CGCFAD)",
+    midi: [36, 43, 48, 53, 57, 62],
+  },
+  "drop-b": {
+    id: "drop-b",
+    name: "Drop B (BF#BEG#C#)",
+    midi: [35, 42, 47, 52, 56, 61],
   },
   dadgad: {
     id: "dadgad",
@@ -33,6 +48,21 @@ export const TUNINGS: Record<string, TuningDef> = {
     id: "open-g",
     name: "Open G (DGDGBD)",
     midi: [38, 43, 50, 55, 59, 62],
+  },
+  "open-d": {
+    id: "open-d",
+    name: "Open D (DADF#AD)",
+    midi: [38, 45, 50, 54, 57, 62],
+  },
+  "open-e": {
+    id: "open-e",
+    name: "Open E (EBEG#BE)",
+    midi: [40, 47, 52, 56, 59, 64],
+  },
+  "open-c": {
+    id: "open-c",
+    name: "Open C (CGCGCE)",
+    midi: [36, 43, 48, 55, 60, 64],
   },
 };
 

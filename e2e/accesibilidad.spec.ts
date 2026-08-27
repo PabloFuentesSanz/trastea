@@ -11,6 +11,7 @@ const RUTAS = [
   "/entrenar",
   "/entrenar/reconocer-intervalos?nivel=3",
   "/entrenar/intervalos-de-oido",
+  "/afinador",
   "/entrenar/grados-de-la-escala",
   "/entrenar/cajas-de-escala?nivel=2",
   "/ejercicios/cromatico-1234",

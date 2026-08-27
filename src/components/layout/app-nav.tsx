@@ -9,6 +9,7 @@ import {
   BookOpen,
   Mic,
   Grip,
+  Gauge,
   GraduationCap,
   Home,
   LineChart,
@@ -43,6 +44,7 @@ const TOOL_ITEMS = [
 
 // El resto vive en el desplegable "Más": la barra no da para once enlaces.
 const EXTRA_ITEMS = [
+  { href: "/afinador", label: "Afinador", icon: Gauge, exact: false },
   { href: "/canciones", label: "Canciones", icon: ListMusic, exact: false },
   { href: "/wiki", label: "Wiki", icon: BookOpen, exact: false },
   { href: "/grabaciones", label: "Grabaciones", icon: Mic, exact: false },
