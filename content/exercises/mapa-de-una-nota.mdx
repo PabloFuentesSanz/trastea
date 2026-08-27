@@ -4,22 +4,54 @@ title: "Mapa de una nota"
 category: diapason
 links:
   wiki: [notas-musicales]
+  tool: "/entrenar"
 ---
 
-Elige UNA nota y encuéntrala en las seis cuerdas, de la 6ª a la 1ª, sin
-saltarte ninguna. Ejemplo con Sol: 6ª traste 3, 5ª traste 10, 4ª traste 5,
-3ª al aire (y traste 12), 2ª traste 8, 1ª traste 3. Seis Soles, un solo mapa.
+<Ficha
+  elEjercicio="Elige UNA nota y encuéntrala en las seis cuerdas, sin saltarte ninguna"
+  porQueFunciona="Fuerza a ver el mástil como un mapa, no como seis listas sueltas"
+  verificacion="Las octavas: si tu mapa no cuadra con ellas, has nombrado algo mal"
+  objetivo="Las 6 cuerdas en menos de 30s hoy, menos de 20s a final de semana"
+/>
 
-**Rutina (10 min):**
+## Ejemplo: Sol
 
-1. **Con calma** (4'): una nota natural (Sol, Do, La…). Recórrela cuerda a
-   cuerda diciendo "Sol, cuerda 5, traste 10". Hazlo dos veces: bajando
-   (6ª→1ª) y subiendo (1ª→6ª).
-2. **Cronómetro** (4'): misma nota, las 6 cuerdas contrarreloj. Objetivo:
-   <30s hoy, <20s a final de semana. Cambia de nota en cada pasada.
-3. **Nivel alteraciones** (2'): repite con F# o Bb. Regla: la alteración vive
-   al lado de la natural que ya conoces.
+<Mastil
+  notas="6:3, 5:10, 4:5, 3:0, 3:12, 2:8, 1:3"
+  raiz="G"
+  etiquetas="note"
+  pie="Seis Soles (siete posiciones: la 3ª cuerda lo da al aire y en el 12)"
+/>
 
-Truco de octavas para verificar sin pensar: desde la 6ª o la 5ª cuerda, la
-octava está 2 cuerdas más arriba y 2 trastes más adelante. Si tu "mapa" no
-cuadra con las octavas, algo has nombrado mal.
+Dicho en voz alta: "Sol, cuerda 6, traste 3. Sol, cuerda 5, traste 10. Sol,
+cuerda 4, traste 5…". El nombre, la cuerda y el traste. Los tres.
+
+## Otro, para que no memorices el dibujo: Do
+
+<Mastil
+  notas="6:8, 5:3, 4:10, 3:5, 2:1, 2:13, 1:8"
+  raiz="C"
+  etiquetas="note"
+  pie="Los Dos del mástil. Distinto dibujo, mismo procedimiento."
+/>
+
+## Rutina
+
+<Rutina>
+  <Paso min="4">
+    **Con calma**: una nota natural. Recórrela cuerda a cuerda diciendo "Sol, cuerda 5,
+    traste 10". Dos veces: bajando (6ª→1ª) y subiendo (1ª→6ª).
+  </Paso>
+  <Paso min="4" tool="/entrenar">
+    **Cronómetro**: misma nota, las 6 cuerdas contrarreloj. Cambia de nota en cada pasada.
+  </Paso>
+  <Paso min="2">
+    **Nivel alteraciones**: F# o Bb. La alteración vive al lado de la natural que ya
+    conoces.
+  </Paso>
+</Rutina>
+
+<Aviso tipo="error">
+  Aprenderte el dibujo en vez de la nota. Por eso se cambia de nota en cada pasada: el
+  dibujo de Sol no vale para Do.
+</Aviso>

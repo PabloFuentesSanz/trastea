@@ -280,3 +280,22 @@ describe("boxWindow", () => {
     expect(boxWindow([])).toEqual({ fromFret: 0, toFret: 15 });
   });
 });
+
+describe("startFret", () => {
+  it("baja la caja de octava sin cambiar su forma", () => {
+    const opciones = {
+      root: "C" as const,
+      intervals: getScale("major").intervals,
+      tuningMidi: STANDARD,
+      box: 5,
+      notesPerString: 3,
+    };
+    const alto = scaleBox(opciones);
+    const bajo = scaleBox({ ...opciones, startFret: 0 });
+
+    expect(bajo).toHaveLength(alto.length);
+    // doce trastes justos, nota por nota
+    expect(bajo.map((p) => p.fret + 12)).toEqual(alto.map((p) => p.fret));
+    expect(bajo.map((p) => p.interval)).toEqual(alto.map((p) => p.interval));
+  });
+});

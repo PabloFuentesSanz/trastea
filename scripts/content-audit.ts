@@ -33,7 +33,8 @@ import {
 import { parseFormulaSpec, parseNoteSpec } from "../src/lib/music/spec";
 import { validateGrid } from "../src/lib/music/grid";
 import { parseFretSpec, voicingFromFrets } from "../src/lib/music/voicing-from-frets";
-import { parseTab } from "../src/lib/music/tab";
+import { foreignNotes, parseTab } from "../src/lib/music/tab";
+import { parseNote, semitonesOf } from "../src/lib/music/notes";
 import { getTuning } from "../src/data/tunings";
 
 const STANDARD_TUNING = getTuning("standard").midi;
@@ -367,7 +368,7 @@ const ACORDE_SPEC = /<Acorde\b[^>]*?\bnombre="([^"]+)"/g;
 const ACORDE_TAG = /<Acorde\b[^>]*?\/>/g;
 const NOTAS_SPEC = /<Mastil\b[^>]*?\bnotas="([^"]+)"/g;
 const REJILLA_SPEC = /<Rejilla\b[^>]*?\bcompases="([^"]+)"/g;
-const TAB_SPEC = /<Tab\b[^>]*?\bnotas="([^"]+)"/g;
+const TAB_TAG = /<Tab\b[\s\S]*?\/>/g;
 // Una caja NO es un rectángulo de trastes: recortarla con desde/hasta se come
 // notas de la vecina y pierde las propias. Se escribe `caja="2"`.
 const MASTIL_TAG = /<Mastil\b[^>]*?\/>/g;
@@ -426,9 +427,26 @@ function checkMusicSpecs(file: string, body: string) {
     }
   }
 
-  for (const m of body.matchAll(TAB_SPEC)) {
+  // Una tab escrita a mano puede parsear bien y tener un traste mal. Si
+  // declara escala, se comprueba que todas sus notas pertenecen a ella.
+  for (const m of body.matchAll(TAB_TAG)) {
+    const tag = m[0];
+    const notas = /\bnotas="([^"]+)"/.exec(tag)?.[1];
+    if (!notas) continue;
     try {
-      parseTab(m[1]);
+      const bars = parseTab(notas);
+      const escala = /\bescala="([^"]+)"/.exec(tag)?.[1];
+      if (escala) {
+        const spec = parseFormulaSpec(escala, "scale");
+        const pcs = semitonesOf(spec.intervals).map((s) => parseNote(spec.root).pc + s);
+        const fuera = foreignNotes(bars, pcs, STANDARD_TUNING);
+        if (fuera.length > 0) {
+          errors.push({
+            file: rel(file),
+            message: `<Tab escala="${escala}">: ${fuera.join(", ")} no está en la escala`,
+          });
+        }
+      }
     } catch (e) {
       errors.push({ file: rel(file), message: `<Tab>: ${(e as Error).message}` });
     }

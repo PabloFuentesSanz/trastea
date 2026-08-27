@@ -281,3 +281,18 @@ describe("<Tab />", () => {
     expect(() => render(<Tab notas="6-5" />)).toThrow(/6-5/);
   });
 });
+
+describe("<Mastil caja desdeTraste>", () => {
+  it("dibuja la misma caja en la octava que se le pida", () => {
+    const alto = render(<Mastil escala="C major" caja="5" notasPorCuerda="3" />);
+    const bajo = render(
+      <Mastil escala="C major" caja="5" notasPorCuerda="3" desdeTraste="0" />,
+    );
+    // misma forma: mismo número de notas y mismo ancho de ventana
+    expect(board(bajo.container).notas).toBe(board(alto.container).notas);
+    expect(board(bajo.container).viewBox).toBe(board(alto.container).viewBox);
+    // otra octava: la caja alta empieza en el 15, la baja en el 3
+    expect(alto.container.textContent).toContain("15");
+    expect(bajo.container.textContent).not.toContain("15");
+  });
+});

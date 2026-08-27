@@ -154,3 +154,30 @@ export function parseTab(spec: string): TabBar[] {
 export function tabDuration(bars: TabBar[]): number {
   return bars.reduce((total, bar) => total + bar.columns.length, 0);
 }
+
+/**
+ * Notas de la tab que NO pertenecen a la escala, como "3ª cuerda traste 4".
+ * Escribir una tab a mano y equivocarse en un traste es demasiado fácil y no
+ * se ve: con esto, una nota ajena a la escala declarada rompe el build.
+ */
+export function foreignNotes(
+  bars: TabBar[],
+  scalePitchClasses: readonly number[],
+  tuningMidi: readonly number[],
+): string[] {
+  const allowed = new Set(scalePitchClasses.map((pc) => ((pc % 12) + 12) % 12));
+  const fuera: string[] = [];
+  for (const bar of bars) {
+    for (const column of bar.columns) {
+      for (const event of column.events) {
+        if (event.fret === "x") continue;
+        // la cuerda 1 es la aguda; el afinado viene de la 6ª a la 1ª
+        const midi = tuningMidi[STRINGS - event.string] + event.fret;
+        if (!allowed.has(((midi % 12) + 12) % 12)) {
+          fuera.push(`${event.string}:${event.fret}`);
+        }
+      }
+    }
+  }
+  return fuera;
+}

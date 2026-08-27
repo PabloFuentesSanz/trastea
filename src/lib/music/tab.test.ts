@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseTab, tabDuration } from "./tab";
+import { foreignNotes, parseTab, tabDuration } from "./tab";
 
 describe("parseTab", () => {
   it("lee una columna por token, cuerda:traste", () => {
@@ -112,5 +112,28 @@ describe("parseTab", () => {
 describe("tabDuration", () => {
   it("cuenta las columnas de todos los compases", () => {
     expect(tabDuration(parseTab("6:5 6:7 | 5:5"))).toBe(3);
+  });
+});
+
+describe("foreignNotes", () => {
+  // afinado estándar de la 6ª a la 1ª
+  const STANDARD = [40, 45, 50, 55, 59, 64];
+  // Sol mayor: G A B C D E F#
+  const SOL_MAYOR = [7, 9, 11, 0, 2, 4, 6];
+
+  it("no encuentra nada si toda la tab está en la escala", () => {
+    // patrón de 3 notas por cuerda de Sol mayor
+    expect(
+      foreignNotes(parseTab("6:3 6:5 6:7 5:3 5:5 5:7 4:4 4:5 4:7"), SOL_MAYOR, STANDARD),
+    ).toEqual([]);
+  });
+
+  it("señala la nota de fuera diciendo dónde está", () => {
+    // 4ª cuerda traste 6 es un Sol#, que no está en Sol mayor
+    expect(foreignNotes(parseTab("6:3 4:6"), SOL_MAYOR, STANDARD)).toEqual(["4:6"]);
+  });
+
+  it("ignora las notas muertas", () => {
+    expect(foreignNotes(parseTab("6:x"), SOL_MAYOR, STANDARD)).toEqual([]);
   });
 });

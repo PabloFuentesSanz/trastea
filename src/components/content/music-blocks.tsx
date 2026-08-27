@@ -6,7 +6,7 @@ import { Tablature } from "@/components/fretboard/tablature";
 import { formulaPositions } from "@/lib/music/fretboard";
 import { boxCount, boxWindow, scaleBox } from "@/lib/music/boxes";
 import { parseGrid } from "@/lib/music/grid";
-import { parseTab } from "@/lib/music/tab";
+import { foreignNotes, parseTab } from "@/lib/music/tab";
 import {
   parseFormulaSpec,
   parseNoteSpec,
@@ -14,7 +14,7 @@ import {
   stringIndex,
   windowPositions,
 } from "@/lib/music/spec";
-import { spellFormula, type NoteName } from "@/lib/music/notes";
+import { parseNote, semitonesOf, spellFormula, type NoteName } from "@/lib/music/notes";
 import { generateVoicings, type Voicing } from "@/lib/music/voicings";
 import { parseFretSpec, voicingFromFrets } from "@/lib/music/voicing-from-frets";
 import { getTuning } from "@/data/tunings";
@@ -101,6 +101,7 @@ export function Mastil({
   raiz,
   caja,
   notasPorCuerda,
+  desdeTraste,
   desde,
   hasta,
   cuerdas,
@@ -118,6 +119,8 @@ export function Mastil({
   caja?: Numerico;
   /** 2 para pentatónicas, 3 para escalas de siete notas */
   notasPorCuerda?: Numerico;
+  /** octava en la que dibujar la caja: traste mínimo de su primera nota */
+  desdeTraste?: Numerico;
   desde?: Numerico;
   hasta?: Numerico;
   cuerdas?: string | number[];
@@ -153,6 +156,7 @@ export function Mastil({
       box: numeroCaja,
       notesPerString: num(notasPorCuerda),
       parentIntervals: boxParentIntervals(spec.id),
+      startFret: num(desdeTraste),
     });
   } else {
     positions = windowPositions(
@@ -616,16 +620,27 @@ export function Paso({
  */
 export function Tab({
   notas,
+  escala,
   figuras,
   pie,
   titulo,
 }: {
   notas: string;
+  /** escala a la que deben pertenecer todas las notas; si no, revienta */
+  escala?: string;
   figuras?: string;
   pie?: string;
   titulo?: string;
 }) {
   const bars = parseTab(notas);
+  if (escala) {
+    const spec = parseFormulaSpec(escala, "scale");
+    const pcs = semitonesOf(spec.intervals).map((s) => parseNote(spec.root).pc + s);
+    const fuera = foreignNotes(bars, pcs, STANDARD);
+    if (fuera.length > 0) {
+      throw new Error(`${fuera.join(", ")} no está en ${spec.label}`);
+    }
+  }
   const compases = bars.length === 1 ? "1 compás" : `${bars.length} compases`;
   return (
     <Figure caption={pie}>

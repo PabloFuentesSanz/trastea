@@ -5,30 +5,64 @@ category: tecnica
 bpm_start: 60
 bpm_target: 80
 links:
-  scale: "/escalas?root=C&type=major"
+  scale: "/escalas?root=C&type=major&view=cajas&npc=3"
   wiki: [escala-mayor, como-practicar]
   tool: "/metronomo?bpm=60"
 ---
 
-Dos posiciones bastan para cubrir el 90% de lo que vas a tocar este año: el
-patrón con **raíz en la 6ª cuerda** y el patrón con **raíz en la 5ª**. Con
-esos dos y el mapa de notas, cualquier tonalidad es solo cuestión de mover el
-punto de partida: Do (6ª traste 8 / 5ª traste 3), Sol (6ª traste 3 / 5ª
-traste 10), Fa (6ª traste 1 / 5ª traste 8).
+<Ficha
+  lasDos="La que arranca con la raíz en la 6ª cuerda y la que arranca con la raíz en la 5ª"
+  porQueBastan="Cubren el 90% de lo que vas a tocar este año"
+  paraCambiarDeTono="Solo mueves el punto de partida. La forma no cambia."
+  do="6ª traste 8 · 5ª traste 3"
+  sol="6ª traste 3 · 5ª traste 10"
+  fa="6ª traste 1 · 5ª traste 8"
+  laRegla="Empieza y termina en la RAÍZ, no en la nota más grave del patrón: la escala tiene dueño"
+/>
 
-**Rutina (8 min):**
+## Posición con la raíz en la 6ª
 
-1. **Posición sola** (3'): sube y baja el patrón del día en corcheas con púa
-   alterna estricta (⊓ ∨), diciendo la RAÍZ al empezar. Empieza y termina
-   siempre en la raíz, no en la nota más grave del patrón: la escala tiene
-   dueño.
-2. **Con grados** (2'): misma pasada, cantando o diciendo los grados
-   (1-2-3-4-5-6-7-8). Baja el bpm si hace falta; esto es lo que la convierte
-   en escala "de verdad".
-3. **Cambio de posición** (3'): una pasada en el patrón de 6ª, sin parar el
-   click, otra en el de 5ª. El silencio entre posiciones es el error: mejor
-   lento y encadenado que rápido y a trozos.
+<Mastil
+  escala="C major"
+  caja="1"
+  notasPorCuerda="3"
+  pie="Do mayor, raíz en la 6ª cuerda (traste 8). La raíz es la nota marcada."
+/>
 
-**Progresión**: corcheas de 60 a 80 bpm en la semana. Sube +2/+3 bpm solo
-cuando 3 pasadas seguidas salgan limpias y con las notas durando lo mismo
-(el fallo típico no es fallar notas, es cojear en los cambios de cuerda).
+## Posición con la raíz en la 5ª
+
+<Mastil
+  escala="C major"
+  caja="5"
+  notasPorCuerda="3"
+  desdeTraste="0"
+  pie="Do mayor, raíz en la 5ª cuerda (traste 3). Es la misma escala desde otra ventana."
+/>
+
+<ToolLink href="/escalas?root=C&type=major&view=cajas&npc=3">
+  Ver las 7 posiciones en /escalas
+</ToolLink>
+
+## Rutina
+
+<Rutina>
+  <Paso min="3" bpm="60" tool="/metronomo?bpm=60">
+    **Posición sola**: sube y baja el patrón del día en corcheas con púa alterna estricta,
+    diciendo la raíz al empezar.
+  </Paso>
+  <Paso min="2" bpm="50" tool="/metronomo?bpm=50">
+    **Con grados**: la misma pasada cantando 1-2-3-4-5-6-7-8. Baja el bpm si hace falta;
+    esto es lo que la convierte en escala de verdad y no en un dibujo.
+  </Paso>
+  <Paso min="3" bpm="60">
+    **Cambio de posición**: una pasada en la de 6ª, sin parar el click, otra en la de 5ª.
+  </Paso>
+</Rutina>
+
+<Aviso tipo="error">
+  El silencio entre posiciones. Mejor lento y encadenado que rápido y a trozos: el fallo
+  típico no es fallar notas, es cojear en el cambio.
+</Aviso>
+
+**Progresión**: de 60 a 80 bpm en corcheas durante la semana, +2/+3 bpm cuando
+3 pasadas seguidas salgan limpias.
