@@ -19,6 +19,7 @@ const THEME_LABELS = {
   oido: "Oído",
   tecnica: "Técnica",
   ritmo: "Ritmo",
+  aplicacion: "Aplicación",
 } as const satisfies Record<string, string>;
 
 export type TrainTheme = keyof typeof THEME_LABELS;
@@ -62,6 +63,11 @@ const SKILL_LABELS = {
   rasgueo: "Rasgueo",
   bending: "Bending y vibrato",
   fingerstyle: "Fingerstyle",
+  // aplicación: tocar música de verdad con lo aprendido
+  improvisacion: "Improvisación",
+  fraseo: "Fraseo",
+  acompanamiento: "Acompañamiento",
+  transcripcion: "Transcripción",
   // ritmo
   subdivision: "Subdivisión",
   sincopa: "Síncopa",
@@ -83,6 +89,8 @@ const MODE_LABELS = {
   escuchar: "Escuchar",
   /** con el instrumento en la mano, metrónomo y cronómetro */
   cronometrado: "Cronometrado",
+  /** se sigue la ficha a tu ritmo: cantar, transcribir, recorrer el mástil */
+  guiado: "Guiado",
 } as const satisfies Record<string, string>;
 
 export type TrainMode = keyof typeof MODE_LABELS;
@@ -95,6 +103,7 @@ export const TRAIN_MODE_HINT: Record<TrainMode, string> = {
   identificar: "Responde y el sistema repite lo que peor llevas",
   escuchar: "Suena y tú dices qué era. Con auriculares mejor",
   cronometrado: "Con la guitarra: metrónomo, cronómetro y bpm que sube",
+  guiado: "Sigues la ficha a tu ritmo, sin tempo que perseguir",
 };
 
 // ---------- niveles ----------
@@ -127,4 +136,17 @@ export function isTrainMode(value: string): value is TrainMode {
 
 export function isTrainLevel(value: number): value is TrainLevel {
   return Number.isInteger(value) && value >= 1 && value <= 5;
+}
+
+/**
+ * Nivel de un ejercicio a partir de la semana del curso en la que aparece por
+ * primera vez. No se escribe en la ficha: se deduce, y así reordenar el curso
+ * reordena los niveles solo.
+ */
+export function levelFromWeek(week: number): TrainLevel {
+  if (week <= 2) return 1;
+  if (week <= 4) return 2;
+  if (week <= 7) return 3;
+  if (week <= 10) return 4;
+  return 5;
 }

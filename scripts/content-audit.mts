@@ -44,6 +44,7 @@ import { SCALES } from "../src/data/scales";
 import { CHORDS } from "../src/data/chords";
 import { getProgression } from "../src/data/progressions";
 import { PRACTICAL_ROOTS } from "../src/lib/music/notes";
+import { isTrainSkill } from "../src/lib/train/taxonomy";
 import { clampBpm } from "../src/lib/metronome/pattern";
 import { capoCoherence } from "../src/lib/content/capo";
 
@@ -279,6 +280,46 @@ for (const { file, fm } of songs) {
       file: rel(file),
       message: `capo ${desajuste.capo} sobre formas de ${desajuste.forma}: suena en ${desajuste.esperado}, pero key dice "${desajuste.declarado}"`,
     });
+  }
+}
+
+/**
+ * `trains` de los ejercicios: vocabulario cerrado de /entrenar. Una destreza
+ * inventada no rompería nada visible — el ejercicio simplemente no saldría en
+ * ningún filtro, que es la peor forma de fallar: en silencio.
+ */
+for (const { file, fm } of exercises) {
+  if (fm.trains.length === 0) {
+    errors.push({
+      file: rel(file),
+      message: "sin `trains`: no aparecerá en ningún filtro de /entrenar",
+    });
+  }
+  for (const skill of fm.trains) {
+    if (!isTrainSkill(skill)) {
+      errors.push({ file: rel(file), message: `destreza desconocida: "${skill}"` });
+    }
+  }
+}
+
+/**
+ * El nivel de un ejercicio se deduce de la semana en que el curso lo usa por
+ * primera vez, así que uno que no use nadie se queda sin nivel y sin sitio.
+ */
+{
+  const usados = new Set<string>();
+  for (const { fm } of lessons) {
+    for (const block of fm.blocks) {
+      if (block.exercise) usados.add(block.exercise);
+    }
+  }
+  for (const { file, fm } of exercises) {
+    if (!usados.has(fm.slug)) {
+      warnings.push({
+        file: rel(file),
+        message: "ningún día del curso lo usa: se queda sin nivel deducido",
+      });
+    }
   }
 }
 

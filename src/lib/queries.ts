@@ -140,6 +140,68 @@ export async function getRecentSessions(
   return data ?? [];
 }
 
+export interface ExerciseAttempt {
+  bpm: number;
+  clean: boolean;
+  recordedAt: string;
+}
+
+export interface ExerciseHistory {
+  attempts: ExerciseAttempt[];
+  /** cuántas veces se ha registrado */
+  times: number;
+  /** el bpm más alto alcanzado limpio */
+  bestClean: number | null;
+  /** el último registrado, limpio o no */
+  last: ExerciseAttempt | null;
+  /** días distintos en los que se ha practicado */
+  days: number;
+}
+
+/**
+ * Todo lo que se sabe de un ejercicio: cuándo lo has hecho, a qué bpm y si
+ * salió limpio. El campo `clean` se guardaba desde el principio y no se
+ * enseñaba en ninguna parte.
+ */
+export async function getExerciseHistory(
+  userId: string | null,
+  exerciseSlug: string,
+): Promise<ExerciseHistory> {
+  const vacio: ExerciseHistory = {
+    attempts: [],
+    times: 0,
+    bestClean: null,
+    last: null,
+    days: 0,
+  };
+  if (!userId || !isSupabaseConfigured()) return vacio;
+
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("exercise_records")
+    .select("bpm, clean, recorded_at")
+    .eq("user_id", userId)
+    .eq("exercise_slug", exerciseSlug)
+    .order("recorded_at", { ascending: true })
+    .limit(400);
+
+  const attempts: ExerciseAttempt[] = (data ?? []).map((r) => ({
+    bpm: r.bpm,
+    clean: r.clean,
+    recordedAt: r.recorded_at,
+  }));
+  if (attempts.length === 0) return vacio;
+
+  const limpios = attempts.filter((a) => a.clean).map((a) => a.bpm);
+  return {
+    attempts,
+    times: attempts.length,
+    bestClean: limpios.length > 0 ? Math.max(...limpios) : null,
+    last: attempts[attempts.length - 1],
+    days: new Set(attempts.map((a) => a.recordedAt.slice(0, 10))).size,
+  };
+}
+
 /** Minutos por día de los últimos `weeks` semanas, para el calendario. */
 export async function getPracticeCalendar(
   userId: string,

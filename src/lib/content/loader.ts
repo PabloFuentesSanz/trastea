@@ -4,6 +4,7 @@ import path from "node:path";
 import matter from "gray-matter";
 import { resolveInterlinksWith } from "./interlinks";
 import { cache } from "react";
+import { levelFromWeek, type TrainLevel } from "@/lib/train/taxonomy";
 import {
   exerciseFrontmatterSchema,
   lessonFrontmatterSchema,
@@ -149,6 +150,52 @@ export const getExercises = cache(() =>
 
 export const getExercise = cache((slug: string) => {
   return getExercises().find((e) => e.frontmatter.slug === slug) ?? null;
+});
+
+export interface ExerciseUse {
+  lessonSlug: string;
+  lessonTitle: string;
+  moduleSlug: string;
+  week: number;
+  day: number;
+}
+
+/**
+ * Dónde usa el curso cada ejercicio. De aquí sale el nivel: el de la semana en
+ * que aparece por primera vez. No se escribe en la ficha para que reordenar el
+ * curso reordene los niveles solo.
+ */
+export const getExerciseUses = cache((): Map<string, ExerciseUse[]> => {
+  const porEjercicio = new Map<string, ExerciseUse[]>();
+  for (const modulo of getCourse()) {
+    for (const semana of modulo.weeks) {
+      // el `order` de la semana es su sitio dentro del módulo (1-4); el número
+      // global del curso está en el directorio, que es w01…w12
+      const week = Number(/w(\d+)/.exec(semana.dir)?.[1] ?? semana.frontmatter.order);
+      for (const leccion of semana.lessons) {
+        for (const block of leccion.frontmatter.blocks) {
+          if (!block.exercise) continue;
+          const lista = porEjercicio.get(block.exercise) ?? [];
+          lista.push({
+            lessonSlug: leccion.frontmatter.slug,
+            lessonTitle: leccion.frontmatter.title,
+            moduleSlug: modulo.frontmatter.slug,
+            week,
+            day: leccion.frontmatter.order,
+          });
+          porEjercicio.set(block.exercise, lista);
+        }
+      }
+    }
+  }
+  return porEjercicio;
+});
+
+/** Nivel deducido: el de la primera semana que lo pide. */
+export const getExerciseLevel = cache((slug: string): TrainLevel => {
+  const usos = getExerciseUses().get(slug) ?? [];
+  if (usos.length === 0) return 3;
+  return levelFromWeek(Math.min(...usos.map((u) => u.week)));
 });
 
 export const getSongs = cache(() =>

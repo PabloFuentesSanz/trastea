@@ -11,6 +11,7 @@ const RUTAS = [
   "/entrenar",
   "/entrenar/reconocer-intervalos?nivel=3",
   "/entrenar/intervalos-de-oido",
+  "/ejercicios/cromatico-1234",
 ];
 
 /**

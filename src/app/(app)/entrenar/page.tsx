@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AudioLines, Ear, Grid3x3, Guitar, Ruler, Timer, Zap } from "lucide-react";
+import { AudioLines, Ear, Grid3x3, Guitar, Music, Ruler, Timer, Zap } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { DRILLS, filterDrills, type Drill } from "@/lib/train/catalog";
+import { getExerciseLevel, getExercises } from "@/lib/content/loader";
 import {
   isTrainLevel,
   isTrainMode,
@@ -41,6 +42,7 @@ const THEME_ICON: Record<TrainTheme, LucideIcon> = {
   oido: Ear,
   tecnica: Zap,
   ritmo: Timer,
+  aplicacion: Music,
 };
 
 interface Filtros {
@@ -83,7 +85,7 @@ function Chip({
   );
 }
 
-function DrillCard({ drill }: { drill: Drill }) {
+function DrillCard({ drill }: { drill: Drill & { href?: string } }) {
   const Icon = THEME_ICON[drill.theme];
   const niveles = drill.levels.map((l) => l.level);
   return (
@@ -94,7 +96,10 @@ function DrillCard({ drill }: { drill: Drill }) {
           {TRAIN_THEME_LABEL[drill.theme]} · {TRAIN_MODE_LABEL[drill.mode]}
         </CardDescription>
         <CardTitle>
-          <Link href={`/entrenar/${drill.slug}`} className="hover:underline">
+          <Link
+            href={drill.href ?? `/entrenar/${drill.slug}`}
+            className="hover:underline"
+          >
             {drill.title}
           </Link>
         </CardTitle>
@@ -115,6 +120,43 @@ function DrillCard({ drill }: { drill: Drill }) {
     </Card>
   );
 }
+
+/**
+ * Los ejercicios del curso, vistos como entrenamientos. No están en el
+ * catálogo de código porque son contenido: los escribe una persona. Aquí se
+ * les da la misma forma para que salgan en los mismos filtros.
+ */
+function exerciseDrills(): Drill[] {
+  return getExercises()
+    .map(({ frontmatter }) => {
+      const level = getExerciseLevel(frontmatter.slug);
+      const skills = frontmatter.trains.filter(isTrainSkill);
+      const cronometrable = frontmatter.bpm_target !== undefined;
+      return {
+        slug: frontmatter.slug,
+        title: frontmatter.title,
+        summary: cronometrable
+          ? `Con metrónomo y cronómetro, de ${frontmatter.bpm_start ?? 60} a ${frontmatter.bpm_target} bpm. Cada intento queda registrado.`
+          : "Ejercicio del curso: se hace escuchando o cantando, sin tempo que perseguir.",
+        theme: THEME_BY_CATEGORY[frontmatter.category],
+        skills,
+        mode: cronometrable ? ("cronometrado" as const) : ("guiado" as const),
+        levels: [{ level, label: TRAIN_LEVEL_LABEL[level], build: () => [] }],
+        href: `/ejercicios/${frontmatter.slug}`,
+      };
+    })
+    .sort((a, b) => a.levels[0].level - b.levels[0].level);
+}
+
+/** La categoría del ejercicio, traducida al tema del centro de entrenamiento. */
+const THEME_BY_CATEGORY: Record<string, TrainTheme> = {
+  tecnica: "tecnica",
+  diapason: "diapason",
+  oido: "oido",
+  aplicacion: "aplicacion",
+  repertorio: "aplicacion",
+  teoria: "aplicacion",
+};
 
 export default async function EntrenarPage({
   searchParams,
@@ -137,11 +179,12 @@ export default async function EntrenarPage({
     level: isTrainLevel(rawLevel) ? rawLevel : undefined,
   };
 
-  const resultados = filterDrills(DRILLS, filtros);
+  const todos = [...DRILLS, ...exerciseDrills()];
+  const resultados = filterDrills(todos, filtros) as (Drill & { href?: string })[];
 
   // solo se ofrecen los temas y destrezas que existen de verdad en el catálogo
-  const temasConDrills = TRAIN_THEMES.filter((t) => DRILLS.some((d) => d.theme === t));
-  const destrezas = [...new Set(DRILLS.flatMap((d) => d.skills))].sort((a, b) =>
+  const temasConDrills = TRAIN_THEMES.filter((t) => todos.some((d) => d.theme === t));
+  const destrezas = [...new Set(todos.flatMap((d) => d.skills))].sort((a, b) =>
     TRAIN_SKILL_LABEL[a].localeCompare(TRAIN_SKILL_LABEL[b], "es"),
   );
 
@@ -188,7 +231,7 @@ export default async function EntrenarPage({
           <Chip active={!filtros.mode} href={href(filtros, { mode: undefined })}>
             Todo
           </Chip>
-          {TRAIN_MODES.filter((m) => DRILLS.some((d) => d.mode === m)).map((m) => (
+          {TRAIN_MODES.filter((m) => todos.some((d) => d.mode === m)).map((m) => (
             <Chip
               key={m}
               active={filtros.mode === m}

@@ -101,6 +101,12 @@ export const exerciseFrontmatterSchema = z.object({
   slug: slugSchema,
   title: z.string().min(1),
   category: exerciseCategorySchema,
+  /**
+   * Qué entrena, con el vocabulario cerrado de /entrenar. No lleva `level`:
+   * el nivel se deduce de la semana del curso en que aparece por primera vez,
+   * y así no puede desincronizarse del currículo.
+   */
+  trains: z.array(z.string().min(1)).default([]),
   bpm_start: z.number().int().min(20).max(300).optional(),
   bpm_target: z.number().int().min(20).max(300).optional(),
   /** tablatura corta inline en alphaTex */
