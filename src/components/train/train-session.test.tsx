@@ -141,6 +141,40 @@ describe("TrainSession", () => {
   });
 });
 
+describe("cuando una tarjeta se repite dentro de la sesión", () => {
+  it("solo se guarda la primera respuesta", async () => {
+    // Los mazos pequeños dan la vuelta para que la sesión no dure dos
+    // preguntas. Pero puntuar seis veces la misma tarjeta la mandaría a
+    // repasar dentro de un mes: el SRS cuenta repasos espaciados, no
+    // repeticiones seguidas.
+    const card: TrainCard = { type: "ear_chord", chordId: "major" };
+    render(<TrainSession cards={[card, card, card]} choices={CHOICES} demo={false} />);
+    for (let i = 0; i < 3; i += 1) {
+      await userEvent.click(screen.getAllByRole("button", { name: "Tríada mayor" })[0]);
+      await new Promise((r) => setTimeout(r, 900));
+    }
+    expect(gradeCard).toHaveBeenCalledTimes(1);
+  });
+
+  it("dos tarjetas distintas se guardan las dos", async () => {
+    render(
+      <TrainSession
+        cards={[
+          { type: "ear_chord", chordId: "major" },
+          { type: "ear_chord", chordId: "minor" },
+        ]}
+        choices={CHOICES}
+        demo={false}
+      />,
+    );
+    await userEvent.click(screen.getAllByRole("button", { name: "Tríada mayor" })[0]);
+    await new Promise((r) => setTimeout(r, 1900));
+    await userEvent.click(screen.getAllByRole("button", { name: "Tríada mayor" })[0]);
+    await new Promise((r) => setTimeout(r, 900));
+    expect(gradeCard).toHaveBeenCalledTimes(2);
+  });
+});
+
 describe("cuando la base de datos rechaza el progreso", () => {
   it("lo dice, en vez de dejarte entrenar para nada", async () => {
     // el caso real: un tipo de tarjeta nuevo cuya migración todavía no está

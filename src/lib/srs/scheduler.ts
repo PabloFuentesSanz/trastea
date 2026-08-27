@@ -106,7 +106,23 @@ export function selectSession<T>(
     random,
   );
 
-  return [...due, ...fresh].slice(0, size).map((c) => c.card);
+  const disponibles = [...due, ...fresh];
+  if (disponibles.length === 0) return [];
+
+  const sesion = disponibles.slice(0, size).map((c) => c.card);
+  // Un mazo más pequeño que la sesión se da otra vuelta. "Acordes de oído"
+  // nivel 1 son dos tarjetas y la sesión se acababa en dos preguntas; en los
+  // ejercicios de oído la repetición ES el ejercicio, porque la raíz se
+  // sortea en cada pregunta y la misma tarjeta suena distinta cada vez.
+  while (sesion.length < size) {
+    const vuelta = shuffle(disponibles, random).map((c) => c.card);
+    // que no se encadene la misma dos veces seguidas en la costura
+    if (vuelta.length > 1 && vuelta[0] === sesion[sesion.length - 1]) {
+      vuelta.push(vuelta.shift() as T);
+    }
+    sesion.push(...vuelta.slice(0, size - sesion.length));
+  }
+  return sesion;
 }
 
 /** Fisher-Yates: reparto uniforme y sin perder ni duplicar nada. */

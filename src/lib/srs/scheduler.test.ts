@@ -166,6 +166,56 @@ describe("selectSession", () => {
     expect([...sesion].sort()).toEqual(nuevas.map((c) => c.card).sort());
   });
 
+  it("un mazo pequeño da una sesión entera, no dos preguntas", () => {
+    // "Acordes de oído" nivel 1 son dos tarjetas (mayor y menor) y la sesión
+    // se acababa en dos preguntas. En los ejercicios de oído la repetición ES
+    // el ejercicio: la raíz se sortea en cada pregunta, así que la misma
+    // tarjeta suena distinta cada vez.
+    const dos = [
+      { card: "mayor", dueAt: now, reps: 0 },
+      { card: "menor", dueAt: now, reps: 0 },
+    ];
+    const sesion = selectSession(dos, now, 12, secuencia(5));
+    expect(sesion).toHaveLength(12);
+    expect(new Set(sesion)).toEqual(new Set(["mayor", "menor"]));
+  });
+
+  it("al repetir no encadena la misma dos veces seguidas", () => {
+    const dos = [
+      { card: "mayor", dueAt: now, reps: 0 },
+      { card: "menor", dueAt: now, reps: 0 },
+    ];
+    const sesion = selectSession(dos, now, 12, secuencia(5));
+    for (let i = 1; i < sesion.length; i += 1) {
+      expect(sesion[i], `posición ${i}`).not.toBe(sesion[i - 1]);
+    }
+  });
+
+  it("con una sola tarjeta no se queda colgado", () => {
+    const una = [{ card: "sola", dueAt: now, reps: 0 }];
+    expect(selectSession(una, now, 5, secuencia(3))).toEqual([
+      "sola",
+      "sola",
+      "sola",
+      "sola",
+      "sola",
+    ]);
+  });
+
+  it("un mazo grande no repite ninguna en la misma sesión", () => {
+    const muchas = Array.from({ length: 60 }, (_, i) => ({
+      card: `n${i}`,
+      dueAt: now,
+      reps: 0,
+    }));
+    const sesion = selectSession(muchas, now, 20, secuencia(11));
+    expect(new Set(sesion).size).toBe(20);
+  });
+
+  it("con el mazo vacío devuelve una sesión vacía", () => {
+    expect(selectSession([], now, 10, secuencia(1))).toEqual([]);
+  });
+
   it("nunca incluye tarjetas que aún no tocan", () => {
     expect(selectSession(deck, now, 10)).not.toContain("futura");
   });

@@ -70,6 +70,13 @@ export function TrainSession({
   const [answers, setAnswers] = useState<Answered[]>([]);
   const [seleccion, setSeleccion] = useState<number[]>([]);
   const [tocado, setTocado] = useState<Position | null>(null);
+  /**
+   * Tarjetas ya puntuadas en esta sesión. Los mazos pequeños dan la vuelta
+   * para que la sesión no dure dos preguntas, pero puntuar seis veces la
+   * misma tarjeta la mandaría a repasar dentro de un mes: el SRS cuenta
+   * repasos espaciados, no repeticiones seguidas.
+   */
+  const puntuadas = useRef(new Set<string>());
   const [, startTransition] = useTransition();
 
   const card = cards[index];
@@ -127,12 +134,14 @@ export function TrainSession({
       setAnswers((prev) => [...prev, { card, correct, ms }]);
 
       const grade: Grade = !correct ? "again" : ms <= FAST_MS ? "good" : "hard";
-      if (!demo) {
+      const id = cardId(card);
+      if (!demo && !puntuadas.current.has(id)) {
+        puntuadas.current.add(id);
         startTransition(async () => {
           // si la base de datos rechaza la fila —una migración sin aplicar,
           // por ejemplo— la sesión se ve perfecta y no se guarda nada. Callarlo
           // es peor que el fallo: entrenas media hora para nada
-          const r = await gradeCard({ cardId: cardId(card), grade });
+          const r = await gradeCard({ cardId: id, grade });
           if (!r.ok && r.error !== "demo") {
             toast.error(`No se pudo guardar el progreso: ${r.error}`);
           }
@@ -161,6 +170,8 @@ export function TrainSession({
           router.refresh();
           setIndex(0);
           setAnswers([]);
+          // otra ronda es otra sesión: lo que se responda vuelve a puntuar
+          puntuadas.current.clear();
           setStartedAt(Date.now());
         }}
       />
