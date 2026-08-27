@@ -31,7 +31,10 @@ import {
   type WikiFrontmatter,
 } from "../src/lib/content/schemas";
 import { parseFormulaSpec, parseNoteSpec } from "../src/lib/music/spec";
-import { parseFretSpec } from "../src/lib/music/voicing-from-frets";
+import { parseFretSpec, voicingFromFrets } from "../src/lib/music/voicing-from-frets";
+import { getTuning } from "../src/data/tunings";
+
+const STANDARD_TUNING = getTuning("standard").midi;
 
 const ROOT = process.cwd();
 const CONTENT = path.join(ROOT, "content");
@@ -308,7 +311,7 @@ function checkMdxExpressions(file: string, body: string) {
 // runtime con un 500, así que se caza aquí.
 const MASTIL_SPEC = /<Mastil\b[^>]*?\b(escala|acorde)="([^"]+)"/g;
 const ACORDE_SPEC = /<Acorde\b[^>]*?\bnombre="([^"]+)"/g;
-const TRASTES_SPEC = /<Acorde\b[^>]*?\btrastes="([^"]+)"/g;
+const ACORDE_TAG = /<Acorde\b[^>]*?\/>/g;
 const NOTAS_SPEC = /<Mastil\b[^>]*?\bnotas="([^"]+)"/g;
 // Una caja NO es un rectángulo de trastes: recortarla con desde/hasta se come
 // notas de la vecina y pierde las propias. Se escribe `caja="2"`.
@@ -329,9 +332,32 @@ function checkMusicSpecs(file: string, body: string) {
     }
   }
 
-  for (const m of body.matchAll(TRASTES_SPEC)) {
+  // Una digitación escrita a mano puede parsear bien y aun así no ser el
+  // acorde: se comprueba que toda cuerda que suena es una nota del acorde.
+  for (const m of body.matchAll(ACORDE_TAG)) {
+    const tag = m[0];
+    const nombre = /nombre="([^"]+)"/.exec(tag)?.[1];
+    const trastes = /trastes="([^"]+)"/.exec(tag)?.[1];
+    if (!nombre || !trastes) continue;
     try {
-      parseFretSpec(m[1]);
+      const spec = parseFormulaSpec(nombre, "chord");
+      const voicing = voicingFromFrets({
+        root: spec.root,
+        intervals: spec.intervals,
+        frets: parseFretSpec(trastes),
+        tuningMidi: STANDARD_TUNING,
+      });
+      const ajenas = voicing.frets
+        .map((fret, string) =>
+          fret !== null && voicing.intervals[string] === null ? 6 - string : null,
+        )
+        .filter((n): n is number => n !== null);
+      if (ajenas.length > 0) {
+        errors.push({
+          file: rel(file),
+          message: `${nombre} "${trastes}": la cuerda ${ajenas.join(", ")} no suena una nota del acorde`,
+        });
+      }
     } catch (e) {
       errors.push({ file: rel(file), message: (e as Error).message });
     }
