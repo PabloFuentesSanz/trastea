@@ -493,10 +493,27 @@ for (const { file, body } of lessons) {
   }
 }
 
+const DIBUJA = ["Mastil", "Tab", "Acorde", "Acordes", "Cajas", "PorCuerdas", "Rejilla"];
+
+// Regla de contenido: un día del curso tiene que dejar algo que se ve y se
+// oye. Todas las primitivas visuales suenan (el mástil desde que sus notas
+// son botones), así que basta con exigir una — o, en los días de plan y
+// evaluación, una herramienta enlazada desde sus bloques.
+for (const { file, body, fm } of lessons) {
+  const dibuja = DIBUJA.some((tag) => new RegExp(`<${tag}\\b`).test(body));
+  const herramienta = (fm.blocks ?? []).some((b) => typeof b.tool === "string");
+  if (!dibuja && !herramienta) {
+    errors.push({
+      file: rel(file),
+      message:
+        "no se ve ni se oye nada: el día necesita un <Mastil>, <Tab>, <Acorde> o <Rejilla> (o, si es de plan, un `tool:` en sus bloques)",
+    });
+  }
+}
+
 // Regla de contenido: un ejercicio se dibuja, no se narra. Si pide tocar
 // algo, tiene que enseñarlo en un mástil, en una tab o en un diagrama de
 // acorde; y la rutina va en <Rutina>, no en una lista numerada de prosa.
-const DIBUJA = ["Mastil", "Tab", "Acorde", "Acordes", "Cajas", "PorCuerdas", "Rejilla"];
 for (const { file, body } of exercises) {
   const dibuja = DIBUJA.some((tag) => new RegExp(`<${tag}\\b`).test(body));
   if (!dibuja) {

@@ -3,7 +3,9 @@ import { render } from "@testing-library/react";
 import { Mastil, num, nums, Tab } from "./music-blocks";
 
 function board(container: HTMLElement) {
-  const svg = container.querySelector("svg");
+  // el primer <svg> puede ser el icono del botón de escuchar; el mástil es
+  // el que se anuncia con su nombre
+  const svg = container.querySelector("svg[aria-label]");
   if (!svg) throw new Error("no se dibujó el mástil");
   return {
     viewBox: svg.getAttribute("viewBox") ?? "",
@@ -217,19 +219,19 @@ describe("<Mastil caja> y <Cajas>", () => {
   it("<Cajas> dibuja las cinco de una pentatónica", async () => {
     const { Cajas } = await import("./music-blocks");
     const { container } = render(<Cajas escala="A minor-pentatonic" />);
-    expect(container.querySelectorAll("svg")).toHaveLength(5);
+    expect(container.querySelectorAll("svg[aria-label]")).toHaveLength(5);
   });
 
   it("<Cajas> dibuja las siete de una escala de siete notas", async () => {
     const { Cajas } = await import("./music-blocks");
     const { container } = render(<Cajas escala="G major" />);
-    expect(container.querySelectorAll("svg")).toHaveLength(7);
+    expect(container.querySelectorAll("svg[aria-label]")).toHaveLength(7);
   });
 
   it("<PorCuerdas> dibuja una por cuerda", async () => {
     const { PorCuerdas } = await import("./music-blocks");
     const { container } = render(<PorCuerdas escala="A minor-pentatonic" />);
-    expect(container.querySelectorAll("svg")).toHaveLength(6);
+    expect(container.querySelectorAll("svg[aria-label]")).toHaveLength(6);
   });
 
   it("una caja inexistente revienta en vez de dibujar otra", async () => {

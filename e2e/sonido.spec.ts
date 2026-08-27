@@ -52,6 +52,29 @@ test.describe("lo que suena", () => {
       .toBeGreaterThan(3);
   });
 
+  test("el mástil de la lección suena: cada nota, con ratón y con teclado", async ({
+    page,
+  }) => {
+    await contarAudio(page);
+    // día 1: las notas naturales de la 6ª cuerda. Aquí el nombre tiene que
+    // atarse al sonido o la semana entera es memorizar por memorizar.
+    await page.goto("/curso/a-cimientos/a-cimientos-w01-d1");
+
+    const la = page.getByRole("button", { name: "Cuerda 6, traste 5, La" });
+    await la.click();
+    await expect.poll(() => sonidosEmitidos(page), { timeout: 10_000 }).toBe(1);
+
+    await la.focus();
+    await page.keyboard.press("Enter");
+    await expect.poll(() => sonidosEmitidos(page), { timeout: 10_000 }).toBe(2);
+
+    // y el dibujo entero, de grave a agudo
+    await page.getByRole("button", { name: "Escuchar" }).first().click();
+    await expect
+      .poll(() => sonidosEmitidos(page), { timeout: 10_000 })
+      .toBeGreaterThan(5);
+  });
+
   test("el metrónomo arranca y para", async ({ page }) => {
     await contarAudio(page);
     await page.goto("/metronomo?bpm=120");

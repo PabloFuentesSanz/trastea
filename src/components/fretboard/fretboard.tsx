@@ -1,3 +1,4 @@
+import type { KeyboardEvent } from "react";
 import type { FretPosition } from "@/lib/music/fretboard";
 import { toSolfege } from "@/lib/music/notes";
 import { cn } from "@/lib/utils";
@@ -15,6 +16,16 @@ const DOUBLE_MARKER_FRETS = [12, 24];
 /** Con la ventana así de corta cabe numerar todos los trastes. */
 const NUMBER_EVERY_FRET_UP_TO = 7;
 
+/** Flechas, inicio y fin: el recorrido del foco por las notas del dibujo. */
+const MOVIMIENTOS: Record<string, number | "inicio" | "final"> = {
+  ArrowRight: 1,
+  ArrowDown: 1,
+  ArrowLeft: -1,
+  ArrowUp: -1,
+  Home: "inicio",
+  End: "final",
+};
+
 function colorFor(position: FretPosition): string {
   return position.isRoot ? "var(--primary)" : colorForInterval(position.interval);
 }
@@ -31,6 +42,12 @@ export interface FretboardProps {
   /** descripción accesible, p. ej. "Escala de Fa mayor" */
   title: string;
   className?: string;
+  /**
+   * Si se pasa, cada nota deja de ser un dibujo y pasa a ser un botón: se
+   * pulsa con el ratón o con el teclado y suena. El manejador lo pone un
+   * componente cliente (ver `<MastilSonoro>`); el dibujo sigue siendo puro.
+   */
+  onPlayNote?: (position: FretPosition) => void;
 }
 
 /**
@@ -49,6 +66,7 @@ export function Fretboard({
   lefty = false,
   title,
   className,
+  onPlayNote,
 }: FretboardProps) {
   /** primera casilla dibujada; el traste 0 no es casilla, es la cejuela */
   const firstCell = Math.max(fromFret, 1);
@@ -80,6 +98,9 @@ export function Fretboard({
       ? Array.from({ length: cells }, (_, i) => firstCell + i)
       : [...MARKER_FRETS, ...DOUBLE_MARKER_FRETS].filter(inWindow).sort((a, b) => a - b);
 
+  /** las que de verdad se pintan, en el orden en que se recorren */
+  const dibujadas = positions.filter((p) => inWindow(p.fret) && p.string < strings);
+
   const label = (p: FretPosition): string => {
     switch (labels) {
       case "note":
@@ -96,7 +117,7 @@ export function Fretboard({
   return (
     <svg
       viewBox={`0 0 ${width} ${height}`}
-      role="img"
+      role={onPlayNote ? "group" : "img"}
       aria-label={title}
       className={cn("w-full", cells > 7 && "min-w-[640px]", className)}
     >
@@ -170,17 +191,55 @@ export function Fretboard({
         </text>
       ))}
       {/* posiciones */}
-      {positions
-        .filter((p) => inWindow(p.fret) && p.string < strings)
-        .map((p) => {
+      {dibujadas
+        .map((p, indice) => {
           const x = fretX(p.fret);
           const y = stringY(p.string);
           const fill = colorFor(p);
           const text = label(p);
           const guitarString = 6 - p.string;
+          const donde = `Cuerda ${guitarString}, traste ${p.fret}, ${toSolfege(p.note)}`;
+          const interactiva = onPlayNote
+            ? {
+                role: "button",
+                // foco itinerante: el mástil entero es una parada del
+                // tabulador y las flechas recorren sus notas. Con 40 notas
+                // por dibujo, un tabulador por nota hace la página
+                // inservible con teclado.
+                tabIndex: indice === 0 ? 0 : -1,
+                "aria-label": donde,
+                className:
+                  "cursor-pointer focus:outline-none focus-visible:[outline:2px_solid_var(--ring)] focus-visible:[outline-offset:2px]",
+                onClick: () => onPlayNote(p),
+                onKeyDown: (e: KeyboardEvent<SVGGElement>) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onPlayNote(p);
+                    return;
+                  }
+                  const salto = MOVIMIENTOS[e.key];
+                  if (salto === undefined) return;
+                  e.preventDefault();
+                  const destino =
+                    salto === "inicio"
+                      ? 0
+                      : salto === "final"
+                        ? dibujadas.length - 1
+                        : Math.min(Math.max(indice + salto, 0), dibujadas.length - 1);
+                  const hermanas = e.currentTarget.parentElement?.querySelectorAll<
+                    SVGGElement
+                  >('[role="button"]');
+                  hermanas?.[destino]?.focus();
+                },
+              }
+            : {};
           return (
-            <g key={`${p.string}-${p.fret}`}>
-              <title>{`Cuerda ${guitarString}, traste ${p.fret}, ${toSolfege(p.note)} (${p.interval})`}</title>
+            <g key={`${p.string}-${p.fret}`} {...interactiva}>
+              <title>{`${donde} (${p.interval})`}</title>
+              {onPlayNote && (
+                // diana generosa: en el móvil el círculo de 9 px se falla
+                <circle cx={x} cy={y} r={14} fill="transparent" />
+              )}
               {p.isRoot ? (
                 <rect
                   x={x - 9}

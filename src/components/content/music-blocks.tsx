@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Fretboard, type FretboardLabels } from "@/components/fretboard/fretboard";
+import { PlayableFretboard } from "@/components/fretboard/playable-fretboard";
 import { ChordDiagram } from "@/components/fretboard/chord-diagram";
 import { Tablature } from "@/components/fretboard/tablature";
 import { PlayChord } from "./play-chord";
@@ -119,6 +120,7 @@ export function Mastil({
   etiquetas = "interval",
   pie,
   zurdo = false,
+  mudo = false,
 }: {
   escala?: string;
   acorde?: string;
@@ -140,6 +142,8 @@ export function Mastil({
   etiquetas?: FretboardLabels;
   pie?: string;
   zurdo?: boolean;
+  /** para el rarísimo caso en que el dibujo no deba sonar */
+  mudo?: boolean;
 }) {
   const from = num(desde);
   const to = num(hasta);
@@ -205,14 +209,26 @@ export function Mastil({
 
   return (
     <Figure caption={pie} maxWidth={natural}>
-      <Fretboard
-        positions={positions}
-        fromFret={firstFret}
-        frets={lastFret}
-        labels={etiquetas}
-        lefty={zurdo}
-        title={pie ? `${titulo}: ${pie}` : titulo}
-      />
+      {mudo ? (
+        <Fretboard
+          positions={positions}
+          fromFret={firstFret}
+          frets={lastFret}
+          labels={etiquetas}
+          lefty={zurdo}
+          title={pie ? `${titulo}: ${pie}` : titulo}
+        />
+      ) : (
+        <PlayableFretboard
+          positions={positions}
+          fromFret={firstFret}
+          frets={lastFret}
+          labels={etiquetas}
+          lefty={zurdo}
+          title={pie ? `${titulo}: ${pie}` : titulo}
+          modo={acorde ? "acorde" : "escala"}
+        />
+      )}
     </Figure>
   );
 }

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { render } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { Fretboard } from "./fretboard";
 import { formulaPositions } from "@/lib/music/fretboard";
 import { windowPositions } from "@/lib/music/spec";
@@ -77,5 +78,86 @@ describe("<Fretboard /> con ventana", () => {
     // 3 raíces (A) en la caja del traste 5, dibujadas como cuadrado
     expect(notes.filter((g) => g.querySelector("rect"))).toHaveLength(3);
     expect(notes.filter((g) => g.querySelector("circle"))).toHaveLength(9);
+  });
+});
+
+describe("<Fretboard /> que suena", () => {
+  const UNA_NOTA = formulaPositions({
+    root: "A",
+    intervals: ["1"],
+    tuningMidi: getTuning("standard").midi,
+    frets: 5,
+  });
+
+  it("sin onPlayNote es un dibujo y nada más", () => {
+    const { container } = render(<Fretboard positions={UNA_NOTA} title="Las La" />);
+    expect(container.querySelectorAll('[role="button"]')).toHaveLength(0);
+    expect(container.querySelector("svg")).toHaveAttribute("role", "img");
+  });
+
+  it("con onPlayNote cada nota es un botón que dice dónde está y qué es", () => {
+    const { container } = render(
+      <Fretboard positions={UNA_NOTA} title="Las La" onPlayNote={() => {}} />,
+    );
+    const botones = [...container.querySelectorAll('[role="button"]')];
+    expect(botones.length).toBe(UNA_NOTA.length);
+    expect(botones[0]).toHaveAttribute("tabindex", "0");
+    expect(botones.map((b) => b.getAttribute("aria-label"))).toContain(
+      "Cuerda 6, traste 5, La",
+    );
+  });
+
+  it("el mástil entero es una sola parada del tabulador", () => {
+    const { container } = render(
+      <Fretboard positions={PENTATONIC_A} title="Pentatónica" onPlayNote={() => {}} />,
+    );
+    const botones = [...container.querySelectorAll('[role="button"]')];
+    expect(botones.length).toBeGreaterThan(10);
+    expect(botones.filter((b) => b.getAttribute("tabindex") === "0")).toHaveLength(1);
+  });
+
+  it("las flechas recorren las notas sin salir del dibujo", async () => {
+    const { container } = render(
+      <Fretboard positions={PENTATONIC_A} title="Pentatónica" onPlayNote={() => {}} />,
+    );
+    const botones = [...container.querySelectorAll('[role="button"]')] as SVGGElement[];
+    botones[0].focus();
+
+    await userEvent.keyboard("{ArrowRight}");
+    expect(document.activeElement).toBe(botones[1]);
+
+    await userEvent.keyboard("{ArrowLeft}");
+    expect(document.activeElement).toBe(botones[0]);
+
+    // en el borde se queda donde está: no se sale del mástil
+    await userEvent.keyboard("{ArrowLeft}");
+    expect(document.activeElement).toBe(botones[0]);
+
+    await userEvent.keyboard("{End}");
+    expect(document.activeElement).toBe(botones[botones.length - 1]);
+
+    await userEvent.keyboard("{Home}");
+    expect(document.activeElement).toBe(botones[0]);
+  });
+
+  it("suena al pulsarla con el ratón y con el teclado", async () => {
+    const sonadas: number[] = [];
+    const { container } = render(
+      <Fretboard
+        positions={UNA_NOTA}
+        title="Las La"
+        onPlayNote={(p) => sonadas.push(p.midi)}
+      />,
+    );
+    const boton = container.querySelector('[role="button"]') as SVGGElement;
+
+    await userEvent.click(boton);
+    expect(sonadas).toHaveLength(1);
+
+    boton.focus();
+    await userEvent.keyboard("{Enter}");
+    await userEvent.keyboard(" ");
+    expect(sonadas).toHaveLength(3);
+    expect(new Set(sonadas).size).toBe(1);
   });
 });
