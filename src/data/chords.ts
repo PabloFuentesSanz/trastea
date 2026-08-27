@@ -6,7 +6,7 @@ export interface ChordDef {
   /** Sufijo de cifrado americano: "", "m", "maj7", "7", "m7b5"… */
   symbol: string;
   intervals: readonly IntervalName[];
-  category: "triada" | "septima" | "sexta" | "suspendido" | "extension";
+  category: "triada" | "septima" | "sexta" | "suspendido" | "extension" | "alterado";
 }
 
 export const CHORDS: Record<string, ChordDef> = {
@@ -135,6 +135,43 @@ export const CHORDS: Record<string, ChordDef> = {
     symbol: "m9",
     intervals: ["1", "b3", "5", "b7", "9"],
     category: "extension",
+  },
+  "13": {
+    id: "13",
+    name: "Dominante trecena",
+    symbol: "13",
+    intervals: ["1", "3", "5", "b7", "9", "13"],
+    category: "extension",
+  },
+  // Dominantes alterados: la alteración sustituye a la nota natural en la
+  // quinta, y se suma por encima en la novena. Es lo que los distingue.
+  "7b5": {
+    id: "7b5",
+    name: "Dominante con quinta bemol",
+    symbol: "7b5",
+    intervals: ["1", "3", "b5", "b7"],
+    category: "alterado",
+  },
+  "7#5": {
+    id: "7#5",
+    name: "Dominante con quinta aumentada",
+    symbol: "7#5",
+    intervals: ["1", "3", "#5", "b7"],
+    category: "alterado",
+  },
+  "7b9": {
+    id: "7b9",
+    name: "Dominante con novena bemol",
+    symbol: "7b9",
+    intervals: ["1", "3", "5", "b7", "b9"],
+    category: "alterado",
+  },
+  "7#9": {
+    id: "7#9",
+    name: "Dominante con novena aumentada",
+    symbol: "7#9",
+    intervals: ["1", "3", "5", "b7", "#9"],
+    category: "alterado",
   },
 };
 
