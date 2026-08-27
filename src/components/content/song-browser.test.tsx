@@ -61,6 +61,53 @@ describe("SongBrowser", () => {
     ).toBeInTheDocument();
   });
 
+  it("las facetas largas empiezan plegadas: solo el nivel está a la vista", () => {
+    render(<SongBrowser songs={CATALOG} />);
+    // el nivel sí
+    expect(screen.getByRole("button", { name: /Primeros acordes/ })).toBeInTheDocument();
+    // el estilo no, hasta abrir su panel
+    expect(screen.queryByRole("button", { name: /^Metal 1$/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "Estilo" })).not.toBeInTheDocument();
+  });
+
+  it("abre una faceta cada vez", async () => {
+    const user = userEvent.setup();
+    render(<SongBrowser songs={CATALOG} />);
+    await user.click(screen.getByRole("button", { name: /^Estilo/ }));
+    expect(screen.getByRole("region", { name: "Estilo" })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /^Colecciones/ }));
+    expect(screen.getByRole("region", { name: "Colecciones" })).toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "Estilo" })).not.toBeInTheDocument();
+  });
+
+  it("cada faceta larga trae su propio buscador", async () => {
+    const user = userEvent.setup();
+    render(<SongBrowser songs={CATALOG} />);
+    await user.click(screen.getByRole("button", { name: /^Qué se practica/ }));
+    const panel = screen.getByRole("region", { name: "Qué se practica" });
+    const buscador = within(panel).getByRole("searchbox");
+
+    expect(within(panel).getByRole("button", { name: /Palm mute/ })).toBeInTheDocument();
+    await user.type(buscador, "downpick");
+    expect(
+      within(panel).queryByRole("button", { name: /Palm mute/ }),
+    ).not.toBeInTheDocument();
+    expect(within(panel).getByRole("button", { name: /Downpicking/ })).toBeInTheDocument();
+  });
+
+  it("lo que está filtrado se ve como chip y se puede quitar de uno en uno", async () => {
+    const user = userEvent.setup();
+    currentParams = new URLSearchParams("nivel=1&tecnica=rasgueo");
+    render(<SongBrowser songs={CATALOG} />);
+
+    expect(
+      screen.getByRole("button", { name: "Quitar filtro Primeros acordes" }),
+    ).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Quitar filtro Rasgueo" }));
+    expect(replace).toHaveBeenCalledWith("/canciones?nivel=1", { scroll: false });
+  });
+
   it("al pulsar un nivel escribe el filtro en la URL", async () => {
     const user = userEvent.setup();
     render(<SongBrowser songs={CATALOG} />);
@@ -81,19 +128,22 @@ describe("SongBrowser", () => {
   it("marca como pulsada la faceta activa, para lectores de pantalla", () => {
     currentParams = new URLSearchParams("nivel=4");
     render(<SongBrowser songs={CATALOG} />);
-    expect(screen.getByRole("button", { name: /Avanzado/ })).toHaveAttribute(
+    // ^ para no chocar con el chip "Quitar filtro Avanzado" de la barra
+    expect(screen.getByRole("button", { name: /^Avanzado/ })).toHaveAttribute(
       "aria-pressed",
       "true",
     );
-    expect(screen.getByRole("button", { name: /Primeros acordes/ })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: /^Primeros acordes/ })).toHaveAttribute(
       "aria-pressed",
       "false",
     );
   });
 
-  it("desactiva las facetas que no darían resultados", () => {
+  it("desactiva las facetas que no darían resultados", async () => {
+    const user = userEvent.setup();
     currentParams = new URLSearchParams("nivel=1");
     render(<SongBrowser songs={CATALOG} />);
+    await user.click(screen.getByRole("button", { name: /^Colecciones/ }));
     expect(screen.getByRole("button", { name: /Metal: resistencia/ })).toBeDisabled();
   });
 
