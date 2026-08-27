@@ -12,7 +12,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "content:audit": "tsx scripts/content-audit.ts",
+    "content:audit": "tsx scripts/content-audit.mts",
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm content:audit",
     "db:verify": "./scripts/verify-migration.sh",
     "bundle:report": "tsx scripts/bundle-report.ts",
@@ -53,6 +53,7 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@mdx-js/mdx": "^3.1.1",
     "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4",
     "@tailwindcss/typography": "^0.5.20",

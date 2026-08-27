@@ -88,67 +88,28 @@ existentes siguen apuntando a las 15 canciones originales.
       `clasica-dominio-publico`: son las únicas que pueden vivir completas
       dentro de Trastea.
 
-## P1 (ahora) — Wiki: siguientes ~38 fichas
+## ✅ Wiki: las 38 fichas de expansión — HECHO
 
-Las 48 actuales cubren el núcleo. Esta es la expansión por categorías,
-ordenada por lo que el curso B/C tocará antes. Todas con la plantilla
-"ficha profunda" de `add-wiki`.
+De 48 a 86 artículos, sin huérfanos. Teoría (10), técnica (9), ritmo (3),
+equipo (7), historia (4) y glosario/transversales (5).
 
-### Teoría (lo que B/C rozará) — 10
+Salieron dos cosas por el camino:
 
-- [ ] `metricas-impares` — 5/4, 7/8, agrupaciones (Take Five, Money, Tool); la necesita w11
-- [ ] `campo-armonico-menor` — armonizar las tres menores; de dónde sale el V7 menor
-- [ ] `arpegios` — qué son y cómo estudiarlos (hub que hoy falta y B usa mucho)
-- [ ] `sustitucion-tritonal` — el bII7; por qué funciona (mismo trítono)
-- [ ] `acordes-alterados` — V7alt, b9/#9/b13 y la escala alterada
-- [ ] `intercambio-modal` — pedir prestado al menor (el bVII, el iv)
-- [ ] `escala-disminuida` — simétrica H-W/W-H sobre dim7 y V7b9
-- [ ] `escala-de-tonos-enteros` — el sonido flotante de la aumentada
-- [ ] `rhythm-changes` — la segunda forma del jazz tras el blues
-- [ ] `turnarounds` — I-VI-ii-V y variantes; cerrar y reabrir la forma
+- **Datos musicales nuevos** que los artículos necesitaban y no existían: seis
+  escalas (tonos enteros, las dos disminuidas, alterada, frigia dominante,
+  lidia dominante) y cinco acordes (7b5, 7#5, 7b9, 7#9, 13).
+- **Regla nueva en `content:audit`**: los deep links a herramientas
+  (`/escalas?type=`, `/acordes?type=`, `/bases?prog=`, `/metronomo?sub=`, y la
+  raíz) se validan contra los datos. Un id inexistente no rompía nada: la
+  página caía al valor por defecto y el lector veía otra escala.
 
-### Técnica — 9
+### Lo que queda pendiente de aquí
 
-- [ ] `sweep-picking` — barridos de 3-5 cuerdas, sincronía, arpegios
-- [ ] `tapping` — de Van Halen a 8 dedos; limpieza y mute
-- [ ] `economy-picking` — cuándo conviene romper la púa alterna
-- [ ] `hybrid-picking` — púa + dedos; country y fusión
-- [ ] `fingerstyle` — pulgar independiente, patrones básicos
-- [ ] `rasgueo-y-mano-derecha` — patrones de acompañamiento, dinámica, ghost strums
-- [ ] `string-skipping` — saltos de cuerda para frases amplias
-- [ ] `armonicos` — naturales, artificiales y pinch
-- [ ] `calentamiento-y-salud` — manos, tendones, cuándo parar (importante de verdad)
-
-### Ritmo — 3
-
-- [ ] `sincopa` — el desplazamiento que hace groove
-- [ ] `compases-compuestos` — 6/8 y 12/8 (All Blues, blues lento)
-- [ ] `claves-latinas` — bossa, son y por qué la clave manda (Blue Bossa)
-
-### Equipo — 7 (categoría casi vacía: solo anatomía)
-
-- [ ] `amplificadores` — válvulas vs transistores vs modelado; ganancia/volumen
-- [ ] `pedales-y-efectos` — cadena típica: drive, modulación, delay, reverb
-- [ ] `pastillas` — single coil vs humbucker; por qué suenan distinto
-- [ ] `cuerdas` — calibres, tensión, cuándo cambiarlas
-- [ ] `puas` — grosores, materiales y cómo cambian el sonido
-- [ ] `mantenimiento-y-setup` — acción, quintaje, alma; qué puedes tocar tú
-- [ ] `grabarse-en-casa` — interfaz, móvil, por qué grabarse mejora más que practicar
-
-### Historia — 4 (categoría vacía)
-
-- [ ] `historia-del-blues` — del Delta a Chicago; por qué todo sale de aquí
-- [ ] `la-guitarra-en-el-jazz` — Charlie Christian → Wes → Benson → moderna
-- [ ] `historia-del-rock` — la guitarra eléctrica como protagonista
-- [ ] `guitarra-espanola-y-flamenco` — el otro árbol genealógico
-
-### Glosario y transversales — 5
-
-- [ ] `glosario` — A-Z de términos (bend, lick, voicing, comping, shred…)
-- [ ] `afinaciones-alternativas` — drop D, DADGAD, open G (ya están en `/src/data`)
-- [ ] `como-improvisar` — hub: de tocar escalas a decir frases
-- [ ] `como-usar-backing-tracks` — dónde, cómo, a qué tempo
-- [ ] `como-montar-tu-rutina` — para después del curso: diseñar tu semana
+- [ ] `<Tab>` y `<Mastil>` asumen afinación estándar. La ficha de
+      [[afinaciones-alternativas]] lo dice en un aviso, pero lo suyo sería un
+      `afinacion="drop-d"` que además valide las notas contra ESA afinación.
+- [ ] Categorías que siguen finas: historia tiene 4 fichas y da para más
+      (country, funk, la guitarra en el soul); equipo podría llevar acústicas.
 
 ## Sonido: plan en tres fases
 

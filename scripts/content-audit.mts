@@ -639,11 +639,31 @@ function walkMdx(dir: string): string[] {
   });
 }
 
+/**
+ * Compila cada MDX de verdad. Las reglas de arriba miran el texto; esto
+ * comprueba que el fichero **existe como MDX válido**, que es otra cosa: un
+ * atributo que empiece por dígito (`50s="…"`) pasa todos los grep del mundo y
+ * revienta el build en producción, con `pnpm check` en verde.
+ */
+// @mdx-js/mdx es ESM puro y este script corre como CJS: import dinámico
+const mdx = await import("@mdx-js/mdx");
+
+async function checkMdxCompiles(file: string, body: string) {
+  try {
+    await mdx.compile(body, { jsx: true });
+  } catch (e) {
+    const err = e as Error & { line?: number };
+    const donde = err.line ? ` (línea ${err.line})` : "";
+    errors.push({ file: rel(file), message: `MDX inválido${donde}: ${err.message}` });
+  }
+}
+
 for (const file of walkMdx(CONTENT)) {
   const { body } = readMdx(file);
   checkMdxExpressions(file, body);
   checkMusicSpecs(file, body);
   checkToolLinks(file, body);
+  await checkMdxCompiles(file, body);
 }
 
 // avisos: semanas sin 5 días, wiki huérfana
