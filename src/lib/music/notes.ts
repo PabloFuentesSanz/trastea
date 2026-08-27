@@ -207,3 +207,25 @@ export function toSolfege(name: NoteName): string {
   const { letter, accidental } = parseNote(name);
   return `${SOLFEGE[letter]}${accidentalToString(accidental)}`;
 }
+
+/**
+ * El intervalo que va de una nota a otra, deletreado: de Do a Mib es "b3",
+ * no "#2". Hace falta para transportar conservando la escritura, que es lo
+ * que distingue un Sib de un La# en una rejilla.
+ */
+export function intervalBetween(from: NoteName, to: NoteName): IntervalName {
+  const desde = parseNote(from);
+  const hasta = parseNote(to);
+
+  const pasos = (LETTERS.indexOf(hasta.letter) - LETTERS.indexOf(desde.letter) + 7) % 7;
+  const numero = pasos + 1;
+  /** semitonos que mide ese número de grados sin alterar */
+  const natural = [0, 2, 4, 5, 7, 9, 11][pasos];
+
+  let alteracion = mod12(hasta.pc - desde.pc) - natural;
+  // la vuelta de la octava puede dejar la diferencia del revés
+  if (alteracion > 6) alteracion -= 12;
+  if (alteracion < -6) alteracion += 12;
+
+  return `${accidentalToString(alteracion)}${numero}`;
+}

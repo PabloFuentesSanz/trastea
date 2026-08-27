@@ -14,6 +14,7 @@ import {
   LineChart,
   MoreHorizontal,
   Play,
+  Music4,
   Timer,
   User,
 } from "lucide-react";
@@ -37,6 +38,7 @@ const TOOL_ITEMS = [
   { href: "/entrenar", label: "Entrenar", icon: Brain, exact: false },
   { href: "/escalas", label: "Escalas", icon: AudioWaveform, exact: false },
   { href: "/acordes", label: "Acordes", icon: Grip, exact: false },
+  { href: "/bases", label: "Bases", icon: Music4, exact: false },
 ] as const;
 
 // El resto vive en el desplegable "Más": la barra no da para once enlaces.

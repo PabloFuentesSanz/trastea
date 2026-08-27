@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  intervalBetween,
   keyPrefersFlats,
   mod12,
   parseInterval,
@@ -122,5 +123,35 @@ describe("utilidades", () => {
   it("toSolfege traduce al sistema latino", () => {
     expect(toSolfege("Bb")).toBe("Sib");
     expect(toSolfege("F#")).toBe("Fa#");
+  });
+});
+
+describe("intervalBetween", () => {
+  it("deletrea el intervalo, no solo lo mide", () => {
+    expect(intervalBetween("C", "E")).toBe("3");
+    expect(intervalBetween("C", "Eb")).toBe("b3");
+    expect(intervalBetween("C", "G")).toBe("5");
+    expect(intervalBetween("C", "Db")).toBe("b2");
+    expect(intervalBetween("C", "F#")).toBe("#4");
+  });
+
+  it("da la unísono para la misma nota", () => {
+    expect(intervalBetween("Bb", "Bb")).toBe("1");
+  });
+
+  it("cruza la octava sin perderse", () => {
+    expect(intervalBetween("B", "C")).toBe("b2");
+    expect(intervalBetween("A", "G")).toBe("b7");
+  });
+
+  it("es el inverso de transpose", () => {
+    for (const [desde, hasta] of [
+      ["C", "Eb"],
+      ["F", "Bb"],
+      ["B", "F#"],
+      ["Eb", "Db"],
+    ] as const) {
+      expect(transpose(desde, intervalBetween(desde, hasta))).toBe(hasta);
+    }
   });
 });

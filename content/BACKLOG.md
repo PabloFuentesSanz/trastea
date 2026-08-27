@@ -187,11 +187,18 @@ El agujero no era la notación, era que nada sonaba. Orden acordado:
       acompañamiento con voces conducidas, cinco grooves, tempo, bucle y
       claqueta. Sin dependencias nuevas (Tone.js). Las 35 rejillas del
       repositorio son ya 35 bases.
-- [ ] **Fase 2 — duraciones en nuestra notación de tab.** Hoy `<Tab>` son
-      columnas sin tiempo: por eso no suena ni dibuja ritmo. Añadir
-      `cuerda:traste:figura`, dibujar plicas y reproducir con bucle y tempo.
-      Desbloquea el módulo C (acentos desplazados, funk, charleston) y una
-      regla de audit nueva: que las figuras de cada compás sumen.
+- [x] **Fase 2a — las tabs suenan.** No hacían falta duraciones mixtas:
+      nuestras tabs son series regulares y ya declaraban su figura. `porPulso`
+      dice cuántas columnas caben en un pulso, la pauta resalta la que suena, y
+      `content:audit` exige que los compases midan todos lo mismo en pulsos
+      enteros. 72 tabs tocables; 4 con figuras mezcladas van `tocable="no"`.
+- [x] **Estudio de bases (`/bases`).** Forma, tono, groove y tempo, con el
+      estado en la URL. 17 progresiones (blues, jazz, modal, pop, ejercicios)
+      transportables a los doce tonos con la escritura correcta —el bII7 de Re
+      es Mib7, no Re#7—, gracias a `intervalBetween` + `transposeGrid`.
+- [ ] **Fase 2b — figuras mezcladas dentro de una tab.** Para las 4 que hoy
+      no suenan y para poder escribir ritmos de verdad: `cuerda:traste:figura`
+      por columna, plicas dibujadas y la regla de que cada compás sume.
 - [ ] **Fase 3 — AlphaTab, acotado.** Solo para `/content/tabs/*.alphatex`:
       piezas completas, varias voces, notación estándar. Cargado con
       `import()` dinámico para no pagar el bundle en las otras ~145 páginas.
