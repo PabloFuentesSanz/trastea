@@ -4,8 +4,8 @@ import userEvent from "@testing-library/user-event";
 import { TrainSession } from "./train-session";
 import type { TrainCard } from "@/lib/train/cards";
 
-const gradeCard = vi.fn((..._args: unknown[]) => Promise.resolve({ ok: true }));
-const playNotes = vi.fn((..._args: unknown[]) => Promise.resolve(1));
+const gradeCard = vi.fn((...args: unknown[]) => Promise.resolve({ ok: true, args }));
+const playNotes = vi.fn((...args: unknown[]) => Promise.resolve(args.length));
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn() }) }));
 vi.mock("@/app/actions/srs", () => ({

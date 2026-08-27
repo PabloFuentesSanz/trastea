@@ -17,6 +17,7 @@ import {
 } from "@/data/progressions";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { InstrumentPicker } from "@/components/audio/instrument-picker";
 import {
   Select,
   SelectContent,
@@ -278,6 +279,8 @@ export function BackingStudio({
             </SelectContent>
           </Select>
         </div>
+
+        <InstrumentPicker id="bases-instrumento" />
       </aside>
     </div>
   );

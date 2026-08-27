@@ -11,12 +11,38 @@
  * que se apague, que las graves duren más que las agudas.
  */
 
+/**
+ * Cómo se ataca la cuerda. Es la mitad del timbre: la misma cuerda pulsada
+ * con la yema o con una púa suena a dos instrumentos distintos.
+ */
+export type Excitation = "dedo" | "pua" | "martillo";
+
 export interface PluckOptions {
   /** 0-1: cuánto agudo conserva en cada vuelta. Más alto, más brillante. */
   brightness?: number;
+  /** con qué se ataca */
+  excitation?: Excitation;
+  /** multiplica la cola: 1 = normal, 2 = el doble de sustain */
+  decayScale?: number;
+  /**
+   * Rigidez de la cuerda: hace que los armónicos suban un pelín respecto al
+   * múltiplo exacto. Es lo que distingue una cuerda golpeada (piano) de una
+   * pulsada, y a poco que se pase suena desafinado.
+   */
+  inharmonicity?: number;
   /** semilla para que la excitación sea reproducible (y los tests, estables) */
   seed?: number;
 }
+
+/**
+ * Cuánto se suaviza la ráfaga inicial y con cuánta fuerza entra.
+ * `suavizado` alto = ataque redondo (yema); bajo = ataque con filo (púa).
+ */
+const EXCITATION: Record<Excitation, { suavizado: number; fuerza: number }> = {
+  dedo: { suavizado: 0.62, fuerza: 0.72 },
+  pua: { suavizado: 0.18, fuerza: 1 },
+  martillo: { suavizado: 0.8, fuerza: 0.95 },
+};
 
 /** Un poco de agudo sin filtrar: cuerda cálida, no caja de música. */
 const DEFAULT_BRIGHTNESS = 0.35;
@@ -48,17 +74,18 @@ export function pluckSamples(
   if (total === 0) return out;
 
   const brightness = options.brightness ?? DEFAULT_BRIGHTNESS;
+  const ataque = EXCITATION[options.excitation ?? "pua"];
   const period = Math.max(2, Math.round(sampleRate / frequency));
 
-  // la línea de retardo, cargada con la púa: ruido con un poco de cuerpo
+  // la línea de retardo, cargada con el ataque: ruido con un poco de cuerpo
   const line = new Float32Array(period);
   const rnd = random(options.seed ?? 12345);
   let previous = 0;
   for (let i = 0; i < period; i++) {
     const noise = rnd() * 2 - 1;
     // suavizar la excitación quita el chasquido metálico del ataque
-    previous = previous * 0.35 + noise * 0.65;
-    line[i] = previous;
+    previous = previous * ataque.suavizado + noise * (1 - ataque.suavizado);
+    line[i] = previous * ataque.fuerza;
   }
 
   /**
@@ -66,8 +93,16 @@ export function pluckSamples(
    * tiempo que dependa de la altura: las graves aguantan, las agudas no.
    */
   const vueltasPorSegundo = sampleRate / period;
-  const segundosDeCola = Math.min(3.5, 90 / Math.max(frequency, 40));
+  const segundosDeCola =
+    Math.min(3.5, 90 / Math.max(frequency, 40)) * (options.decayScale ?? 1);
   const decay = Math.pow(0.001, 1 / (vueltasPorSegundo * segundosDeCola));
+
+  /**
+   * La rigidez se aplica como un desfase dentro del bucle: en vez de leer la
+   * muestra siguiente, se lee un poco más allá. Sube los armónicos agudos sin
+   * mover la fundamental, que es justo lo que hace una cuerda gruesa.
+   */
+  const rigidez = options.inharmonicity ?? 0;
 
   // ataque corto para que no aparezca de golpe (evita el clic)
   const attack = Math.min(Math.round(sampleRate * 0.004), total);
@@ -76,7 +111,8 @@ export function pluckSamples(
   let filtered = 0;
   for (let i = 0; i < total; i++) {
     const current = line[index];
-    const next = line[(index + 1) % period];
+    const salto = 1 + Math.floor(rigidez * period);
+    const next = line[(index + salto) % period];
 
     // media de dos muestras vecinas: el filtro paso-bajo del bucle
     filtered = (current + next) * 0.5;
