@@ -304,7 +304,8 @@ for (const { file, body } of lessons) {
   if (!/<Ficha\b/.test(body)) {
     errors.push({
       file: rel(file),
-      message: "no tiene <Ficha>: el objetivo y la regla del día no pueden ir enterrados en un párrafo",
+      message:
+        "no tiene <Ficha>: el objetivo y la regla del día no pueden ir enterrados en un párrafo",
     });
   }
 }
