@@ -375,7 +375,10 @@ function checkMusicSpecs(file: string, body: string) {
     const tag = m[0];
     const recorta = /\bdesde="/.test(tag) || /\bhasta="/.test(tag);
     const pieDeCaja = /\bpie="[^"]*[Cc]aja/.test(tag);
-    if (recorta && pieDeCaja) {
+    // Con `notas` la ventana es legítima: son posiciones sueltas, no una
+    // caja de escala, aunque el pie mencione la caja donde viven.
+    const esCajaDeEscala = /\bescala="/.test(tag) && !/\bnotas="/.test(tag);
+    if (recorta && pieDeCaja && esCajaDeEscala) {
       errors.push({
         file: rel(file),
         message:
