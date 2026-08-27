@@ -37,6 +37,7 @@ import {
   pitchClassesOf,
 } from "../src/lib/music/spec";
 import { validateGrid } from "../src/lib/music/grid";
+import { GROOVES } from "../src/lib/backing/groove";
 import { DRILLS } from "../src/lib/train/catalog";
 import {
   isTrainLevel,
@@ -281,6 +282,35 @@ function checkWikiFormula(file: string, scale: string | undefined, body: string)
       file: rel(file),
       message: `formula="${escrita}" no es la de ${id} en /src/data (${esperada.join(" - ")})`,
     });
+  }
+}
+
+/**
+ * Cada día del curso se llama de una manera.
+ *
+ * Diez días se llamaban igual que su semana ("Subdivisión y groove — día 1..5")
+ * y en la lista no había forma de saber cuál era cuál. Un título repetido es
+ * una lección sin identidad propia.
+ */
+{
+  const porSemana = new Map<string, Map<string, number>>();
+  for (const l of lessons) {
+    const semana = `${l.moduleSlug}/w${String(l.weekOrder).padStart(2, "0")}`;
+    const cuenta = porSemana.get(semana) ?? new Map<string, number>();
+    // se compara sin el "— día N", que es lo que los distingue artificialmente
+    const base = l.fm.title.replace(/\s*[—-]\s*día\s*\d.*$/i, "").trim();
+    cuenta.set(base, (cuenta.get(base) ?? 0) + 1);
+    porSemana.set(semana, cuenta);
+  }
+  for (const [semana, cuenta] of porSemana) {
+    for (const [titulo, veces] of cuenta) {
+      if (veces > 1) {
+        errors.push({
+          file: `content/course/${semana}`,
+          message: `${veces} días se llaman "${titulo}": cada día necesita su propio título`,
+        });
+      }
+    }
   }
 }
 
@@ -703,6 +733,18 @@ function checkMusicSpecs(file: string, body: string) {
     }
   }
 
+  // El groove de una rejilla no se validaba: un `estilo` inventado no da error
+  // al escribirlo, revienta al PRERENDERIZAR la página que la contiene. Un
+  // `estilo="pop"` tumbó el build entero.
+  for (const m of body.matchAll(/\bestilo="([^"]+)"/g)) {
+    if (!(m[1] in GROOVES)) {
+      errors.push({
+        file: rel(file),
+        message: `estilo="${m[1]}" no existe (hay: ${Object.keys(GROOVES).join(", ")})`,
+      });
+    }
+  }
+
   for (const m of body.matchAll(MASTIL_TAG)) {
     const tag = m[0];
     const recorta = /\bdesde="/.test(tag) || /\bhasta="/.test(tag);
@@ -879,6 +921,14 @@ function checkLink(file: string, href: string) {
 
 for (const file of walkMdx(CONTENT)) {
   const { body } = readMdx(file);
+  // los interlinks se comprobaban solo en la wiki, y se resuelven en todas
+  // partes: uno roto en una lección sale impreso con los corchetes
+  for (const m of body.matchAll(INTERLINK)) {
+    checkRef(file, "interlink", m[1], wikiSlugs, brokenRefs);
+    // un interlink desde una lección o un ejercicio también es un backlink:
+    // si no, el artículo aparece como huérfano estando enlazado
+    wikiIncoming.set(m[1], (wikiIncoming.get(m[1]) ?? 0) + 1);
+  }
   checkMdxExpressions(file, body);
   checkMusicSpecs(file, body);
   for (const m of body.matchAll(TOOL_LINK)) checkLink(file, m[1]);

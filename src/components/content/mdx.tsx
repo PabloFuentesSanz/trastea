@@ -17,6 +17,7 @@ import {
 } from "./music-blocks";
 import { Cancion, Canciones } from "./song-blocks";
 import { chordify } from "./chordify";
+import { resolveInterlinks } from "@/lib/content/loader";
 
 function SmartLink({ href = "", children, ...rest }: ComponentPropsWithoutRef<"a">) {
   if (href.startsWith("/")) {
@@ -118,6 +119,12 @@ function sanitizeMdx(source: string): string {
   return source.replace(/<(?=\d)/g, "&lt;");
 }
 
+/**
+ * Los `[[interlinks]]` se resuelven aquí y no en cada página: se resolvían
+ * solo en la wiki, así que un `[[como-practicar]]` escrito en una lección o en
+ * un ejercicio salía impreso con los corchetes. Pasaba de verdad en el
+ * ejercicio del primer día del curso.
+ */
 export function Mdx({ source, className }: { source: string; className?: string }) {
   return (
     <div
@@ -126,7 +133,10 @@ export function Mdx({ source, className }: { source: string; className?: string 
         className,
       )}
     >
-      <MDXRemote source={sanitizeMdx(source)} components={components} />
+      <MDXRemote
+        source={resolveInterlinks(sanitizeMdx(source))}
+        components={components}
+      />
     </div>
   );
 }

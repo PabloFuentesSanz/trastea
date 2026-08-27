@@ -66,7 +66,7 @@ interface Groove {
   swing: boolean;
 }
 
-const GROOVES: Record<BackingStyle, Groove> = {
+export const GROOVES: Record<BackingStyle, Groove> = {
   recto: {
     chord: [
       [0, 1, 0.75],

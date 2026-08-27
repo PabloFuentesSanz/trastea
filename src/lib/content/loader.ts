@@ -40,6 +40,8 @@ export interface LessonEntry {
 
 export interface WeekEntry {
   frontmatter: WeekFrontmatter;
+  /** la presentación de la semana: de qué va, por qué y qué sabrás al acabarla */
+  body: string;
   moduleSlug: string;
   dir: string;
   lessons: LessonEntry[];
@@ -72,7 +74,8 @@ export const getCourse = cache((): ModuleEntry[] => {
       const weekFile = path.join(weekPath, "week.mdx");
       if (!fs.existsSync(weekFile)) continue;
 
-      const weekFm = weekFrontmatterSchema.parse(readMdx(weekFile).data);
+      const weekMdx = readMdx(weekFile);
+      const weekFm = weekFrontmatterSchema.parse(weekMdx.data);
       const lessons: LessonEntry[] = [];
       for (const file of fs.readdirSync(weekPath)) {
         if (!/^d\d\.mdx$/.test(file)) continue;
@@ -88,6 +91,7 @@ export const getCourse = cache((): ModuleEntry[] => {
       lessons.sort((a, b) => a.frontmatter.order - b.frontmatter.order);
       weeks.push({
         frontmatter: weekFm,
+        body: weekMdx.body,
         moduleSlug: frontmatter.slug,
         dir: weekDir,
         lessons,

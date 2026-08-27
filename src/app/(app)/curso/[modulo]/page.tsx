@@ -64,6 +64,12 @@ export default async function ModuloPage({
             <p className="mt-1 text-sm text-muted-foreground">
               {week.frontmatter.summary}
             </p>
+            {/* la presentación de la semana: de qué va, por qué, y qué vas a
+                saber hacer al acabarla. Sin esto se entra a los cinco días
+                sueltos sin saber a dónde llevan */}
+            {week.body.trim() && (
+              <Mdx source={week.body} className="mt-3 text-[0.95rem]" />
+            )}
             <ol className="mt-3 flex flex-col gap-1.5">
               {week.lessons.map((lesson) => {
                 const status = progress.get(lesson.frontmatter.slug)?.status;

@@ -27,6 +27,7 @@ import { parseFretSpec, voicingFromFrets } from "@/lib/music/voicing-from-frets"
 import { getTuning } from "@/data/tunings";
 import { getScale, SCALES } from "@/data/scales";
 import { chordify } from "./chordify";
+import { splitInlineLinks } from "./inline-links";
 import { cn } from "@/lib/utils";
 
 const STANDARD = getTuning("standard").midi;
@@ -534,7 +535,17 @@ export function Ficha(props: Record<string, string | undefined>) {
           <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
             {LABELS[key] ?? humanize(key)}
           </dt>
-          <dd className="mt-0.5 text-sm">{chordify(value)}</dd>
+          <dd className="mt-0.5 text-sm">
+            {splitInlineLinks(value).map((trozo, i) =>
+              trozo.tipo === "enlace" ? (
+                <Link key={i} href={trozo.href} className="text-primary hover:underline">
+                  {trozo.texto}
+                </Link>
+              ) : (
+                <span key={i}>{chordify(trozo.texto)}</span>
+              ),
+            )}
+          </dd>
         </div>
       ))}
     </dl>
