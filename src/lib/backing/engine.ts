@@ -8,6 +8,7 @@
 
 import * as Tone from "tone";
 import { midiToFrequency } from "@/lib/music/fretboard";
+import { pluckSamples } from "./string-synth";
 import type { BackingNote } from "./groove";
 
 const LOOKAHEAD_S = 0.15;
@@ -69,31 +70,49 @@ function deadNote(time: number, duration: number, gainValue: number) {
   noise.stop(time + 0.08);
 }
 
-/** Cuerda pulsada de andar por casa: dos ondas y una envolvente corta. */
+/** Cola máxima de una cuerda: más allá ya no se oye. */
+const TAIL_S = 2.4;
+
+/**
+ * Las cuerdas se sintetizan una vez por altura y se guardan. Generar el
+ * modelo cuesta, pero solo la primera vez que suena esa nota; a partir de
+ * ahí es reproducir un buffer.
+ */
+const strings = new Map<number, AudioBuffer>();
+
+function stringBuffer(ctx: BaseAudioContext, midi: number): AudioBuffer {
+  const cached = strings.get(midi);
+  if (cached) return cached;
+
+  const samples = pluckSamples(ctx.sampleRate, midiToFrequency(midi), TAIL_S, {
+    seed: 1000 + midi,
+  });
+  const buffer = ctx.createBuffer(1, samples.length, ctx.sampleRate);
+  buffer.copyToChannel(samples, 0);
+  strings.set(midi, buffer);
+  return buffer;
+}
+
+/**
+ * Una nota pulsada: la cuerda sintetizada, cortada con una envolvente que la
+ * apaga cuando toca. Al soltar no se corta en seco —eso chasquea— sino que
+ * se deja caer en unos milisegundos.
+ */
 function pluck(time: number, midi: number, duration: number, gainValue: number) {
   const ctx = Tone.getContext().rawContext;
-  const freq = midiToFrequency(midi);
-  const gain = ctx.createGain();
-  gain.gain.setValueAtTime(0, time);
-  gain.gain.linearRampToValueAtTime(gainValue, time + 0.008);
-  gain.gain.exponentialRampToValueAtTime(0.0001, time + Math.max(duration, 0.12));
-  gain.connect(ctx.destination);
+  const source = ctx.createBufferSource();
+  source.buffer = stringBuffer(ctx, midi);
 
-  for (const [type, detune, mix] of [
-    ["triangle", 0, 1],
-    ["sawtooth", 4, 0.35],
-  ] as const) {
-    const osc = ctx.createOscillator();
-    const oscGain = ctx.createGain();
-    osc.type = type;
-    osc.frequency.value = freq;
-    osc.detune.value = detune;
-    oscGain.gain.value = mix;
-    osc.connect(oscGain);
-    oscGain.connect(gain);
-    osc.start(time);
-    osc.stop(time + Math.max(duration, 0.12) + 0.05);
-  }
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(gainValue, time);
+  const release = Math.max(duration, 0.1);
+  gain.gain.setValueAtTime(gainValue, time + release);
+  gain.gain.exponentialRampToValueAtTime(0.0001, time + release + 0.09);
+
+  source.connect(gain);
+  gain.connect(ctx.destination);
+  source.start(time);
+  source.stop(time + release + 0.15);
 }
 
 /** Claqueta: el mismo click seco del metrónomo. */
@@ -185,6 +204,14 @@ export function createBackingEngine(getConfig: () => BackingEngineConfig): Backi
       if (running) return;
       const config = getConfig();
       await Tone.start();
+      // se sintetizan de golpe las cuerdas que van a sonar: hacerlo dentro
+      // del bucle metería un tirón la primera vez que aparece cada nota
+      const ctx = Tone.getContext().rawContext;
+      for (const midi of new Set(
+        config.notes.filter((n) => n.voice !== "muerta").map((n) => n.midi),
+      )) {
+        stringBuffer(ctx, midi);
+      }
       running = true;
       cursor = 0;
       countInLeft = config.countIn * config.beatsPerBar;

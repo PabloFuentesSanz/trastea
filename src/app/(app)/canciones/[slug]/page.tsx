@@ -5,9 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Mdx } from "@/components/content/mdx";
+import { ChordChip } from "@/components/content/chord-chip";
 import { getSong, getSongLessons, getSongs, getWikiArticle } from "@/lib/content/loader";
 import { relatedSongs, type SongCard } from "@/lib/content/song-filter";
-import { chordToolHref } from "@/lib/music/chord-symbol";
 import {
   SONG_LEVEL_LABEL,
   SONG_STYLE_LABEL,
@@ -115,21 +115,11 @@ export default async function CancionPage({
             {song.progression ? ` · ${song.progression}` : ""}
           </h2>
           <div className="mt-2 flex flex-wrap gap-2">
-            {song.chords.map((chord) => {
-              const href = chordToolHref(chord);
-              const badge = (
-                <Badge variant="outline" className="font-mono hover:border-primary">
-                  {chord}
-                </Badge>
-              );
-              return href ? (
-                <Link key={chord} href={href}>
-                  {badge}
-                </Link>
-              ) : (
-                <span key={chord}>{badge}</span>
-              );
-            })}
+            {song.chords.map((chord) => (
+              <Badge key={chord} variant="outline" className="font-mono">
+                <ChordChip chord={chord} className="no-underline" />
+              </Badge>
+            ))}
           </div>
         </section>
       )}

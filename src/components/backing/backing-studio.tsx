@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
+import { ChordChip } from "@/components/content/chord-chip";
 import { cn } from "@/lib/utils";
 
 export interface BackingStudioProps {
@@ -124,7 +125,7 @@ export function BackingStudio({
                     %
                   </span>
                 ) : (
-                  bar.chords.map((chord, j) => <span key={j}>{chord}</span>)
+                  bar.chords.map((chord, j) => <ChordChip key={j} chord={chord} />)
                 )}
               </span>
             </li>

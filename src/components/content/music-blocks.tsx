@@ -5,6 +5,7 @@ import { ChordDiagram } from "@/components/fretboard/chord-diagram";
 import { Tablature } from "@/components/fretboard/tablature";
 import { PlayableGrid } from "@/components/backing/playable-grid";
 import { PlayableTab } from "@/components/backing/playable-tab";
+import { ChordChip } from "./chord-chip";
 import type { BackingStyle } from "@/lib/backing/groove";
 import { formulaPositions } from "@/lib/music/fretboard";
 import { boxCount, boxWindow, scaleBox } from "@/lib/music/boxes";
@@ -24,6 +25,7 @@ import { generateVoicings, type Voicing } from "@/lib/music/voicings";
 import { parseFretSpec, voicingFromFrets } from "@/lib/music/voicing-from-frets";
 import { getTuning } from "@/data/tunings";
 import { getScale, SCALES } from "@/data/scales";
+import { chordify } from "./chordify";
 import { cn } from "@/lib/utils";
 
 const STANDARD = getTuning("standard").midi;
@@ -263,7 +265,7 @@ export function Rejilla({
                     %
                   </span>
                 ) : (
-                  bar.chords.map((chord, j) => <span key={j}>{chord}</span>)
+                  bar.chords.map((chord, j) => <ChordChip key={j} chord={chord} />)
                 )}
               </span>
             </li>
@@ -530,7 +532,7 @@ export function Ficha(props: Record<string, string | undefined>) {
           <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
             {LABELS[key] ?? humanize(key)}
           </dt>
-          <dd className="mt-0.5 text-sm">{value}</dd>
+          <dd className="mt-0.5 text-sm">{chordify(value)}</dd>
         </div>
       ))}
     </dl>

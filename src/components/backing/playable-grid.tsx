@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { ChordChip } from "@/components/content/chord-chip";
 import { cn } from "@/lib/utils";
 
 export interface PlayableGridProps {
@@ -58,7 +59,7 @@ export function PlayableGrid({ bars, columnas, bpm, estilo, id }: PlayableGridPr
                   %
                 </span>
               ) : (
-                bar.chords.map((chord, j) => <span key={j}>{chord}</span>)
+                bar.chords.map((chord, j) => <ChordChip key={j} chord={chord} />)
               )}
             </span>
           </li>

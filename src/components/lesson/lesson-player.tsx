@@ -13,6 +13,7 @@ import { LessonPlayerContext, type LessonPlayerState } from "./lesson-context";
 import { BlockTimer } from "./block-timer";
 import { EmbeddedMetronome, metronomeConfigForBlock } from "./embedded-metronome";
 import { BLOCK_TYPE_LABEL } from "./lesson-block-card";
+import { chordify } from "@/components/content/chordify";
 
 function todayLocal(): string {
   const d = new Date();
@@ -131,7 +132,7 @@ export function LessonPlayer({
         <p className="mt-4 flex items-start gap-2 rounded-lg border border-primary/30 bg-accent/40 p-3 text-sm">
           <Target className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
           <span>
-            <strong>Objetivo de hoy:</strong> {lesson.goal}
+            <strong>Objetivo de hoy:</strong> {chordify(lesson.goal)}
           </span>
         </p>
 

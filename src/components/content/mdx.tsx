@@ -16,6 +16,7 @@ import {
   Tab,
 } from "./music-blocks";
 import { Cancion, Canciones } from "./song-blocks";
+import { chordify } from "./chordify";
 
 function SmartLink({ href = "", children, ...rest }: ComponentPropsWithoutRef<"a">) {
   if (href.startsWith("/")) {
@@ -62,8 +63,34 @@ function WikiLink({ slug, children }: { slug: string; children?: ReactNode }) {
   return <Link href={`/wiki/${slug}`}>{children ?? slug}</Link>;
 }
 
+/**
+ * Los bloques de prosa pasan por `chordify`: cualquier cifrado mencionado se
+ * convierte en una tarjeta con su forma. El código en línea y los enlaces no
+ * se tocan (ver chordify.tsx).
+ */
+const P = ({ children, ...rest }: ComponentPropsWithoutRef<"p">) => (
+  <p {...rest}>{chordify(children)}</p>
+);
+const Li = ({ children, ...rest }: ComponentPropsWithoutRef<"li">) => (
+  <li {...rest}>{chordify(children)}</li>
+);
+const Strong = ({ children, ...rest }: ComponentPropsWithoutRef<"strong">) => (
+  <strong {...rest}>{chordify(children)}</strong>
+);
+const Em = ({ children, ...rest }: ComponentPropsWithoutRef<"em">) => (
+  <em {...rest}>{chordify(children)}</em>
+);
+const Td = ({ children, ...rest }: ComponentPropsWithoutRef<"td">) => (
+  <td {...rest}>{chordify(children)}</td>
+);
+
 const components = {
   a: SmartLink,
+  p: P,
+  li: Li,
+  strong: Strong,
+  em: Em,
+  td: Td,
   YouTube,
   ToolLink,
   WikiLink,
