@@ -4,8 +4,16 @@ import userEvent from "@testing-library/user-event";
 import { TrainSession } from "./train-session";
 import type { TrainCard } from "@/lib/train/cards";
 
-const gradeCard = vi.fn((...args: unknown[]) => Promise.resolve({ ok: true, args }));
+interface Guardado {
+  ok: boolean;
+  error?: string;
+  args?: unknown[];
+}
+const gradeCard = vi.fn((...args: unknown[]): Promise<Guardado> =>
+  Promise.resolve({ ok: true, args }),
+);
 const playNotes = vi.fn((...args: unknown[]) => Promise.resolve(args.length));
+const toastError = vi.fn();
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn() }) }));
 vi.mock("@/app/actions/srs", () => ({
@@ -14,12 +22,15 @@ vi.mock("@/app/actions/srs", () => ({
 vi.mock("@/lib/audio/pluck", () => ({
   playNotes: (...args: unknown[]) => playNotes(...args),
 }));
+vi.mock("sonner", () => ({ toast: { error: (...a: unknown[]) => toastError(...a) } }));
 
 const CHOICES = { intervals: [0, 4, 7, 12], chords: ["major", "minor"] };
 
 beforeEach(() => {
   gradeCard.mockReset();
+  gradeCard.mockImplementation(() => Promise.resolve({ ok: true, args: [] }));
   playNotes.mockClear();
+  toastError.mockReset();
 });
 
 function renderCard(card: TrainCard, demo = true) {
@@ -127,5 +138,30 @@ describe("TrainSession", () => {
     expect(
       screen.getByRole("button", { name: "Cuerda 6, traste 0" }),
     ).toBeInTheDocument();
+  });
+});
+
+describe("cuando la base de datos rechaza el progreso", () => {
+  it("lo dice, en vez de dejarte entrenar para nada", async () => {
+    // el caso real: un tipo de tarjeta nuevo cuya migración todavía no está
+    // aplicada. La sesión se ve perfecta y no se guarda ni una respuesta.
+    gradeCard.mockImplementation(() =>
+      Promise.resolve({
+        ok: false,
+        error: 'new row violates check constraint "srs_cards_card_type_check"',
+      }),
+    );
+    renderCard({ type: "fretboard_note", string: 0, fret: 5 }, false);
+    await userEvent.click(screen.getByRole("button", { name: "A" }));
+    await vi.waitFor(() => expect(toastError).toHaveBeenCalled());
+    expect(String(toastError.mock.calls[0][0])).toMatch(/check constraint/);
+  });
+
+  it("en modo demo no molesta: ya se avisa arriba de que no se guarda", async () => {
+    gradeCard.mockImplementation(() => Promise.resolve({ ok: false, error: "demo" }));
+    renderCard({ type: "fretboard_note", string: 0, fret: 5 }, false);
+    await userEvent.click(screen.getByRole("button", { name: "A" }));
+    await new Promise((r) => setTimeout(r, 50));
+    expect(toastError).not.toHaveBeenCalled();
   });
 });

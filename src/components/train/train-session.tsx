@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Check, RotateCcw, Volume2, X } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -128,7 +129,13 @@ export function TrainSession({
       const grade: Grade = !correct ? "again" : ms <= FAST_MS ? "good" : "hard";
       if (!demo) {
         startTransition(async () => {
-          await gradeCard({ cardId: cardId(card), grade });
+          // si la base de datos rechaza la fila —una migración sin aplicar,
+          // por ejemplo— la sesión se ve perfecta y no se guarda nada. Callarlo
+          // es peor que el fallo: entrenas media hora para nada
+          const r = await gradeCard({ cardId: cardId(card), grade });
+          if (!r.ok && r.error !== "demo") {
+            toast.error(`No se pudo guardar el progreso: ${r.error}`);
+          }
         });
       }
 

@@ -216,10 +216,13 @@ export function LessonPlayer({
                 onClick={() => {
                   state.markBlockDone(currentBlock.id);
                   startTransition(async () => {
-                    await completeBlock({
+                    const r = await completeBlock({
                       lessonSlug: lesson.slug,
                       blockId: currentBlock.id,
                     });
+                    if (!r.ok && r.error !== "demo") {
+                      toast.error(`No se pudo guardar el bloque: ${r.error}`);
+                    }
                   });
                 }}
                 className="h-12"
