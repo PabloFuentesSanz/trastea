@@ -292,6 +292,26 @@ for (const { file, fm, body } of wikis) {
   }
 }
 
+// Secuenciación: un módulo no puede pedir canciones por encima de su techo.
+// Es lo que dejaba un estándar de jazz de nivel 3 en la semana 1.
+const songLevel = new Map(songs.map((s) => [s.fm.slug, s.fm.level]));
+const moduleMaxSongLevel = new Map(modules.map((m) => [m.fm.slug, m.fm.max_song_level]));
+
+for (const { file, fm, moduleSlug } of lessons) {
+  const techo = moduleMaxSongLevel.get(moduleSlug);
+  if (techo === undefined) continue;
+  for (const block of fm.blocks) {
+    if (!block.song) continue;
+    const level = songLevel.get(block.song);
+    if (level !== undefined && level > techo) {
+      errors.push({
+        file: rel(file),
+        message: `"${block.song}" es de nivel ${level} y este módulo no pasa de ${techo}: demasiado avanzada para esta altura del curso`,
+      });
+    }
+  }
+}
+
 // slugs duplicados
 function findDuplicates(items: { slug: string; file: string }[], kind: string) {
   const seen = new Map<string, string>();

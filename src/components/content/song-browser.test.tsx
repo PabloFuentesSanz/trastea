@@ -93,7 +93,9 @@ describe("SongBrowser", () => {
     expect(
       within(panel).queryByRole("button", { name: /Palm mute/ }),
     ).not.toBeInTheDocument();
-    expect(within(panel).getByRole("button", { name: /Downpicking/ })).toBeInTheDocument();
+    expect(
+      within(panel).getByRole("button", { name: /Downpicking/ }),
+    ).toBeInTheDocument();
   });
 
   it("lo que está filtrado se ve como chip y se puede quitar de uno en uno", async () => {

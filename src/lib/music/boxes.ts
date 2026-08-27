@@ -198,7 +198,6 @@ function withExtraNotes(base: FretPosition[], options: ScaleBoxOptions): FretPos
   return [...base, ...extra].sort((a, b) => a.midi - b.midi);
 }
 
-
 /**
  * Ventana de mástil que enmarca unas posiciones, con un traste de aire a
  * cada lado. La usan tanto <Mastil caja> como el explorador de /escalas.

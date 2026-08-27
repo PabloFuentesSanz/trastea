@@ -70,6 +70,11 @@ export const moduleFrontmatterSchema = z.object({
   level: z.enum(["cero", "principiante", "intermedio", "avanzado"]),
   goals: z.array(z.string()).min(1),
   summary: z.string().min(1),
+  /**
+   * Nivel máximo de canción que el módulo puede pedir. Sin esto se colaban
+   * estándares de jazz de nivel 3 en la semana 1: content:audit lo rechaza.
+   */
+  max_song_level: z.number().int().min(1).max(5),
   /** vacío = módulo placeholder (aparece como "próximamente") */
   placeholder: z.boolean().default(false),
   assessment: z
