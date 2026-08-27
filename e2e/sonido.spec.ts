@@ -15,6 +15,30 @@ test.describe("lo que suena", () => {
     await expect(page.locator('li[aria-current="true"]')).toHaveCount(1);
   });
 
+  test("una tab de figuras mezcladas suena y se ve la figuración", async ({ page }) => {
+    await contarAudio(page);
+    // corcheas → tresillos → semicorcheas en el mismo dibujo
+    await page.goto("/curso/c-lenguaje/c-lenguaje-w09-d5");
+    const figura = page.locator("figure").filter({ hasText: /Los dos cambios/ });
+    await expect(figura).toHaveCount(1);
+
+    // 18 columnas, cada una con su plica
+    const svg = figura.locator("svg").first();
+    await expect(svg.locator("line[data-stem]")).toHaveCount(18);
+    // las barras: 2 pulsos de corcheas (1 barra) + 2 de tresillos (1) +
+    // 2 de semicorcheas (2) = 8 líneas. Si esto cambia, la tab ha dejado de
+    // decir en qué figura está.
+    await expect(svg.locator("line[data-beam]")).toHaveCount(8);
+    // y los dos pulsos de tresillos llevan su 3 (el número de compás también
+    // dice "3", así que se busca la marca, no el texto)
+    await expect(svg.locator("text[data-triplet]")).toHaveCount(2);
+
+    await figura.getByRole("button", { name: /oír la tab/i }).click();
+    await expect
+      .poll(() => sonidosEmitidos(page), { timeout: 10_000 })
+      .toBeGreaterThan(3);
+  });
+
   test("la tab de una lección se oye", async ({ page }) => {
     await contarAudio(page);
     await page.goto("/curso/c-lenguaje/c-lenguaje-w11-d4");

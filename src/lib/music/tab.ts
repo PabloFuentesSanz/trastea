@@ -11,6 +11,7 @@
  *   3:7b     bend
  *   h p s    enlace con la columna siguiente (ligado, tirón, slide)
  *   |        barra de compás
+ *   [16]     a partir de aquí, semicorcheas (ver FIGURES)
  *
  * El parser es puro y estricto: cualquier cosa que no entienda revienta con
  * un mensaje que dice qué token es, para que `content:audit` lo cace en el
@@ -25,8 +26,29 @@ export interface TabEvent {
   fret: TabFret;
 }
 
+export interface TabFigure {
+  /** lo que dura, en pulsos */
+  beats: number;
+  /** barras de la plica: 0 negra o más larga, 1 corchea, 2 semicorchea, 3 fusa */
+  beams: number;
+  triplet: boolean;
+  dotted: boolean;
+}
+
 export interface TabColumn {
   events: TabEvent[];
+  /**
+   * Lo que dura la columna, en pulsos. Sale de la figura vigente, no del
+   * número de columnas: es lo que permite meter un compás de corcheas y otro
+   * de semicorcheas en la misma tab.
+   */
+  beats: number;
+  /**
+   * La figura con la que está escrita. Las barras NO se deducen de la
+   * duración: un tresillo de corchea dura 1/3 y una semicorchea 0,25, y por
+   * número el tresillo parece más corto — pero lleva una barra, no dos.
+   */
+  figure: TabFigure;
   rest: boolean;
   accent: boolean;
   palmMute: boolean;
@@ -49,6 +71,57 @@ export const STRINGS = 6;
 const LINKS: Record<string, TabLink> = { h: "h", p: "p", s: "s" };
 const NOTE = /^(\d):(x|\d{1,2})$/;
 
+/**
+ * Figuras, escritas como en cualquier partitura: el número es la fracción de
+ * redonda (4 = negra, 8 = corchea), `t` la hace tresillo y `.` le pone
+ * puntillo. En pulsos, que es la unidad con la que se toca.
+ */
+const FIGURE = /^\[(1|2|4|8|16|32)(t?)(\.?)\]$/;
+
+/** Barras de la plica de cada figura, por su denominador. */
+const BEAMS: Record<number, number> = { 1: 0, 2: 0, 4: 0, 8: 1, 16: 2, 32: 3 };
+
+function parseFigure(token: string): TabFigure | null {
+  const m = FIGURE.exec(token);
+  if (!m) return null;
+  return figureOf(Number(m[1]), m[2] === "t", m[3] === ".");
+}
+
+function figureOf(denominator: number, triplet: boolean, dotted: boolean): TabFigure {
+  let beats = 4 / denominator;
+  if (triplet) beats = (beats * 2) / 3;
+  if (dotted) beats *= 1.5;
+  return { beats, beams: BEAMS[denominator] ?? 0, triplet, dotted };
+}
+
+/** Corcheas: lo que dura una columna cuando la tab no dice otra cosa. */
+export const DEFAULT_PER_BEAT = 2;
+
+/**
+ * La figura con la que arranca una tab, a partir de `porPulso`. Tres
+ * columnas por pulso son tresillos de corchea (una barra), no una figura
+ * rara de 1/3: por eso hace falta la tabla y no basta con dividir.
+ */
+const BY_PER_BEAT: Record<number, TabFigure> = {
+  1: figureOf(4, false, false),
+  2: figureOf(8, false, false),
+  3: figureOf(8, true, false),
+  4: figureOf(16, false, false),
+  6: figureOf(16, true, false),
+  8: figureOf(32, false, false),
+};
+
+export function figureFromPerBeat(perBeat: number): TabFigure {
+  return (
+    BY_PER_BEAT[perBeat] ?? {
+      beats: 1 / perBeat,
+      beams: 0,
+      triplet: false,
+      dotted: false,
+    }
+  );
+}
+
 function parseEvent(token: string, raw: string): TabEvent {
   const match = NOTE.exec(token);
   if (!match) {
@@ -66,7 +139,7 @@ function parseEvent(token: string, raw: string): TabEvent {
   return { string, fret };
 }
 
-function parseColumn(raw: string): TabColumn {
+function parseColumn(raw: string, figure: TabFigure): TabColumn {
   let body = raw;
   let accent = false;
   let palmMute = false;
@@ -101,7 +174,16 @@ function parseColumn(raw: string): TabColumn {
   }
 
   if (body === "-") {
-    return { events: [], rest: true, accent, palmMute, bend, bendSemitones };
+    return {
+      events: [],
+      beats: figure.beats,
+      figure,
+      rest: true,
+      accent,
+      palmMute,
+      bend,
+      bendSemitones,
+    };
   }
 
   const events = body.split("+").map((part) => parseEvent(part, raw));
@@ -112,11 +194,25 @@ function parseColumn(raw: string): TabColumn {
     }
     seen.add(event.string);
   }
-  return { events, rest: false, accent, palmMute, bend, bendSemitones };
+  return {
+    events,
+    beats: figure.beats,
+    figure,
+    rest: false,
+    accent,
+    palmMute,
+    bend,
+    bendSemitones,
+  };
+}
+
+export interface ParseTabOptions {
+  /** columnas por pulso mientras la tab no declare una figura: 2 = corcheas */
+  perBeat?: number;
 }
 
 /** Divide la tab en compases y cada compás en columnas. */
-export function parseTab(spec: string): TabBar[] {
+export function parseTab(spec: string, options: ParseTabOptions = {}): TabBar[] {
   const tokens = spec
     .split(/[\s,]+/)
     .flatMap((token) => token.split(/(\|)/))
@@ -129,6 +225,13 @@ export function parseTab(spec: string): TabBar[] {
   let columns: TabColumn[] = [];
   /** enlace leído que aún espera la nota de destino */
   let pending: TabLink | undefined;
+  /**
+   * La figura vigente. No se reinicia en la barra de compás, igual que en
+   * papel: se escribe una vez y vale hasta que cambie.
+   */
+  let figure = figureFromPerBeat(options.perBeat ?? DEFAULT_PER_BEAT);
+  /** una figura declarada que todavía no ha estrenado columna */
+  let figuraHuerfana: string | undefined;
 
   const closeBar = () => {
     if (pending) throw new Error("un ligado se queda sin la nota de destino");
@@ -143,6 +246,17 @@ export function parseTab(spec: string): TabBar[] {
       closeBar();
       continue;
     }
+    const figura = parseFigure(token);
+    if (figura !== null) {
+      figure = figura;
+      figuraHuerfana = token;
+      continue;
+    }
+    if (token.startsWith("[")) {
+      throw new Error(
+        `no existe la figura "${token}": usa [1] [2] [4] [8] [16] [32], con t de tresillo o . de puntillo`,
+      );
+    }
     const link = LINKS[token];
     if (link) {
       if (columns.length === 0) throw new Error("un ligado empieza sin nota de origen");
@@ -150,7 +264,8 @@ export function parseTab(spec: string): TabBar[] {
       pending = link;
       continue;
     }
-    columns.push(parseColumn(token));
+    columns.push(parseColumn(token, figure));
+    figuraHuerfana = undefined;
     if (pending) {
       columns[columns.length - 2].link = pending;
       pending = undefined;
@@ -158,8 +273,38 @@ export function parseTab(spec: string): TabBar[] {
   }
   closeBar();
 
+  if (figuraHuerfana) {
+    throw new Error(`la figura ${figuraHuerfana} se queda sin notas detrás`);
+  }
   if (bars.length === 0) throw new Error("tab vacía");
   return bars;
+}
+
+/** Lo que dura un compás, en pulsos. */
+export function barBeats(bar: TabBar): number {
+  return bar.columns.reduce((total, column) => total + column.beats, 0);
+}
+
+/** Lo que dura la tab entera, en pulsos. */
+export function tabBeats(bars: readonly TabBar[]): number {
+  return bars.reduce((total, bar) => total + barBeats(bar), 0);
+}
+
+/**
+ * El pulso en el que entra cada columna, de la primera a la última. Con
+ * figuras mezcladas ya no vale multiplicar el índice por un paso fijo: hay
+ * que acumular.
+ */
+export function columnStarts(bars: readonly TabBar[]): number[] {
+  const starts: number[] = [];
+  let beat = 0;
+  for (const bar of bars) {
+    for (const column of bar.columns) {
+      starts.push(beat);
+      beat += column.beats;
+    }
+  }
+  return starts;
 }
 
 /** Número total de columnas: sirve para dimensionar el SVG. */

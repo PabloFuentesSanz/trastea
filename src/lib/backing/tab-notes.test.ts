@@ -3,7 +3,7 @@ import { parseTab } from "@/lib/music/tab";
 import { tabLength, tabNotes } from "./tab-notes";
 
 const notas = (spec: string, perBeat = 2, swing = false) =>
-  tabNotes(parseTab(spec), { perBeat, swing });
+  tabNotes(parseTab(spec, { perBeat }), { swing });
 
 describe("tabNotes", () => {
   it("reparte una columna por figura", () => {
@@ -82,33 +82,62 @@ describe("tabNotes", () => {
 describe("tabLength", () => {
   it("mide la tab en pulsos, redondeando al compás", () => {
     // ocho corcheas son cuatro pulsos
-    expect(tabLength(parseTab("6:5 6:5 6:5 6:5 6:5 6:5 6:5 6:5"), { perBeat: 2 })).toBe(
-      4,
-    );
+    expect(tabLength(parseTab("6:5 6:5 6:5 6:5 6:5 6:5 6:5 6:5"))).toBe(4);
   });
 
   it("no deja una vuelta más corta que lo que suena", () => {
     const bars = parseTab("6:5 6:6 6:7");
-    expect(tabLength(bars, { perBeat: 2 })).toBeGreaterThanOrEqual(1.5);
+    expect(tabLength(bars)).toBeGreaterThanOrEqual(1.5);
   });
 });
 
 describe("la nota dura hasta la siguiente", () => {
   it("una nota seguida de silencios suena todo ese hueco", () => {
     // en la notación, "X - - -" es una redonda, no una negra y tres silencios
-    const [redonda] = tabNotes(parseTab("6:5 - - -"), { perBeat: 1 });
-    const [negra] = tabNotes(parseTab("6:5 6:5"), { perBeat: 1 });
+    const [redonda] = tabNotes(parseTab("6:5 - - -", { perBeat: 1 }), {});
+    const [negra] = tabNotes(parseTab("6:5 6:5", { perBeat: 1 }), {});
     expect(redonda.duration).toBeCloseTo(negra.duration * 4);
   });
 
   it("la última nota también se estira hasta el final", () => {
-    const [, ultima] = tabNotes(parseTab("6:5 6:7 - -"), { perBeat: 1 });
+    const [, ultima] = tabNotes(parseTab("6:5 6:7 - -", { perBeat: 1 }), {});
     expect(ultima.duration).toBeGreaterThan(1);
   });
 
   it("el palm mute sigue cortando aunque haya hueco detrás", () => {
-    const [muteada] = tabNotes(parseTab("6:0. - - -"), { perBeat: 1 });
-    const [abierta] = tabNotes(parseTab("6:0 - - -"), { perBeat: 1 });
+    const [muteada] = tabNotes(parseTab("6:0. - - -", { perBeat: 1 }), {});
+    const [abierta] = tabNotes(parseTab("6:0 - - -", { perBeat: 1 }), {});
     expect(muteada.duration).toBeLessThan(abierta.duration);
+  });
+});
+
+describe("figuras mezcladas al sonar", () => {
+  it("cada columna entra donde la deja la anterior, no cada paso fijo", () => {
+    // corchea, corchea, y luego dos semicorcheas
+    const n = notas("6:5 6:6 [16] 6:7 6:8");
+    expect(n.map((x) => x.beat)).toEqual([0, 0.5, 1, 1.25]);
+  });
+
+  it("una nota larga dura lo que dice su figura", () => {
+    const [blanca] = notas("[2] 6:5 [8] 6:7");
+    const [corchea] = notas("6:5 6:7");
+    expect(blanca.duration).toBeCloseTo(corchea.duration * 4);
+  });
+
+  it("el compás de semicorcheas cabe entero donde el de corcheas", () => {
+    const n = notas("6:0 6:0 6:0 6:0 | [16] 6:0 6:0 6:0 6:0 6:0 6:0 6:0 6:0");
+    expect(n[4].beat).toBe(2);
+    expect(n[n.length - 1].beat).toBe(3.75);
+  });
+
+  it("el swing solo mueve las corcheas, no las semicorcheas de al lado", () => {
+    const n = tabNotes(parseTab("6:5 6:6 [16] 6:7 6:8 6:9 6:10"), { swing: true });
+    expect(n[1].beat).toBeCloseTo(2 / 3);
+    expect(n[2].beat).toBe(1);
+    expect(n[3].beat).toBe(1.25);
+  });
+
+  it("la vuelta mide lo que suma la tab, no cuántas columnas tiene", () => {
+    expect(tabLength(parseTab("[16] 6:5 6:5 6:5 6:5 6:5 6:5 6:5 6:5"))).toBe(2);
   });
 });

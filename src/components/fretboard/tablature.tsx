@@ -1,6 +1,7 @@
-import type { TabBar, TabColumn } from "@/lib/music/tab";
+import type { TabBar } from "@/lib/music/tab";
 import { STRINGS } from "@/lib/music/tab";
 import { cn } from "@/lib/utils";
+import { beamGroups, beatTicks, layoutColumns, type PlacedColumn } from "./tab-layout";
 
 const STRING_GAP = 18;
 const COL_W = 26;
@@ -9,39 +10,15 @@ const PAD_X = 34;
 const PAD_TOP = 26;
 const PAD_BOTTOM = 22;
 const BAR_GAP = 14;
+/** alto de la fila de plicas y barras que va debajo de la pauta */
+const RHYTHM_H = 22;
+const STEM_H = 9;
+const BEAM_GAP = 3;
 
-/** Una columna con varias notas necesita más aire para no chocar. */
-function columnWidth(column: TabColumn): number {
-  return column.events.length > 1 ? CHORD_COL_W : COL_W;
-}
-
-interface Placed {
-  column: TabColumn;
-  x: number;
-  width: number;
-  /** hay barra de compás justo antes */
-  barLineBefore: boolean;
-  barNumber?: number;
-}
+type Placed = PlacedColumn;
 
 function layout(bars: TabBar[]): { placed: Placed[]; width: number } {
-  const placed: Placed[] = [];
-  let x = PAD_X;
-  bars.forEach((bar, barIndex) => {
-    if (barIndex > 0) x += BAR_GAP;
-    bar.columns.forEach((column, columnIndex) => {
-      const width = columnWidth(column);
-      placed.push({
-        column,
-        x: x + width / 2,
-        width,
-        barLineBefore: columnIndex === 0 && barIndex > 0,
-        barNumber: columnIndex === 0 && bars.length > 1 ? bar.number : undefined,
-      });
-      x += width;
-    });
-  });
-  return { placed, width: x + PAD_X };
+  return layoutColumns(bars, COL_W, CHORD_COL_W, PAD_X, BAR_GAP);
 }
 
 /** Tramos seguidos de palm mute: se marcan una vez con un corchete, como en papel. */
@@ -96,9 +73,15 @@ export function Tablature({
 }: TablatureProps) {
   const { placed, width } = layout(bars);
   const runs = palmMuteRuns(placed);
+  const ticks = beatTicks(placed);
+  const beams = beamGroups(placed);
   // el corchete de P.M. va bajo la pauta: sin este hueco recorta la figuración
   const height =
-    PAD_TOP + (STRINGS - 1) * STRING_GAP + PAD_BOTTOM + (runs.length > 0 ? 12 : 0);
+    PAD_TOP +
+    (STRINGS - 1) * STRING_GAP +
+    PAD_BOTTOM +
+    RHYTHM_H +
+    (runs.length > 0 ? 12 : 0);
   const staffTop = PAD_TOP;
   const staffBottom = PAD_TOP + (STRINGS - 1) * STRING_GAP;
 
@@ -255,11 +238,77 @@ export function Tablature({
         );
       })}
 
+      {/* La figuración, debajo de la pauta: plica por columna y barras
+          agrupadas por pulso, como en papel. Sin esto un compás de
+          semicorcheas se lee igual que uno de corcheas y la figura mezclada
+          es invisible. Las marcas de pulso dicen dónde cae el tiempo. */}
+      <g aria-hidden>
+        {ticks.map((tick) => (
+          <line
+            key={`t-${tick.beat}`}
+            x1={mirror(tick.x)}
+            x2={mirror(tick.x)}
+            y1={staffBottom + 4}
+            y2={staffBottom + 10}
+            stroke="var(--muted-foreground)"
+            strokeWidth={1}
+            opacity={0.45}
+          />
+        ))}
+
+        {placed.map((item, i) => (
+          <line
+            key={`s-${i}`}
+            data-stem=""
+            x1={mirror(item.x)}
+            x2={mirror(item.x)}
+            y1={staffBottom + 8}
+            y2={staffBottom + 8 + STEM_H}
+            stroke={i === currentColumn ? "var(--primary)" : "var(--muted-foreground)"}
+            strokeWidth={i === currentColumn ? 2 : 1.2}
+            strokeDasharray={item.column.rest ? "2 2" : undefined}
+            opacity={item.column.rest ? 0.5 : 0.9}
+          />
+        ))}
+
+        {beams.map((group, i) => (
+          <g key={`b-${i}`}>
+            {Array.from({ length: group.beams }, (_, n) => (
+              <line
+                key={n}
+                data-beam=""
+                x1={mirror(group.from === group.to ? group.from - 4 : group.from)}
+                x2={mirror(group.to)}
+                y1={staffBottom + 8 + STEM_H - n * BEAM_GAP}
+                y2={staffBottom + 8 + STEM_H - n * BEAM_GAP}
+                stroke="var(--muted-foreground)"
+                strokeWidth={1.6}
+                strokeLinecap="butt"
+                opacity={0.9}
+              />
+            ))}
+            {group.triplet && (
+              <text
+                data-triplet=""
+                x={mirror((group.from + group.to) / 2)}
+                y={staffBottom + 8 + STEM_H + 9}
+                textAnchor="middle"
+                fontSize={8}
+                fontStyle="italic"
+                fill="var(--muted-foreground)"
+              >
+                3
+              </text>
+            )}
+          </g>
+        ))}
+      </g>
+
       {runs.map((run, i) => (
         <g key={`pm-${i}`}>
           <text
             x={mirror(run.from)}
-            y={staffBottom + 14}
+            y={staffBottom + 14 + RHYTHM_H}
             textAnchor={lefty ? "end" : "start"}
             fontSize={8}
             fill="var(--muted-foreground)"
@@ -270,8 +319,8 @@ export function Tablature({
             <line
               x1={mirror(run.from + 24)}
               x2={mirror(run.to)}
-              y1={staffBottom + 11}
-              y2={staffBottom + 11}
+              y1={staffBottom + 11 + RHYTHM_H}
+              y2={staffBottom + 11 + RHYTHM_H}
               stroke="var(--muted-foreground)"
               strokeWidth={1}
               strokeDasharray="3 3"
@@ -283,7 +332,7 @@ export function Tablature({
       {subdivision && (
         <text
           x={mirror(PAD_X - 10)}
-          y={staffBottom + (runs.length > 0 ? 24 : 14)}
+          y={staffBottom + RHYTHM_H + (runs.length > 0 ? 24 : 14)}
           textAnchor={lefty ? "end" : "start"}
           fontSize={9}
           fill="var(--muted-foreground)"

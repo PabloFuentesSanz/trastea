@@ -45,7 +45,7 @@ import {
   isTrainTheme,
 } from "../src/lib/train/taxonomy";
 import { parseFretSpec, voicingFromFrets } from "../src/lib/music/voicing-from-frets";
-import { foreignNotes, foreignPerBar, parseTab } from "../src/lib/music/tab";
+import { barBeats, foreignNotes, foreignPerBar, parseTab } from "../src/lib/music/tab";
 import { getTuning } from "../src/data/tunings";
 import { SCALES } from "../src/data/scales";
 import { CHORDS } from "../src/data/chords";
@@ -554,7 +554,10 @@ function checkMusicSpecs(file: string, body: string) {
     const notas = /\bnotas="([^"]+)"/.exec(tag)?.[1];
     if (!notas) continue;
     try {
-      const bars = parseTab(notas);
+      const porPulso = /\bporPulso="([^"]+)"/.exec(tag)?.[1];
+      const bars = parseTab(notas, {
+        perBeat: porPulso === undefined ? undefined : Number(porPulso),
+      });
       const escala = /\bescala="([^"]+)"/.exec(tag)?.[1];
       if (escala) {
         const spec = parseFormulaSpec(escala, "scale");
@@ -568,23 +571,23 @@ function checkMusicSpecs(file: string, body: string) {
       }
       // Los compases de una tab tienen que medir todos lo mismo y caer en
       // pulsos enteros. Si no, las barras de compás mienten y el bucle entra
-      // a destiempo: no se ve mirando, se oye tocando.
-      if (!/tocable="no"/.test(tag)) {
-        const porPulso = Number(/\bporPulso="([^"]+)"/.exec(tag)?.[1] ?? 2);
-        const pulsos = bars.map((b) => b.columns.length / porPulso);
-        const enteros = pulsos.every((p) => Math.abs(p - Math.round(p)) < 1e-9);
-        const iguales = new Set(pulsos).size === 1;
-        if (!enteros) {
-          errors.push({
-            file: rel(file),
-            message: `<Tab porPulso="${porPulso}">: compases de ${pulsos.join(", ")} pulsos, que no son enteros`,
-          });
-        } else if (!iguales) {
-          errors.push({
-            file: rel(file),
-            message: `<Tab porPulso="${porPulso}">: los compases no miden lo mismo (${pulsos.join(", ")} pulsos)`,
-          });
-        }
+      // a destiempo: no se ve mirando, se oye tocando. Ahora se suman las
+      // figuras, así que también vale para las tabs de figuras mezcladas —y
+      // `tocable="no"` ya no exime: una tab mal medida está mal medida aunque
+      // solo se mire.
+      const pulsos = bars.map((b) => Math.round(barBeats(b) * 1e6) / 1e6);
+      const enteros = pulsos.every((p) => Math.abs(p - Math.round(p)) < 1e-6);
+      const iguales = new Set(pulsos).size === 1;
+      if (!enteros) {
+        errors.push({
+          file: rel(file),
+          message: `<Tab>: compases de ${pulsos.join(", ")} pulsos, que no son enteros`,
+        });
+      } else if (!iguales) {
+        errors.push({
+          file: rel(file),
+          message: `<Tab>: los compases no miden lo mismo (${pulsos.join(", ")} pulsos)`,
+        });
       }
 
       const acordes = /\bacordes="([^"]+)"/.exec(tag)?.[1];

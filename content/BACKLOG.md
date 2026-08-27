@@ -125,18 +125,23 @@ El agujero no era la notación, era que nada sonaba. Orden acordado:
       acompañamiento con voces conducidas, cinco grooves, tempo, bucle y
       claqueta. Sin dependencias nuevas (Tone.js). Las 35 rejillas del
       repositorio son ya 35 bases.
-- [x] **Fase 2a — las tabs suenan.** No hacían falta duraciones mixtas:
-      nuestras tabs son series regulares y ya declaraban su figura. `porPulso`
-      dice cuántas columnas caben en un pulso, la pauta resalta la que suena, y
-      `content:audit` exige que los compases midan todos lo mismo en pulsos
-      enteros. 72 tabs tocables; 4 con figuras mezcladas van `tocable="no"`.
+- [x] **Fase 2a — las tabs suenan.** `porPulso` dice cuántas columnas caben en
+      un pulso, la pauta resalta la que suena, y `content:audit` exige que los
+      compases midan todos lo mismo en pulsos enteros. 72 tabs tocables; las de
+      figuras mezcladas quedaron en `tocable="no"` hasta la fase 2b.
 - [x] **Estudio de bases (`/bases`).** Forma, tono, groove y tempo, con el
       estado en la URL. 17 progresiones (blues, jazz, modal, pop, ejercicios)
       transportables a los doce tonos con la escritura correcta —el bII7 de Re
       es Mib7, no Re#7—, gracias a `intervalBetween` + `transposeGrid`.
-- [ ] **Fase 2b — figuras mezcladas dentro de una tab.** Para las 4 que hoy
-      no suenan y para poder escribir ritmos de verdad: `cuerda:traste:figura`
-      por columna, plicas dibujadas y la regla de que cada compás sume.
+- [x] **Fase 2b — figuras mezcladas dentro de una tab.** La duración pasa a
+      ser de la notación, no del reproductor: cada columna trae sus pulsos
+      (`column.beats`) y se cambia de figura dentro de `notas` con `[16]`,
+      `[8t]`, `[4.]`… `porPulso` queda como figura de arranque. Debajo de la
+      pauta va una regla de pulsos con la duración real de cada columna, así
+      que un compás de semicorcheas ya no se dibuja igual que uno de corcheas.
+      `content:audit` suma las figuras del compás y **`tocable="no"` ya no
+      exime**: al quitar la exención saltaron las tres tabs mal medidas que la
+      exención tapaba. Ya no queda ninguna tab muda: 106 de 106 suenan.
 - [ ] **Fase 3 — AlphaTab, acotado.** Medido el 27/08; ver el recuadro de
       abajo. Sigue en pie, pero solo para `/tabs/[slug]`.
 

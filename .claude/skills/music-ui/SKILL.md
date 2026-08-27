@@ -29,8 +29,9 @@ description: APIs de los componentes musicales (Fretboard, ChordDiagram, Tab, Me
 - `<FormulaExplorer kind basePath ... initialView initialNotesPerString />` —
   el de `/escalas` tiene tres vistas (`view=mastil|cajas|cuerdas`) y, en
   escalas de siete notas, `npc=2|3`. Todo en la URL.
-- `<ChordDiagram />` — svguitar. `<Tab />` — AlphaTab (cargar en cliente,
-  pesa; lazy import).
+- `<ChordDiagram />` y `<Tablature />` — SVG propios, sin dependencias: se
+  dibujan en servidor y no cargan JS. (AlphaTab y svguitar se evaluaron y NO
+  se usan; ver la medición en `content/BACKLOG.md`.)
 
 ## Primitivas de autoría en MDX
 
@@ -68,6 +69,34 @@ donde cabe un diagrama. Componentes disponibles desde cualquier `.mdx`:
 
 `escala`/`acorde` se resuelven contra `SCALES`/`CHORDS` (`parseFormulaSpec`):
 un id inexistente revienta el build, no dibuja algo equivocado.
+
+### Tablaturas: notación y figuras
+
+```mdx
+<Tab
+  notas="6:5 6:6 6:7 6:8 | [16] 5:5 5:6 5:7 5:8 5:9 5:10 5:11 5:12"
+  escala="A minor-pentatonic"
+  porPulso="2"
+  figuras="corcheas y luego semicorcheas"
+  bpm="80"
+/>
+```
+
+Cada token es una columna: `6:5` (cuerda:traste), `6:3+5:2` un acorde, `6:x`
+nota muerta, `-` silencio, `|` barra de compás, `h`/`p`/`s` ligado entre la
+columna anterior y la siguiente, y `>` `.` `b2` pegados al final para acento,
+palm mute y bend.
+
+**La figura se declara dentro de `notas`** con `[1] [2] [4] [8] [16] [32]`,
+más `t` para tresillo (`[8t]`) y `.` para puntillo (`[4.]`). Vale desde ahí
+hasta que cambie y **no se reinicia en la barra de compás**, igual que en
+papel. `porPulso` solo fija con qué figura arranca (2 = corcheas, por
+defecto).
+
+`content:audit` **suma las figuras de cada compás** y exige que todos midan lo
+mismo y en pulsos enteros: una tab mal medida es build rojo, tanto si suena
+como si solo se mira. La duración vive en la notación, no en el reproductor
+(`column.beats`), así que lo que se dibuja y lo que suena no pueden separarse.
 
 ### ⚠️ Una caja NO es una ventana de trastes
 

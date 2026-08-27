@@ -5,7 +5,7 @@ import { Pause, Play, Repeat } from "lucide-react";
 import { Tablature } from "@/components/fretboard/tablature";
 import { usePlayer } from "@/hooks/use-player";
 import { tabLength, tabNotes } from "@/lib/backing/tab-notes";
-import type { TabBar } from "@/lib/music/tab";
+import { columnStarts, type TabBar } from "@/lib/music/tab";
 import { MAX_BPM, MIN_BPM } from "@/lib/metronome/pattern";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -14,8 +14,6 @@ export interface PlayableTabProps {
   bars: TabBar[];
   title: string;
   subdivision?: string;
-  /** columnas por pulso: 2 corcheas, 3 tresillos, 4 semicorcheas */
-  perBeat: number;
   bpm: number;
   swing: boolean;
 }
@@ -24,24 +22,26 @@ export interface PlayableTabProps {
  * La tab, y debajo los mandos para oírla. La columna que suena se resalta:
  * eso convierte el dibujo en algo que se puede seguir a tempo lento y subir.
  */
-export function PlayableTab({
-  bars,
-  title,
-  subdivision,
-  perBeat,
-  bpm,
-  swing,
-}: PlayableTabProps) {
-  const notes = useMemo(() => tabNotes(bars, { perBeat, swing }), [bars, perBeat, swing]);
-  const length = useMemo(() => tabLength(bars, { perBeat }), [bars, perBeat]);
+export function PlayableTab({ bars, title, subdivision, bpm, swing }: PlayableTabProps) {
+  const notes = useMemo(() => tabNotes(bars, { swing }), [bars, swing]);
+  const length = useMemo(() => tabLength(bars), [bars]);
+  const starts = useMemo(() => columnStarts(bars), [bars]);
   const player = usePlayer({ notes, length, initialBpm: bpm });
 
-  // la vuelta se redondea al compás, así que al final sobran pulsos sin
-  // columna: ahí no se resalta nada en vez de clavar el resalte en la última
-  const totalColumnas = bars.reduce((n, bar) => n + bar.columns.length, 0);
-  const columna =
-    player.currentBeat === null ? null : Math.floor(player.currentBeat * perBeat);
-  const currentColumn = columna !== null && columna < totalColumnas ? columna : null;
+  // con figuras mezcladas no vale multiplicar por un paso fijo: se busca la
+  // columna cuyo hueco contiene el pulso. La vuelta se redondea al compás, así
+  // que al final sobran pulsos sin columna: ahí no se resalta nada, en vez de
+  // clavar el resalte en la última
+  const todas = bars.flatMap((bar) => bar.columns);
+  let currentColumn: number | null = null;
+  if (player.currentBeat !== null) {
+    for (let i = todas.length - 1; i >= 0; i -= 1) {
+      if (player.currentBeat >= starts[i] - 1e-9) {
+        currentColumn = player.currentBeat < starts[i] + todas[i].beats - 1e-9 ? i : null;
+        break;
+      }
+    }
+  }
 
   return (
     <div>

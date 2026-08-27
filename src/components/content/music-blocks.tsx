@@ -681,18 +681,22 @@ export function Tab({
   acordes?: string;
   /** pie de la pauta: "corcheas", "tresillos"… */
   figuras?: string;
-  /** columnas por pulso: 2 corcheas, 3 tresillos, 4 semicorcheas */
+  /**
+   * Columnas por pulso mientras la tab no diga otra cosa: 2 corcheas,
+   * 3 tresillos, 4 semicorcheas. Dentro de `notas` se puede cambiar con
+   * `[16]`, `[8t]`, `[4.]`… y ahí sí se mezclan figuras.
+   */
   porPulso?: Numerico;
   /** "si" para que las corcheas suenen con swing */
   swing?: string;
   /** tempo con el que arranca */
   bpm?: Numerico;
-  /** "no" en una tab de figuras mezcladas, que sonaría mal a columnas iguales */
+  /** "no" para una tab que solo se mira (un dibujo de ritmo sin altura) */
   tocable?: string;
   pie?: string;
   titulo?: string;
 }) {
-  const bars = parseTab(notas);
+  const bars = parseTab(notas, { perBeat: num(porPulso) ?? undefined });
   if (escala) {
     const spec = parseFormulaSpec(escala, "scale");
     const fuera = foreignNotes(bars, pitchClassesOf(spec), STANDARD);
@@ -729,7 +733,6 @@ export function Tab({
         bars={bars}
         title={titulazo}
         subdivision={figuras}
-        perBeat={num(porPulso) ?? 2}
         bpm={num(bpm) ?? 70}
         swing={swing === "si"}
       />
