@@ -6,10 +6,10 @@
  * metrónomo — aquí no se decide qué suena, solo cuándo y con qué timbre.
  */
 
-import * as Tone from "tone";
 import { midiToFrequency } from "@/lib/music/fretboard";
 import { pluckSamples } from "./string-synth";
 import type { BackingNote } from "./groove";
+import { audioContext, audioNow, resumeAudio } from "@/lib/audio/context";
 
 const LOOKAHEAD_S = 0.15;
 const SCHEDULER_INTERVAL_MS = 25;
@@ -47,7 +47,7 @@ export interface BackingEngine {
 
 /** Golpe seco sin altura: la cuerda apagada del funk y de los ghost notes. */
 function deadNote(time: number, duration: number, gainValue: number) {
-  const ctx = Tone.getContext().rawContext;
+  const ctx = audioContext();
   const noise = ctx.createBufferSource();
   const buffer = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * 0.06), ctx.sampleRate);
   const data = buffer.getChannelData(0);
@@ -99,7 +99,7 @@ function stringBuffer(ctx: BaseAudioContext, midi: number): AudioBuffer {
  * se deja caer en unos milisegundos.
  */
 function pluck(time: number, midi: number, duration: number, gainValue: number) {
-  const ctx = Tone.getContext().rawContext;
+  const ctx = audioContext();
   const source = ctx.createBufferSource();
   source.buffer = stringBuffer(ctx, midi);
 
@@ -117,7 +117,7 @@ function pluck(time: number, midi: number, duration: number, gainValue: number) 
 
 /** Claqueta: el mismo click seco del metrónomo. */
 function click(time: number, accent: boolean, gainValue: number) {
-  const ctx = Tone.getContext().rawContext;
+  const ctx = audioContext();
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
   osc.type = "square";
@@ -144,7 +144,7 @@ export function createBackingEngine(getConfig: () => BackingEngineConfig): Backi
     if (!running) return;
     const config = getConfig();
     const secondsPerBeat = 60 / config.bpm;
-    const now = Tone.getContext().rawContext.currentTime;
+    const now = audioNow();
     const horizon = now + LOOKAHEAD_S;
 
     // claqueta: un click por pulso antes de que empiece la base
@@ -180,7 +180,7 @@ export function createBackingEngine(getConfig: () => BackingEngineConfig): Backi
           const fin = cycleStart + config.length * secondsPerBeat;
           setTimeout(
             () => {
-              if (Tone.getContext().rawContext.currentTime >= fin - 0.05) stop();
+              if (audioNow() >= fin - 0.05) stop();
             },
             Math.max((fin - now) * 1000, 0),
           );
@@ -203,10 +203,10 @@ export function createBackingEngine(getConfig: () => BackingEngineConfig): Backi
     async start() {
       if (running) return;
       const config = getConfig();
-      await Tone.start();
+      await resumeAudio();
       // se sintetizan de golpe las cuerdas que van a sonar: hacerlo dentro
       // del bucle metería un tirón la primera vez que aparece cada nota
-      const ctx = Tone.getContext().rawContext;
+      const ctx = audioContext();
       for (const midi of new Set(
         config.notes.filter((n) => n.voice !== "muerta").map((n) => n.midi),
       )) {
@@ -215,7 +215,7 @@ export function createBackingEngine(getConfig: () => BackingEngineConfig): Backi
       running = true;
       cursor = 0;
       countInLeft = config.countIn * config.beatsPerBar;
-      const now = Tone.getContext().rawContext.currentTime;
+      const now = audioNow();
       cycleStart = now + START_PADDING_S + (countInLeft * 60) / config.bpm;
       scheduleAhead();
       schedulerId = setInterval(scheduleAhead, SCHEDULER_INTERVAL_MS);
@@ -227,7 +227,7 @@ export function createBackingEngine(getConfig: () => BackingEngineConfig): Backi
     currentBeat() {
       if (!running) return null;
       const config = getConfig();
-      const now = Tone.getContext().rawContext.currentTime;
+      const now = audioNow();
       if (now < cycleStart) return null;
       const beat = (now - cycleStart) / (60 / config.bpm);
       return config.loop ? beat % config.length : Math.min(beat, config.length);

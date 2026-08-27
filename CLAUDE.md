@@ -8,8 +8,8 @@ tono cercano y juguetón en los textos, herramienta seria y precisa.
 
 Next.js 15+ App Router + TS estricto · Tailwind v4 + shadcn/ui (componentes
 vendorizados en `src/components/ui`, sin CLI) · Supabase (Auth, Postgres+RLS,
-Storage) · TanStack Query + Zustand (solo estado efímero) · Tone.js (audio,
-lookahead scheduling, nunca `setInterval`) · MDX en `/content` · datos musicales
+Storage) · TanStack Query + Zustand (solo estado efímero) · Web Audio directo (`src/lib/audio`,
+lookahead scheduling propio, nunca `setInterval` para el sonido) · MDX en `/content` · datos musicales
 por fórmulas en `/src/data` · Vitest + Testing Library · Playwright (E2E).
 
 ## Comandos

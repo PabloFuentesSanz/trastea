@@ -6,7 +6,7 @@
  * el sonido). La decisión de qué suena viene de pattern.ts.
  */
 
-import * as Tone from "tone";
+import { audioContext, audioNow, resumeAudio } from "@/lib/audio/context";
 import {
   bpmAfterMeasures,
   tickAt,
@@ -54,7 +54,7 @@ export function createMetronomeEngine(getConfig: () => MetronomeConfig): Metrono
   let pending: ScheduledTick[] = [];
 
   function click(time: number, kind: Exclude<TickInfo["kind"], "silent">) {
-    const ctx = Tone.getContext().rawContext;
+    const ctx = audioContext();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.type = "square";
@@ -71,7 +71,7 @@ export function createMetronomeEngine(getConfig: () => MetronomeConfig): Metrono
   function scheduleAhead() {
     if (!running) return;
     const base = getConfig();
-    const now = Tone.getContext().rawContext.currentTime;
+    const now = audioNow();
 
     while (nextTickTime < now + LOOKAHEAD_S) {
       const info = tickAt(base, tickIndex);
@@ -89,11 +89,11 @@ export function createMetronomeEngine(getConfig: () => MetronomeConfig): Metrono
   return {
     async start() {
       if (running) return;
-      await Tone.start();
+      await resumeAudio();
       running = true;
       tickIndex = 0;
       pending = [];
-      nextTickTime = Tone.getContext().rawContext.currentTime + 0.08;
+      nextTickTime = audioNow() + 0.08;
       scheduleAhead();
       schedulerId = setInterval(scheduleAhead, SCHEDULER_INTERVAL_MS);
     },
@@ -107,7 +107,7 @@ export function createMetronomeEngine(getConfig: () => MetronomeConfig): Metrono
       return running;
     },
     drainPlayedTicks() {
-      const now = Tone.getContext().rawContext.currentTime;
+      const now = audioNow();
       const played = pending.filter((t) => t.time <= now);
       pending = pending.filter((t) => t.time > now);
       return played;

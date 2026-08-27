@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import * as Tone from "tone";
 import { midiToFrequency } from "@/lib/music/fretboard";
+import { audioContext, audioNow, resumeAudio } from "@/lib/audio/context";
 
 /** Reproduce secuencias (escala) o bloques (acorde) con osciladores simples. */
 export function useFormulaPlayer() {
@@ -10,7 +10,7 @@ export function useFormulaPlayer() {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const playNote = useCallback((midi: number, time: number, duration: number) => {
-    const ctx = Tone.getContext().rawContext;
+    const ctx = audioContext();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.type = "triangle";
@@ -27,8 +27,8 @@ export function useFormulaPlayer() {
   const play = useCallback(
     async (midis: number[], mode: "sequence" | "chord") => {
       if (midis.length === 0) return;
-      await Tone.start();
-      const ctx = Tone.getContext().rawContext;
+      await resumeAudio();
+      const ctx = audioContext();
       const start = ctx.currentTime + 0.05;
       const step = 0.32;
 
