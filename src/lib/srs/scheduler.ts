@@ -82,17 +82,41 @@ export interface DueCard<T> {
  * Selecciona qué repasar: primero lo vencido (más atrasado antes) y luego
  * tarjetas nuevas hasta completar el tamaño de sesión.
  */
+/**
+ * Las tarjetas de la sesión: primero lo vencido —lo más atrasado antes— y se
+ * rellena con nuevas.
+ *
+ * Las nuevas van BARAJADAS. Todas tienen el mismo `dueAt`, así que ordenarlas
+ * las dejaba tal y como venían del mazo y la sesión era siempre las primeras
+ * N cartas: en "reconocer intervalos" avanzado, veinte preguntas seguidas en
+ * la 6ª cuerda, y subir de nivel no cambiaba nada de lo que veías. El azar
+ * entra por parámetro para que esto siga siendo puro y comprobable.
+ */
 export function selectSession<T>(
   cards: readonly DueCard<T>[],
   now: number,
   size: number,
+  random: () => number = Math.random,
 ): T[] {
   const due = cards
     .filter((c) => c.dueAt <= now && c.reps > 0)
     .sort((a, b) => a.dueAt - b.dueAt);
-  const fresh = cards.filter((c) => c.reps === 0).sort((a, b) => a.dueAt - b.dueAt);
+  const fresh = shuffle(
+    cards.filter((c) => c.reps === 0),
+    random,
+  );
 
   return [...due, ...fresh].slice(0, size).map((c) => c.card);
+}
+
+/** Fisher-Yates: reparto uniforme y sin perder ni duplicar nada. */
+function shuffle<T>(items: readonly T[], random: () => number): T[] {
+  const out = [...items];
+  for (let i = out.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
 }
 
 /** Resumen para la UI: cuántas tocan hoy y cuántas están sin estrenar. */

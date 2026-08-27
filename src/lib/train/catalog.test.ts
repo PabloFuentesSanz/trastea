@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { DRILLS, drillsForSkills, getDrill, drillLevel, filterDrills } from "./catalog";
-import { cardId, parseCardId } from "./cards";
+import { cardId, parseCardId, type TrainCard } from "./cards";
+import { selectSession } from "@/lib/srs/scheduler";
+import { intervalBetweenPositions } from "./cards";
+import { scaleBoxPositions } from "./scales";
 import { isTrainLevel, isTrainSkill, isTrainTheme, isTrainMode } from "./taxonomy";
 
 describe("catálogo de entrenamientos", () => {
@@ -165,5 +168,120 @@ describe("drillsForSkills", () => {
 
   it("una destreza que ningún entrenamiento cubre no inventa nada", () => {
     expect(drillsForSkills(["palm-mute"])).toEqual([]);
+  });
+});
+
+/** Las cuerdas que toca una tarjeta, si es de mástil. */
+function cuerdasDe(card: TrainCard): number[] {
+  switch (card.type) {
+    case "fretboard_note":
+      return [card.string];
+    case "interval_name":
+      return [card.from.string, card.to.string];
+    case "interval_build":
+      return [card.from.string];
+    case "scale_degree":
+      return [card.position.string];
+    case "scale_box":
+      return scaleBoxPositions(card.root, card.scaleId, card.box).map((p) => p.string);
+    default:
+      return [];
+  }
+}
+
+describe("la sesión recorre el mazo, no su primera esquina", () => {
+  /** Azar determinista: el test no puede depender de la suerte. */
+  function secuencia(semilla: number) {
+    let x = semilla;
+    return () => {
+      x = (x * 9301 + 49297) % 233280;
+      return x / 233280;
+    };
+  }
+
+  const SESSION_SIZE = 20;
+
+  it("un nivel que usa las seis cuerdas las pregunta de verdad", () => {
+    // Esto es lo que se veía usándolo: en avanzado seguían saliendo las mismas
+    // preguntas en la 6ª cuerda que en principiante. El mazo sí tenía las seis;
+    // la sesión cogía siempre las primeras veinte cartas, todas de la cuerda 0.
+    for (const drill of DRILLS) {
+      for (const level of drill.levels) {
+        const mazo = level.build();
+        const cuerdasDelMazo = new Set(mazo.flatMap(cuerdasDe));
+        // solo interesa cuando el mazo de verdad abarca varias cuerdas y hay
+        // mucho más de lo que cabe en una sesión
+        if (cuerdasDelMazo.size < 4 || mazo.length < SESSION_SIZE * 2) continue;
+
+        const ahora = Date.now();
+        const sesion = selectSession(
+          mazo.map((card) => ({ card, dueAt: ahora, reps: 0 })),
+          ahora,
+          SESSION_SIZE,
+          secuencia(7),
+        );
+        const cuerdasDeLaSesion = new Set(sesion.flatMap(cuerdasDe));
+        expect(
+          cuerdasDeLaSesion.size,
+          `${drill.slug} n${level.level}: el mazo abarca ${cuerdasDelMazo.size} cuerdas y la sesión solo ${cuerdasDeLaSesion.size}`,
+        ).toBeGreaterThanOrEqual(4);
+      }
+    }
+  });
+
+  it("dos sesiones seguidas no son la misma ronda de preguntas", () => {
+    const mazo = getDrill("reconocer-intervalos")!.levels[3].build();
+    const ahora = Date.now();
+    const pedir = (semilla: number) =>
+      selectSession(
+        mazo.map((card) => ({ card, dueAt: ahora, reps: 0 })),
+        ahora,
+        SESSION_SIZE,
+        secuencia(semilla),
+      ).map(cardId);
+    expect(pedir(1)).not.toEqual(pedir(2));
+  });
+});
+
+describe("los intervalos cruzando cuerdas", () => {
+  const cruzando = (nivel: number) =>
+    getDrill("reconocer-intervalos")!
+      .levels.find((l) => l.level === nivel)!
+      .build()
+      .filter((c) => c.type === "interval_name" && c.from.string !== c.to.string);
+
+  it("incluyen las terceras, que son LA forma de la guitarra", () => {
+    // Faltaban: se calculaba el traste destino como `intervalo - salto entre
+    // cuerdas` y se descartaba si salía negativo, así que cruzando solo se
+    // podían pedir intervalos más grandes que la distancia entre cuerdas.
+    // Nunca una segunda ni una tercera, que es como se toca cualquier arpegio.
+    const semitonos = new Set(
+      cruzando(5).map((c) =>
+        c.type === "interval_name" ? intervalBetweenPositions(c.from, c.to) : -1,
+      ),
+    );
+    expect(semitonos, "tercera menor").toContain(3);
+    expect(semitonos, "tercera mayor").toContain(4);
+    expect(semitonos, "segunda mayor").toContain(2);
+  });
+
+  it("no se piden en trastes que no existen", () => {
+    for (const nivel of [4, 5]) {
+      for (const card of cruzando(nivel)) {
+        if (card.type !== "interval_name") continue;
+        expect(card.from.fret).toBeGreaterThanOrEqual(0);
+        expect(card.to.fret).toBeGreaterThanOrEqual(0);
+        expect(card.to.fret).toBeLessThanOrEqual(12);
+      }
+    }
+  });
+
+  it("el intervalo que se pide es el que hay de verdad entre las dos notas", () => {
+    for (const card of cruzando(5)) {
+      if (card.type !== "interval_name") continue;
+      const real = intervalBetweenPositions(card.from, card.to);
+      expect(real, `${cardId(card)}`).toBeGreaterThan(0);
+      expect(real).toBeLessThanOrEqual(12);
+    }
   });
 });

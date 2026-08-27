@@ -102,11 +102,18 @@ function sameStringPairs(
 /**
  * Pares cruzando a la cuerda de al lado: es el caso que de verdad cuesta,
  * porque el número de trastes ya no dice el intervalo.
+ *
+ * `destino` puede ser NEGATIVO —la nota aguda cae en un traste más bajo— y
+ * ese es justamente el caso interesante: una tercera entre dos cuerdas se
+ * toca así. Descartarlo dejaba fuera segundas y terceras cruzando, que son la
+ * forma con la que se tocan todos los arpegios.
  */
 function crossStringPairs(
   strings: readonly number[],
   maxFret: number,
   semitones: readonly number[],
+  /** cada cuántos trastes se repite el par; sube para no inflar el mazo */
+  step = 5,
 ): TrainCard[] {
   const out: TrainCard[] = [];
   const tuningSteps = [5, 5, 5, 4, 5]; // semitonos entre cuerdas contiguas
@@ -115,8 +122,11 @@ function crossStringPairs(
     const salto = tuningSteps[string];
     for (const s of semitones) {
       const destino = s - salto;
-      if (destino < 0 || destino > maxFret) continue;
-      for (let fret = 0; fret <= maxFret - Math.max(0, destino); fret += 4) {
+      if (destino > maxFret) continue;
+      // el primer traste posible: si el destino baja, hay que empezar más
+      // arriba para que la nota de llegada no caiga antes de la cejuela
+      const desde = Math.max(0, -destino);
+      for (let fret = desde; fret + Math.max(0, destino) <= maxFret; fret += step) {
         out.push({
           type: "interval_name",
           from: { string, fret },
@@ -333,7 +343,10 @@ export const DRILLS: readonly Drill[] = [
         label: "Cruzando cuerdas por todo el mástil",
         build: () => [
           ...sameStringPairs(ALL_STRINGS, 12, TODOS),
-          ...crossStringPairs(ALL_STRINGS, 12, TODOS),
+          // paso más ancho: con los doce intervalos en las cinco parejas de
+          // cuerdas, un paso de 5 se va de las 300 tarjetas y el nivel deja
+          // de poder estudiarse
+          ...crossStringPairs(ALL_STRINGS, 12, TODOS, 6),
         ],
       },
     ],

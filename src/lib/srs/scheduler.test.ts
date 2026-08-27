@@ -13,6 +13,15 @@ import {
 
 const DAY = 24 * 60 * 60 * 1000;
 
+/** Azar determinista: nada de Math.random dentro de un test. */
+function secuencia(semilla: number) {
+  let x = semilla;
+  return () => {
+    x = (x * 9301 + 49297) % 233280;
+    return x / 233280;
+  };
+}
+
 describe("review — primera vez", () => {
   it("acertar una tarjeta nueva la manda a mañana", () => {
     const next = review(NEW_CARD, "good");
@@ -100,12 +109,61 @@ describe("selectSession", () => {
   });
 
   it("rellena con tarjetas nuevas cuando falta", () => {
-    expect(selectSession(deck, now, 4)).toEqual([
-      "vencida-hace-3d",
-      "vencida-hoy",
-      "nueva-1",
-      "nueva-2",
-    ]);
+    const sesion = selectSession(deck, now, 4);
+    // lo vencido va primero y en orden; las nuevas van barajadas detrás, así
+    // que aquí se comprueba cuáles son, no en qué orden salen
+    expect(sesion.slice(0, 2)).toEqual(["vencida-hace-3d", "vencida-hoy"]);
+    expect(sesion.slice(2).sort()).toEqual(["nueva-1", "nueva-2"]);
+  });
+
+  it("las nuevas no salen siempre en el mismo orden", () => {
+    // Aquí vivía el fallo: las nuevas tienen todas el mismo `dueAt`, el orden
+    // estable las dejaba tal cual venían del mazo y la sesión era SIEMPRE las
+    // primeras 20 cartas. En "reconocer intervalos" avanzado eso significaba
+    // veinte preguntas seguidas en la 6ª cuerda, y cambiar de nivel no
+    // cambiaba nada de lo que veías.
+    const nuevas = Array.from({ length: 50 }, (_, i) => ({
+      card: `n${i}`,
+      dueAt: now,
+      reps: 0,
+    }));
+    const a = selectSession(nuevas, now, 10, secuencia(0.9));
+    const b = selectSession(nuevas, now, 10, secuencia(0.1));
+    expect(a).not.toEqual(b);
+    // y no son las diez primeras del mazo
+    expect(a).not.toEqual(nuevas.slice(0, 10).map((c) => c.card));
+  });
+
+  it("con el mismo azar da lo mismo: nada de sorpresas en el servidor", () => {
+    const nuevas = Array.from({ length: 30 }, (_, i) => ({
+      card: `n${i}`,
+      dueAt: now,
+      reps: 0,
+    }));
+    expect(selectSession(nuevas, now, 8, secuencia(0.42))).toEqual(
+      selectSession(nuevas, now, 8, secuencia(0.42)),
+    );
+  });
+
+  it("lo vencido sigue mandando, y en orden: eso no se baraja", () => {
+    const mezcla = [
+      { card: "nueva", dueAt: now, reps: 0 },
+      { card: "vencida-hace-3d", dueAt: now - 3 * DAY, reps: 4 },
+      { card: "vencida-hoy", dueAt: now - 1000, reps: 2 },
+    ];
+    const sesion = selectSession(mezcla, now, 3, secuencia(0.7));
+    expect(sesion.slice(0, 2)).toEqual(["vencida-hace-3d", "vencida-hoy"]);
+  });
+
+  it("baraja sin perder ni duplicar tarjetas", () => {
+    const nuevas = Array.from({ length: 25 }, (_, i) => ({
+      card: `n${i}`,
+      dueAt: now,
+      reps: 0,
+    }));
+    const sesion = selectSession(nuevas, now, 25, secuencia(0.33));
+    expect(new Set(sesion).size).toBe(25);
+    expect([...sesion].sort()).toEqual(nuevas.map((c) => c.card).sort());
   });
 
   it("nunca incluye tarjetas que aún no tocan", () => {

@@ -13,14 +13,19 @@ interface Llamada {
   select?: string;
   eq: [string, unknown][];
   in: [string, unknown[]][];
+  count?: number;
 }
 
 const llamadas: Llamada[] = [];
 let respuesta: unknown[] = [];
+/** respuestas por tabla, para las funciones que consultan varias */
+let porTabla: Record<string, unknown[]> = {};
+let firmadas: { path: string; signedUrl: string }[] = [];
 
 function builder(tabla: string) {
   const registro: Llamada = { tabla, eq: [], in: [] };
   llamadas.push(registro);
+  const datos = () => porTabla[tabla] ?? respuesta;
   const api = {
     select(cols: string) {
       registro.select = cols;
@@ -34,20 +39,28 @@ function builder(tabla: string) {
       registro.in.push([col, vals]);
       return api;
     },
+    gte(col: string, val: unknown) {
+      registro.eq.push([`gte:${col}`, val]);
+      return api;
+    },
     order: () => api,
     limit: () => api,
-    maybeSingle: () => Promise.resolve({ data: null, error: null }),
+    maybeSingle: () =>
+      Promise.resolve({ data: (datos()[0] as unknown) ?? null, error: null }),
     then: (
       resolve: (r: { data: unknown[]; error: null }) => unknown,
     ): Promise<unknown> => {
+      registro.count = datos().length;
       // el doble APLICA los filtros: si no, un `.eq()` de más no se nota y el
       // test pasa igual con el fallo dentro
-      const filas = (respuesta as Record<string, unknown>[]).filter(
+      const filas = (datos() as Record<string, unknown>[]).filter(
         (fila) =>
           registro.eq.every(([col, val]) => !(col in fila) || fila[col] === val) &&
           registro.in.every(([col, vals]) => !(col in fila) || vals.includes(fila[col])),
       );
-      return Promise.resolve(resolve({ data: filas, error: null }));
+      return Promise.resolve(
+        resolve({ data: filas, error: null, count: filas.length } as never),
+      );
     },
   };
   return api;
@@ -60,14 +73,29 @@ vi.mock("@/lib/supabase/server", () => ({
     Promise.resolve({
       from: (tabla: string) => builder(tabla),
       auth: { getUser: () => Promise.resolve({ data: { user: null } }) },
+      storage: {
+        from: () => ({
+          createSignedUrls: () => Promise.resolve({ data: firmadas, error: null }),
+        }),
+      },
     }),
 }));
 
-const { getSrsProgress, getTrainingDeck } = await import("./queries");
+const {
+  getSrsProgress,
+  getTrainingDeck,
+  getDashboardData,
+  getExerciseHistory,
+  getModuleAssessment,
+  getRecordings,
+  getPracticeCalendar,
+} = await import("./queries");
 
 beforeEach(() => {
   llamadas.length = 0;
   respuesta = [];
+  porTabla = {};
+  firmadas = [];
 });
 
 const fila = (cardId: string, extra: Record<string, unknown> = {}) => ({
@@ -159,5 +187,201 @@ describe("getTrainingDeck", () => {
     );
     const [, tipos] = llamadas[0].in[0];
     expect([...tipos].sort()).toEqual(["ear_interval", "scale_box"]);
+  });
+});
+
+const hoy = new Date().toISOString().slice(0, 10);
+
+describe("getDashboardData", () => {
+  it("suma los minutos de la semana y cuenta las sesiones", async () => {
+    porTabla = {
+      profiles: [{ streak_days: 4, last_practice_date: hoy }],
+      practice_sessions: [
+        { duration_min: 20, date: hoy },
+        { duration_min: 35, date: hoy },
+      ],
+      exercise_records: [],
+      lesson_progress: [],
+    };
+    const d = await getDashboardData("u1");
+    expect(d.weekMinutes).toBe(55);
+    expect(d.sessionsThisWeek).toBe(2);
+  });
+
+  it("de cada ejercicio enseña el registro más reciente, no todos", async () => {
+    porTabla = {
+      profiles: [],
+      practice_sessions: [],
+      // vienen ordenados de más nuevo a más viejo
+      exercise_records: [
+        {
+          exercise_slug: "cromatico-1234",
+          bpm: 110,
+          recorded_at: "2026-08-20T10:00:00Z",
+        },
+        { exercise_slug: "cromatico-1234", bpm: 90, recorded_at: "2026-08-10T10:00:00Z" },
+        { exercise_slug: "octavas", bpm: 70, recorded_at: "2026-08-19T10:00:00Z" },
+      ],
+      lesson_progress: [],
+    };
+    const d = await getDashboardData("u1");
+    expect(d.latestBpms).toHaveLength(2);
+    expect(d.latestBpms.find((r) => r.exercise_slug === "cromatico-1234")?.bpm).toBe(110);
+  });
+
+  it("pide solo la última semana de sesiones", async () => {
+    porTabla = {
+      profiles: [],
+      practice_sessions: [],
+      exercise_records: [],
+      lesson_progress: [],
+    };
+    await getDashboardData("u1");
+    const sesiones = llamadas.find((l) => l.tabla === "practice_sessions")!;
+    const [, desde] = sesiones.eq.find(([col]) => col.startsWith("gte:"))!;
+    const dias = Math.round((Date.parse(hoy) - Date.parse(String(desde))) / 86_400_000);
+    expect(dias).toBe(6);
+  });
+
+  it("cada consulta se ata al usuario que la pide", async () => {
+    porTabla = {
+      profiles: [],
+      practice_sessions: [],
+      exercise_records: [],
+      lesson_progress: [],
+    };
+    await getDashboardData("u1");
+    for (const l of llamadas) {
+      const atada = l.eq.some(
+        ([col, val]) => (col === "user_id" || col === "id") && val === "u1",
+      );
+      expect(atada, `${l.tabla} no filtra por usuario`).toBe(true);
+    }
+  });
+});
+
+describe("getExerciseHistory", () => {
+  const intento = (bpm: number, clean: boolean, dia: string) => ({
+    bpm,
+    clean,
+    recorded_at: `${dia}T10:00:00Z`,
+  });
+
+  it("la mejor marca solo cuenta si salió limpia", async () => {
+    respuesta = [
+      intento(100, true, "2026-08-01"),
+      intento(130, false, "2026-08-02"),
+      intento(110, true, "2026-08-03"),
+    ];
+    const h = await getExerciseHistory("u1", "cromatico-1234");
+    expect(h.bestClean).toBe(110);
+    expect(h.times).toBe(3);
+  });
+
+  it("cuenta días distintos, no intentos", async () => {
+    respuesta = [
+      intento(90, true, "2026-08-01"),
+      intento(95, true, "2026-08-01"),
+      intento(100, true, "2026-08-02"),
+    ];
+    expect((await getExerciseHistory("u1", "x")).days).toBe(2);
+  });
+
+  it("sin ningún intento limpio no inventa una marca", async () => {
+    respuesta = [intento(120, false, "2026-08-01")];
+    expect((await getExerciseHistory("u1", "x")).bestClean).toBeNull();
+  });
+
+  it("sin usuario no consulta la base", async () => {
+    const h = await getExerciseHistory(null, "x");
+    expect(llamadas).toHaveLength(0);
+    expect(h.times).toBe(0);
+  });
+});
+
+describe("getModuleAssessment", () => {
+  it("el quiz cuenta solo si está aprobado", async () => {
+    respuesta = [{ type: "quiz", passed: false, data: null }];
+    expect((await getModuleAssessment("u1", "a-cimientos")).quizPassed).toBe(false);
+    respuesta = [{ type: "quiz", passed: true, data: null }];
+    expect((await getModuleAssessment("u1", "a-cimientos")).quizPassed).toBe(true);
+  });
+
+  it("de la checklist se queda con las cadenas y tira lo demás", async () => {
+    respuesta = [
+      { type: "checklist", passed: null, data: { done: ["a", 3, null, "b"] } },
+    ];
+    expect((await getModuleAssessment("u1", "a")).checklistDone).toEqual(["a", "b"]);
+  });
+
+  it("un data corrupto no revienta la página", async () => {
+    respuesta = [{ type: "checklist", passed: null, data: "no soy un objeto" }];
+    expect((await getModuleAssessment("u1", "a")).checklistDone).toEqual([]);
+  });
+});
+
+describe("getRecordings", () => {
+  it("empareja cada grabación con SU url firmada, no por orden", async () => {
+    respuesta = [
+      {
+        id: "1",
+        title: "a",
+        storage_path: "u1/a.webm",
+        lesson_slug: null,
+        duration_s: 10,
+        created_at: "2026-08-02",
+      },
+      {
+        id: "2",
+        title: "b",
+        storage_path: "u1/b.webm",
+        lesson_slug: null,
+        duration_s: 20,
+        created_at: "2026-08-01",
+      },
+    ];
+    // el storage devuelve las urls en otro orden a propósito
+    firmadas = [
+      { path: "u1/b.webm", signedUrl: "https://x/b" },
+      { path: "u1/a.webm", signedUrl: "https://x/a" },
+    ];
+    const grabaciones = await getRecordings("u1");
+    expect(grabaciones.find((g) => g.id === "1")?.url).toBe("https://x/a");
+    expect(grabaciones.find((g) => g.id === "2")?.url).toBe("https://x/b");
+  });
+
+  it("si una url no viene, la grabación sigue apareciendo", async () => {
+    respuesta = [
+      {
+        id: "1",
+        title: "a",
+        storage_path: "u1/a.webm",
+        lesson_slug: null,
+        duration_s: 10,
+        created_at: "2026-08-02",
+      },
+    ];
+    firmadas = [];
+    const [g] = await getRecordings("u1");
+    expect(g.url).toBeNull();
+    expect(g.title).toBe("a");
+  });
+
+  it("sin grabaciones no pide urls firmadas", async () => {
+    respuesta = [];
+    expect(await getRecordings("u1")).toEqual([]);
+  });
+});
+
+describe("getPracticeCalendar", () => {
+  it("devuelve minutos por día y trata el nulo como cero", async () => {
+    respuesta = [
+      { date: "2026-08-01", duration_min: 30 },
+      { date: "2026-08-02", duration_min: null },
+    ];
+    expect(await getPracticeCalendar("u1")).toEqual([
+      { date: "2026-08-01", minutes: 30 },
+      { date: "2026-08-02", minutes: 0 },
+    ]);
   });
 });
