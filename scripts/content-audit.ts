@@ -44,6 +44,7 @@ import { SCALES } from "../src/data/scales";
 import { CHORDS } from "../src/data/chords";
 import { getProgression } from "../src/data/progressions";
 import { PRACTICAL_ROOTS } from "../src/lib/music/notes";
+import { clampBpm } from "../src/lib/metronome/pattern";
 
 const STANDARD_TUNING = getTuning("standard").midi;
 
@@ -573,7 +574,7 @@ function checkMusicSpecs(file: string, body: string) {
  * `/bases?prog=`. Una id que no existe no da error en la página —cae al valor
  * por defecto sin decir nada— y el lector se queda mirando otra escala.
  */
-const TOOL_LINK = /(?:href|tool)="(\/(?:escalas|acordes|bases)\?[^"]+)"/g;
+const TOOL_LINK = /(?:href|tool)="(\/(?:escalas|acordes|bases|metronomo)\?[^"]+)"/g;
 
 function checkToolLinks(file: string, body: string) {
   for (const m of body.matchAll(TOOL_LINK)) {
@@ -599,6 +600,25 @@ function checkToolLinks(file: string, body: string) {
         file: rel(file),
         message: `${href}: no existe la progresión "${prog}"`,
       });
+    }
+
+    // el metrónomo también se queda callado: un `sub` que no es 1-4 se ignora
+    // y el lector oye negras donde el texto le prometía tresillos
+    if (ruta === "/metronomo") {
+      const bpm = Number(params.get("bpm"));
+      if (params.has("bpm") && (!Number.isFinite(bpm) || bpm !== clampBpm(bpm))) {
+        errors.push({
+          file: rel(file),
+          message: `${href}: bpm fuera del rango del metrónomo`,
+        });
+      }
+      const sub = params.get("sub");
+      if (sub && ![1, 2, 3, 4].includes(Number(sub))) {
+        errors.push({
+          file: rel(file),
+          message: `${href}: subdivisión "${sub}" no existe (1-4)`,
+        });
+      }
     }
 
     const root = params.get("root") ?? params.get("tono");
