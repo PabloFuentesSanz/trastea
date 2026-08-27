@@ -40,6 +40,10 @@ import { validateGrid } from "../src/lib/music/grid";
 import { parseFretSpec, voicingFromFrets } from "../src/lib/music/voicing-from-frets";
 import { foreignNotes, foreignPerBar, parseTab } from "../src/lib/music/tab";
 import { getTuning } from "../src/data/tunings";
+import { SCALES } from "../src/data/scales";
+import { CHORDS } from "../src/data/chords";
+import { getProgression } from "../src/data/progressions";
+import { PRACTICAL_ROOTS } from "../src/lib/music/notes";
 
 const STANDARD_TUNING = getTuning("standard").midi;
 
@@ -564,6 +568,49 @@ function checkMusicSpecs(file: string, body: string) {
   }
 }
 
+/**
+ * Deep links a herramientas: `/escalas?type=`, `/acordes?type=` y
+ * `/bases?prog=`. Una id que no existe no da error en la página —cae al valor
+ * por defecto sin decir nada— y el lector se queda mirando otra escala.
+ */
+const TOOL_LINK = /(?:href|tool)="(\/(?:escalas|acordes|bases)\?[^"]+)"/g;
+
+function checkToolLinks(file: string, body: string) {
+  for (const m of body.matchAll(TOOL_LINK)) {
+    const href = m[1].replace(/&amp;/g, "&");
+    const [ruta, query = ""] = href.split("?");
+    const params = new URLSearchParams(query);
+
+    const type = params.get("type");
+    if (type) {
+      const tabla = ruta === "/escalas" ? SCALES : CHORDS;
+      const decoded = decodeURIComponent(type);
+      if (!(decoded in tabla)) {
+        errors.push({
+          file: rel(file),
+          message: `${href}: no existe ${ruta === "/escalas" ? "la escala" : "el acorde"} "${decoded}"`,
+        });
+      }
+    }
+
+    const prog = params.get("prog");
+    if (prog && !getProgression(prog)) {
+      errors.push({
+        file: rel(file),
+        message: `${href}: no existe la progresión "${prog}"`,
+      });
+    }
+
+    const root = params.get("root") ?? params.get("tono");
+    if (root && !PRACTICAL_ROOTS.includes(decodeURIComponent(root))) {
+      errors.push({
+        file: rel(file),
+        message: `${href}: "${root}" no es una raíz de las que ofrece la herramienta`,
+      });
+    }
+  }
+}
+
 function walkMdx(dir: string): string[] {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const full = path.join(dir, entry.name);
@@ -576,6 +623,7 @@ for (const file of walkMdx(CONTENT)) {
   const { body } = readMdx(file);
   checkMdxExpressions(file, body);
   checkMusicSpecs(file, body);
+  checkToolLinks(file, body);
 }
 
 // avisos: semanas sin 5 días, wiki huérfana

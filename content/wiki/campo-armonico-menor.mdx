@@ -1,0 +1,147 @@
+---
+slug: campo-armonico-menor
+title: "El campo armónico menor"
+category: teoria
+level: 2
+related:
+  [
+    campo-armonico,
+    escala-menor-natural,
+    escala-menor-armonica,
+    escala-menor-melodica,
+    ii-v-i,
+  ]
+summary: "De dónde salen los acordes de una tonalidad menor, y por qué hay tres menores en vez de una: la menor natural no tiene dominante, y alguien tuvo que inventárselo."
+---
+
+<Ficha
+  grados="i - ii° - III - iv - v - VI - VII (natural)"
+  clave="La menor natural no tiene V7: su quinto grado es menor"
+  solucion="Subir la séptima → menor armónica → V7 de verdad"
+  usa="Todo el repertorio menor: rock, flamenco, jazz, bandas sonoras"
+  ojo="Las tres menores conviven en la misma canción"
+/>
+
+## Qué es
+
+Armonizar una escala es apilar terceras sobre cada grado y ver qué acorde sale.
+Con la mayor ya lo hiciste en [[campo-armonico]]. Con la menor pasa algo raro,
+y ese algo explica media historia de la armonía.
+
+De la [[escala-menor-natural]] de La (A B C D E F G) salen:
+
+| Grado | Acorde | Séptima |
+| ----- | ------ | ------- |
+| i     | Am     | Am7     |
+| ii°   | Bdim   | Bm7b5   |
+| III   | C      | Cmaj7   |
+| iv    | Dm     | Dm7     |
+| v     | **Em** | **Em7** |
+| VI    | F      | Fmaj7   |
+| VII   | G      | G7      |
+
+Mira el quinto grado: **Em, menor**. Y un acorde menor no tira hacia la tónica.
+El movimiento que hace que una canción "vuelva a casa" —el trítono del
+dominante resolviendo— aquí no existe, porque Em7 no tiene trítono.
+
+## La solución: subir la séptima
+
+Si al La menor le subes el G a G#, tienes la [[escala-menor-armonica]] (A B C D
+E F G#). Y ahora el quinto grado es **E7**: mayor, con séptima menor, con
+trítono. Un dominante de verdad.
+
+<Acorde nombre="E7" zona="7" pie="E7: el dominante que la menor natural no tenía." />
+
+Ese es el campo armónico que se usa de verdad en música menor:
+
+| Grado | Acorde | Séptima  |
+| ----- | ------ | -------- |
+| i     | Am     | Am(maj7) |
+| ii°   | Bdim   | Bm7b5    |
+| III+  | Caug   | Cmaj7#5  |
+| iv    | Dm     | Dm7      |
+| **V** | **E**  | **E7**   |
+| VI    | F      | Fmaj7    |
+| vii°  | G#dim  | G#dim7   |
+
+<Aviso tipo="nota">
+  En la práctica **nadie usa una sola de las tres menores**. Se toma el i y el iv de la
+  natural, el V7 de la armónica y, al subir melodías, el vi y el vii de la
+  [[escala-menor-melodica]]. Las tres escalas son tres herramientas para la misma
+  tonalidad, no tres tonalidades.
+</Aviso>
+
+## De dónde viene
+
+De cantar. La menor armónica tiene un salto de tres semitonos entre F y G# que
+a las voces les resulta incómodo, así que al subir se sube también el F
+(melódica) y al bajar se vuelve a la natural. Los tratados llevan siglos
+explicándolo como si fueran escalas distintas; en realidad es una tonalidad
+menor con la séptima ajustada según lo que haga la melodía.
+
+## Dónde lo has oído
+
+- **Hit the Road Jack** (Ray Charles) — Am - G - F - **E7**, el bucle entero.
+  Ese E7 es el campo menor armónico en cuatro compases.
+- **Sultans of Swing** (Dire Straits) — Dm - C - Bb - **A7**: idéntico patrón.
+- **Autumn Leaves**, la segunda mitad — el ii-V-i menor: Bm7b5 - E7 - Am.
+- **Stairway to Heaven** — el bajo cromático de la intro es la menor con la
+  séptima moviéndose.
+- Casi cualquier cosa en flamenco: la **cadencia andaluza** Am - G - F - E es
+  este campo armónico exacto.
+
+## En el mástil
+
+El ii-V-i menor es el atajo: **Bm7b5 - E7 - Am7**. Los tres en la misma zona,
+sin mover la mano más de tres trastes.
+
+<Acordes>
+  <Acorde nombre="Bm7b5" trastes="x,2,3,2,3,x" pie="Bm7b5 — el ii° con séptima" />
+  <Acorde nombre="E7" trastes="x,x,2,1,3,0" pie="E7 — el V con su trítono" />
+  <Acorde nombre="Am7" trastes="x,0,2,0,1,0" pie="Am7 — a casa" />
+</Acordes>
+
+<Mastil
+  escala="A harmonic-minor"
+  pie="La menor armónica: la natural con el G subido a G#. Ese G# es todo el asunto."
+/>
+
+<ToolLink href="/escalas?root=A&type=harmonic-minor">Explorarla en /escalas</ToolLink>
+
+## Cómo estudiarlo
+
+<Rutina>
+  <Paso dias="1-3" min="8" tool="/bases?prog=cadencia-andaluza&tono=A">
+    Toca Am - G - F - E una y otra vez. Escucha **qué hace el E** que no hacía el Em: la
+    tensión que pide volver.
+  </Paso>
+  <Paso dias="4-7" min="10" bpm="70" tool="/escalas?root=A&type=harmonic-minor">
+    La menor armónica en una posición. Fíjate solo en el hueco entre F y G#: es de tres
+    trastes en la misma cuerda, y es lo que le da ese sabor.
+  </Paso>
+  <Paso dias="8-12" min="10" tool="/bases?prog=ii-v-i-menor&tono=A">
+    El ii-V-i menor: Bm7b5 - E7 - Am7. Primero acompañando, luego sacando el arpegio de
+    cada uno ([[arpegios]]).
+  </Paso>
+  <Paso dias="13+" min="10">
+    Improvisa con la menor natural, y **solo sobre el E7 cambia el G por G#**. Es el 90%
+    de lo que suena a "sabe armonía".
+  </Paso>
+</Rutina>
+
+## Errores comunes
+
+- **Tocar la menor armónica entera todo el rato.** Suena a examen de
+  conservatorio. Antídoto: úsala solo mientras suena el dominante.
+- **Poner Em7 donde la canción pide E7.** Si el estribillo no "vuelve", suele
+  ser esto. Antídoto: prueba el V mayor y compara.
+- **Creer que hay que elegir una de las tres menores.** No hay que elegir.
+
+## Para trastear
+
+Coge cualquier canción tuya en menor que suene sosa al volver a la tónica y
+cambia el v menor por **V7**. Un solo acorde. Escucha la diferencia.
+
+<ToolLink href="/bases?prog=ii-v-i-menor&tono=A&bpm=80">
+  Base de ii-V-i menor en La
+</ToolLink>
