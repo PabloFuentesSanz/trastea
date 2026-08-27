@@ -72,4 +72,8 @@
 - Referenciados sin existir: 0
 - Huérfanos (sin backlinks): 0
 
-_Última ejecución: 2026-08-27T08:06:15.826Z_
+## ❌ Errores de validación
+
+- content/wiki/enclosures.mdx: una caja no es un rectángulo de trastes: usa `caja="N"` en vez de desde/hasta
+
+_Última ejecución: 2026-08-27T08:15:42.755Z_
