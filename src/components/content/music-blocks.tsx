@@ -4,6 +4,7 @@ import { Fretboard, type FretboardLabels } from "@/components/fretboard/fretboar
 import { ChordDiagram } from "@/components/fretboard/chord-diagram";
 import { formulaPositions } from "@/lib/music/fretboard";
 import { boxCount, scaleBox } from "@/lib/music/boxes";
+import { parseGrid } from "@/lib/music/grid";
 import {
   parseFormulaSpec,
   parseNoteSpec,
@@ -190,6 +191,60 @@ export function Mastil({
         title={pie ? `${titulo}: ${pie}` : titulo}
       />
     </Figure>
+  );
+}
+
+/**
+ * Rejilla de acordes: la forma de un tema como se lee en un real book.
+ *
+ *   <Rejilla compases="A7 | A7 | A7 | A7 | D7 | D7 | A7 | A7 | E7 | D7 | A7 | E7" />
+ *
+ * Un compás por celda, cuatro por línea. "%" repite el anterior y dos
+ * cifrados en la misma celda son dos acordes en ese compás.
+ */
+export function Rejilla({
+  compases,
+  pie,
+  porLinea,
+}: {
+  compases: string;
+  pie?: string;
+  porLinea?: Numerico;
+}) {
+  const bars = parseGrid(compases);
+  const columnas = num(porLinea) ?? 4;
+
+  return (
+    <figure className="not-prose my-5">
+      <ol
+        className="grid gap-px overflow-hidden rounded-lg border bg-border"
+        style={{ gridTemplateColumns: `repeat(${columnas}, minmax(0, 1fr))` }}
+      >
+        {bars.map((bar, i) => (
+          <li
+            key={i}
+            className="flex min-h-14 flex-col justify-between bg-card px-2 py-1.5"
+          >
+            <span className="text-[10px] text-muted-foreground">{i + 1}</span>
+            <span className="flex flex-wrap gap-x-2 text-sm font-medium">
+              {bar.chords.length === 0 ? (
+                <span
+                  className="text-muted-foreground"
+                  aria-label="repite el compás anterior"
+                >
+                  %
+                </span>
+              ) : (
+                bar.chords.map((chord) => <span key={chord}>{chord}</span>)
+              )}
+            </span>
+          </li>
+        ))}
+      </ol>
+      {pie && (
+        <figcaption className="mt-1.5 text-xs text-muted-foreground">{pie}</figcaption>
+      )}
+    </figure>
   );
 }
 

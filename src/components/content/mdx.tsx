@@ -11,6 +11,7 @@ import {
   Mastil,
   Paso,
   PorCuerdas,
+  Rejilla,
   Rutina,
 } from "./music-blocks";
 import { Cancion, Canciones } from "./song-blocks";
@@ -69,6 +70,7 @@ const components = {
   Mastil,
   Cajas,
   PorCuerdas,
+  Rejilla,
   Acorde,
   Acordes,
   Ficha,
