@@ -72,4 +72,4 @@
 - Referenciados sin existir: 0
 - Huérfanos (sin backlinks): 0
 
-_Última ejecución: 2026-08-27T11:47:01.171Z_
+_Última ejecución: 2026-08-27T12:13:48.814Z_

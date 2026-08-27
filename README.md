@@ -186,6 +186,7 @@ URLs firmadas de una hora. Todas juntas están en `/grabaciones`.
 | Comando                                        | Qué hace                                                                        |
 | ---------------------------------------------- | ------------------------------------------------------------------------------- |
 | `pnpm dev`                                     | servidor de desarrollo                                                          |
+| `pnpm e2e`                                     | E2E con Playwright (escritorio y móvil); arranca la app en producción           |
 | `pnpm build` / `pnpm start`                    | build y servidor de producción                                                  |
 | `pnpm test` / `pnpm test:watch`                | tests unitarios (Vitest + Testing Library)                                      |
 | `pnpm lint` / `pnpm typecheck` / `pnpm format` | calidad                                                                         |
