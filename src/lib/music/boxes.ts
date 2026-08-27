@@ -62,6 +62,33 @@ function defaultNotesPerString(intervals: readonly IntervalName[]): number {
   return intervals.length <= 5 ? 2 : 3;
 }
 
+/**
+ * Último traste que se puede tocar. Las guitarras tienen entre 20 y 24; 22 es
+ * el techo razonable, y por encima de ahí la caja deja de existir.
+ */
+export const MAX_PLAYABLE_FRET = 22;
+
+/**
+ * Baja la caja octavas enteras hasta que quepa en el mástil.
+ *
+ * Las cajas se numeran subiendo desde la raíz en la 6ª cuerda, así que en
+ * tonalidades altas las últimas se salen: la caja 7 de Do mayor caía en los
+ * trastes 19-24 y se dibujaba tan tranquila. El traste 24 no existe en la
+ * mayoría de guitarras y en ninguna acústica. Bajar doce trastes es la misma
+ * forma exacta, sonando una octava más grave — que es donde se toca de verdad.
+ */
+function intoNeck(positions: FretPosition[]): FretPosition[] {
+  if (positions.length === 0) return positions;
+  let salida = positions;
+  for (let vuelta = 0; vuelta < 3; vuelta += 1) {
+    const max = Math.max(...salida.map((p) => p.fret));
+    const min = Math.min(...salida.map((p) => p.fret));
+    if (max <= MAX_PLAYABLE_FRET || min < 12) return salida;
+    salida = salida.map((p) => ({ ...p, fret: p.fret - 12, midi: p.midi - 12 }));
+  }
+  return salida;
+}
+
 export function scaleBox(options: ScaleBoxOptions): FretPosition[] {
   const { root, tuningMidi, box, parentIntervals } = options;
 
@@ -135,7 +162,7 @@ export function scaleBox(options: ScaleBoxOptions): FretPosition[] {
     }
   }
 
-  return positions;
+  return intoNeck(positions);
 }
 
 /** Traste más grave de esa cuerda que suena `pc` y queda por encima de `aboveMidi`. */
@@ -172,7 +199,9 @@ function withExtraNotes(base: FretPosition[], options: ScaleBoxOptions): FretPos
     const enCuerda = base.filter((p) => p.string === string);
     if (enCuerda.length === 0) continue;
     const min = Math.min(...enCuerda.map((p) => p.fret));
-    const max = Math.max(...enCuerda.map((p) => p.fret)) + 1;
+    // un traste de margen arriba (ahí cae la b5 del blues en la 4ª cuerda),
+    // pero nunca más allá del mástil: una nota en el traste 23 no se toca
+    const max = Math.min(Math.max(...enCuerda.map((p) => p.fret)) + 1, MAX_PLAYABLE_FRET);
 
     for (let fret = min; fret <= max; fret++) {
       if (yaEstan.has(`${string}:${fret}`)) continue;

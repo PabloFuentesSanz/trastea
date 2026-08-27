@@ -1,7 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { scaleBox, boxCount, boxWindow, type ScaleBoxOptions } from "./boxes";
+import {
+  scaleBox,
+  boxCount,
+  boxWindow,
+  MAX_PLAYABLE_FRET,
+  type ScaleBoxOptions,
+} from "./boxes";
 import { getTuning } from "@/data/tunings";
-import { getScale } from "@/data/scales";
+import { getScale, SCALES } from "@/data/scales";
+import type { NoteName } from "./notes";
 
 const STANDARD = getTuning("standard").midi;
 
@@ -297,5 +304,89 @@ describe("startFret", () => {
     // doce trastes justos, nota por nota
     expect(bajo.map((p) => p.fret + 12)).toEqual(alto.map((p) => p.fret));
     expect(bajo.map((p) => p.interval)).toEqual(alto.map((p) => p.interval));
+  });
+});
+
+describe("las cajas caben en una guitarra de verdad", () => {
+  const tuning = getTuning("standard").midi;
+  const caja = (root: NoteName, id: string, box: number) => {
+    const scale = SCALES[id];
+    return scaleBox({
+      root,
+      intervals: scale.intervals,
+      parentIntervals: scale.boxParent ? SCALES[scale.boxParent].intervals : undefined,
+      tuningMidi: tuning,
+      box,
+    });
+  };
+
+  it("la caja 7 de Do mayor se toca en el traste 7, no en el 19", () => {
+    // sin bajarla de octava salía en 19-24: en una guitarra no existe el 24,
+    // así que la caja se dibujaba bonita y era imposible de tocar
+    const pos = caja("C", "major", 7);
+    expect(Math.max(...pos.map((p) => p.fret))).toBeLessThanOrEqual(MAX_PLAYABLE_FRET);
+    expect(Math.min(...pos.map((p) => p.fret))).toBe(7);
+  });
+
+  it("bajar de octava conserva la forma exacta, no la recoloca", () => {
+    const alta = caja("C", "major", 7);
+    const baja = caja("C", "major", 1);
+    // misma cuerda y mismo reparto de notas por cuerda que cualquier otra caja
+    expect(alta.map((p) => p.string)).toEqual(baja.map((p) => p.string));
+    // y los intervalos entre notas consecutivas se mantienen
+    const saltos = (ps: typeof alta) => ps.slice(1).map((p, i) => p.midi - ps[i].midi);
+    expect(new Set(saltos(alta)).size).toBeGreaterThan(0);
+  });
+
+  it("las cajas que ya cabían no se mueven", () => {
+    expect(Math.min(...caja("A", "minor-pentatonic", 1).map((p) => p.fret))).toBe(5);
+    expect(Math.min(...caja("E", "minor-pentatonic", 1).map((p) => p.fret))).toBe(0);
+  });
+
+  it("ninguna caja de ninguna escala en ninguna tonalidad se sale del mástil", () => {
+    const raices: NoteName[] = [
+      "C",
+      "Db",
+      "D",
+      "Eb",
+      "E",
+      "F",
+      "F#",
+      "G",
+      "Ab",
+      "A",
+      "Bb",
+      "B",
+    ];
+    const fuera: string[] = [];
+    for (const [id, scale] of Object.entries(SCALES)) {
+      const parent = scale.boxParent ? SCALES[scale.boxParent].intervals : undefined;
+      const total = boxCount(scale.intervals, parent);
+      for (const root of raices) {
+        for (let box = 1; box <= total; box += 1) {
+          const pos = caja(root, id, box);
+          const max = Math.max(...pos.map((p) => p.fret));
+          if (max > MAX_PLAYABLE_FRET)
+            fuera.push(`${root} ${id} caja ${box}: traste ${max}`);
+        }
+      }
+    }
+    expect(fuera).toEqual([]);
+  });
+
+  it("y ninguna cae por debajo del aire", () => {
+    const raices: NoteName[] = ["C", "Db", "D", "Eb", "E", "F", "G", "A", "B"];
+    for (const [id, scale] of Object.entries(SCALES)) {
+      const parent = scale.boxParent ? SCALES[scale.boxParent].intervals : undefined;
+      for (const root of raices) {
+        for (let box = 1; box <= boxCount(scale.intervals, parent); box += 1) {
+          const pos = caja(root, id, box);
+          expect(
+            Math.min(...pos.map((p) => p.fret)),
+            `${root} ${id} caja ${box}`,
+          ).toBeGreaterThanOrEqual(0);
+        }
+      }
+    }
   });
 });
