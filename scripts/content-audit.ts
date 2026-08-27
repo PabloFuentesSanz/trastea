@@ -310,6 +310,9 @@ const MASTIL_SPEC = /<Mastil\b[^>]*?\b(escala|acorde)="([^"]+)"/g;
 const ACORDE_SPEC = /<Acorde\b[^>]*?\bnombre="([^"]+)"/g;
 const TRASTES_SPEC = /<Acorde\b[^>]*?\btrastes="([^"]+)"/g;
 const NOTAS_SPEC = /<Mastil\b[^>]*?\bnotas="([^"]+)"/g;
+// Una caja NO es un rectángulo de trastes: recortarla con desde/hasta se come
+// notas de la vecina y pierde las propias. Se escribe `caja="2"`.
+const MASTIL_TAG = /<Mastil\b[^>]*?\/>/g;
 
 function checkMusicSpecs(file: string, body: string) {
   const seen: [string, "scale" | "chord"][] = [];
@@ -339,6 +342,19 @@ function checkMusicSpecs(file: string, body: string) {
       parseNoteSpec(m[1]);
     } catch (e) {
       errors.push({ file: rel(file), message: (e as Error).message });
+    }
+  }
+
+  for (const m of body.matchAll(MASTIL_TAG)) {
+    const tag = m[0];
+    const recorta = /\bdesde="/.test(tag) || /\bhasta="/.test(tag);
+    const pieDeCaja = /\bpie="[^"]*[Cc]aja/.test(tag);
+    if (recorta && pieDeCaja) {
+      errors.push({
+        file: rel(file),
+        message:
+          'una caja no es un rectángulo de trastes: usa `caja="N"` en vez de desde/hasta',
+      });
     }
   }
 }

@@ -4,8 +4,14 @@ export interface ScaleDef {
   id: string;
   name: string;
   intervals: readonly IntervalName[];
-  /** Escala de 7 notas de la que deriva (para digitaciones), si aplica */
+  /** Escala de 7 notas de la que deriva (teoría), si aplica */
   parent?: string;
+  /**
+   * Escala de la que hereda la DIGITACIÓN de las cajas. No siempre coincide
+   * con `parent`: el blues deriva teóricamente de la menor natural, pero su
+   * caja es la de la pentatónica menor con la b5 metida dentro.
+   */
+  boxParent?: string;
   category: "mayor" | "menor" | "pentatonica" | "modo" | "sintetica" | "otra";
 }
 
@@ -57,6 +63,7 @@ export const SCALES: Record<string, ScaleDef> = {
     name: "Blues",
     intervals: ["1", "b3", "4", "b5", "5", "b7"],
     parent: "natural-minor",
+    boxParent: "minor-pentatonic",
     category: "otra",
   },
   dorian: {

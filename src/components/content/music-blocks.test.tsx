@@ -199,3 +199,43 @@ describe("<Mastil notas> con notas sueltas", () => {
     expect(() => render(<Mastil />)).toThrow(/necesita/);
   });
 });
+
+describe("<Mastil caja> y <Cajas>", () => {
+  it("la caja 2 incluye el traste 7, que la ventana rectangular se comía", async () => {
+    const { Mastil } = await import("./music-blocks");
+    const { container } = render(<Mastil escala="A minor-pentatonic" caja="2" />);
+    const titulos = [...container.querySelectorAll("title")].map((t) => t.textContent);
+    expect(titulos.some((t) => t?.includes("traste 7"))).toBe(true);
+  });
+
+  it("una caja tiene doce notas, no las que quepan en un rectángulo", async () => {
+    const { Mastil } = await import("./music-blocks");
+    const { container } = render(<Mastil escala="A minor-pentatonic" caja="3" />);
+    expect(board(container).notas).toBe(12);
+  });
+
+  it("<Cajas> dibuja las cinco de una pentatónica", async () => {
+    const { Cajas } = await import("./music-blocks");
+    const { container } = render(<Cajas escala="A minor-pentatonic" />);
+    expect(container.querySelectorAll("svg")).toHaveLength(5);
+  });
+
+  it("<Cajas> dibuja las siete de una escala de siete notas", async () => {
+    const { Cajas } = await import("./music-blocks");
+    const { container } = render(<Cajas escala="G major" />);
+    expect(container.querySelectorAll("svg")).toHaveLength(7);
+  });
+
+  it("<PorCuerdas> dibuja una por cuerda", async () => {
+    const { PorCuerdas } = await import("./music-blocks");
+    const { container } = render(<PorCuerdas escala="A minor-pentatonic" />);
+    expect(container.querySelectorAll("svg")).toHaveLength(6);
+  });
+
+  it("una caja inexistente revienta en vez de dibujar otra", async () => {
+    const { Mastil } = await import("./music-blocks");
+    expect(() => render(<Mastil escala="A minor-pentatonic" caja="9" />)).toThrow(
+      /caja/i,
+    );
+  });
+});

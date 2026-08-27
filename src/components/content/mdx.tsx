@@ -2,7 +2,17 @@ import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { Acorde, Acordes, Aviso, Ficha, Mastil, Paso, Rutina } from "./music-blocks";
+import {
+  Acorde,
+  Acordes,
+  Aviso,
+  Cajas,
+  Ficha,
+  Mastil,
+  Paso,
+  PorCuerdas,
+  Rutina,
+} from "./music-blocks";
 import { Cancion, Canciones } from "./song-blocks";
 
 function SmartLink({ href = "", children, ...rest }: ComponentPropsWithoutRef<"a">) {
@@ -57,6 +67,8 @@ const components = {
   WikiLink,
   // primitivas visuales de autoría (ver .claude/skills/music-ui)
   Mastil,
+  Cajas,
+  PorCuerdas,
   Acorde,
   Acordes,
   Ficha,

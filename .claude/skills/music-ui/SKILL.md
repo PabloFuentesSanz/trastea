@@ -34,7 +34,10 @@ El contenido **no dibuja nada a mano**: nunca una lista tipo "6ª cuerda: 5-8"
 donde cabe un diagrama. Componentes disponibles desde cualquier `.mdx`:
 
 ```mdx
-<Mastil escala="A minor-pentatonic" desde="5" hasta="8" pie="Caja 1" />
+<Mastil escala="A minor-pentatonic" caja="1" />
+<Cajas escala="A minor-pentatonic" /> {/* TODAS las posiciones */}
+<PorCuerdas escala="A minor-pentatonic" /> {/* la escala cuerda a cuerda */}
+<Mastil escala="A minor-pentatonic" desde="5" hasta="8" pie="una zona cualquiera" />
 <Mastil acorde="Am7" desde="5" hasta="8" cuerdas="4, 3, 2" />
 <Acordes>
   <Acorde nombre="C" />
@@ -61,6 +64,24 @@ donde cabe un diagrama. Componentes disponibles desde cualquier `.mdx`:
 
 `escala`/`acorde` se resuelven contra `SCALES`/`CHORDS` (`parseFormulaSpec`):
 un id inexistente revienta el build, no dibuja algo equivocado.
+
+### ⚠️ Una caja NO es una ventana de trastes
+
+Para una posición de escala se usa **siempre `caja="N"`**, nunca `desde/hasta`.
+Una caja es un patrón de digitación con un par de trastes distinto en cada
+cuerda: recortarla por rectángulo se come notas de la caja vecina y pierde las
+propias (la caja 2 de la pentatónica baja al traste 7 aunque "empiece" en el
+8). El patrón se deduce de la fórmula en `src/lib/music/boxes.ts`, no se
+escribe a mano. `content:audit` rechaza `desde/hasta` en cualquier `<Mastil>`
+cuyo pie hable de una caja.
+
+Las escalas que heredan digitación (el blues es la pentatónica con la b5
+metida dentro) lo declaran con `boxParent` en `src/data/scales.ts`.
+
+### Regla de contenido: todas las formas, siempre
+
+Donde se hable de una escala salen **todas** sus cajas (`<Cajas>`), no una de
+muestra, y el estudio **cuerda a cuerda** (`<PorCuerdas>`).
 
 ### ⚠️ Las expresiones MDX no se evalúan
 

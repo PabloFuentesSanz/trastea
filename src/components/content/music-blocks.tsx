@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Fretboard, type FretboardLabels } from "@/components/fretboard/fretboard";
 import { ChordDiagram } from "@/components/fretboard/chord-diagram";
 import { formulaPositions } from "@/lib/music/fretboard";
+import { boxCount, scaleBox } from "@/lib/music/boxes";
 import {
   parseFormulaSpec,
   parseNoteSpec,
@@ -14,9 +15,16 @@ import { spellFormula, type NoteName } from "@/lib/music/notes";
 import { generateVoicings, type Voicing } from "@/lib/music/voicings";
 import { parseFretSpec, voicingFromFrets } from "@/lib/music/voicing-from-frets";
 import { getTuning } from "@/data/tunings";
+import { getScale, SCALES } from "@/data/scales";
 import { cn } from "@/lib/utils";
 
 const STANDARD = getTuning("standard").midi;
+
+/** Fórmula de la escala de la que una escala hereda la digitación, si la hay. */
+function boxParentIntervals(scaleId: string) {
+  const parentId = SCALES[scaleId]?.boxParent;
+  return parentId ? getScale(parentId).intervals : undefined;
+}
 
 /**
  * En este pipeline las expresiones MDX (`desde={5}`) NO se evalúan: llegan
@@ -74,16 +82,22 @@ function Figure({
 /**
  * Mástil dibujado desde MDX:
  *
- *   <Mastil escala="A minor-pentatonic" desde={5} hasta={8} pie="Caja 1" />
- *   <Mastil acorde="Am7" desde={5} hasta={8} cuerdas={[4,3,2]} />
+ *   <Mastil escala="A minor-pentatonic" caja="1" />
+ *   <Mastil escala="A minor-pentatonic" cuerdas="6" />
+ *   <Mastil acorde="Am7" desde="5" hasta="8" />
+ *   <Mastil notas="6:5, 5:7" />
  *
- * `desde`/`hasta` recortan la ventana; sin ellos sale el mástil entero.
+ * Para una caja usa SIEMPRE `caja`, nunca `desde`/`hasta`: una caja no es un
+ * rectángulo de trastes y recortarla a ojo se come notas de la vecina y
+ * pierde las propias (ver src/lib/music/boxes.ts).
  */
 export function Mastil({
   escala,
   acorde,
   notas,
   raiz,
+  caja,
+  notasPorCuerda,
   desde,
   hasta,
   cuerdas,
@@ -97,6 +111,10 @@ export function Mastil({
   notas?: string;
   /** raíz desde la que medir los intervalos de `notas` */
   raiz?: string;
+  /** posición de la escala: 1 = la que empieza en la raíz */
+  caja?: Numerico;
+  /** 2 para pentatónicas, 3 para escalas de siete notas */
+  notasPorCuerda?: Numerico;
   desde?: Numerico;
   hasta?: Numerico;
   cuerdas?: string | number[];
@@ -118,38 +136,140 @@ export function Mastil({
   }
 
   const parsed = notas ? parseNoteSpec(notas) : null;
-  // con notas sueltas la ventana se ajusta sola a lo que hay que enseñar
-  const lastFret = to ?? (parsed ? Math.max(...parsed.map((n) => n.fret), 1) + 1 : 15);
+  const numeroCaja = num(caja);
 
-  const positions = parsed
-    ? positionsFromNotes(parsed, STANDARD, raiz ?? spec?.root)
-    : windowPositions(
-        formulaPositions({
-          root: spec!.root,
-          intervals: spec!.intervals,
-          tuningMidi: STANDARD,
-          frets: lastFret,
-        }),
-        { fromFret: from, toFret: to, strings },
-      );
+  let positions;
+  if (parsed) {
+    positions = positionsFromNotes(parsed, STANDARD, raiz ?? spec?.root);
+  } else if (numeroCaja !== undefined) {
+    if (!spec) throw new Error("<Mastil caja> necesita `escala`");
+    positions = scaleBox({
+      root: spec.root,
+      intervals: spec.intervals,
+      tuningMidi: STANDARD,
+      box: numeroCaja,
+      notesPerString: num(notasPorCuerda),
+      parentIntervals: boxParentIntervals(spec.id),
+    });
+  } else {
+    positions = windowPositions(
+      formulaPositions({
+        root: spec!.root,
+        intervals: spec!.intervals,
+        tuningMidi: STANDARD,
+        frets: to ?? 15,
+      }),
+      { fromFret: from, toFret: to, strings },
+    );
+  }
+
+  // La caja y las notas sueltas traen su propia extensión: la ventana se
+  // ajusta a lo que hay que enseñar, con un traste de aire a cada lado.
+  const frets = positions.map((p) => p.fret);
+  const autoFrom = frets.length > 0 ? Math.max(Math.min(...frets) - 1, 0) : 0;
+  const autoTo = frets.length > 0 ? Math.max(...frets) + 1 : 15;
+  const ajustada = parsed !== null || numeroCaja !== undefined;
+
+  const firstFret = from ?? (ajustada ? autoFrom : 0);
+  const lastFret = to ?? (ajustada ? autoTo : 15);
 
   const titulo = spec?.label ?? "Notas en el mástil";
 
   // el mástil entero se deja crecer; una ventana corta se queda en su tamaño
-  const cells = lastFret - Math.max(from ?? 0, 1) + 1;
+  const cells = lastFret - Math.max(firstFret, 1) + 1;
   const natural = cells >= 12 ? undefined : 90 + cells * 78;
 
   return (
     <Figure caption={pie} maxWidth={natural}>
       <Fretboard
         positions={positions}
-        fromFret={from ?? 0}
+        fromFret={firstFret}
         frets={lastFret}
         labels={etiquetas}
         lefty={zurdo}
         title={pie ? `${titulo}: ${pie}` : titulo}
       />
     </Figure>
+  );
+}
+
+/**
+ * Todas las cajas de una escala, de golpe. La regla del contenido: donde se
+ * habla de una escala salen TODAS sus posiciones, no una de muestra.
+ *
+ *   <Cajas escala="A minor-pentatonic" />
+ */
+export function Cajas({
+  escala,
+  notasPorCuerda,
+  etiquetas = "interval",
+  desde,
+}: {
+  escala: string;
+  notasPorCuerda?: Numerico;
+  etiquetas?: FretboardLabels;
+  /** empezar en otra caja que no sea la 1 */
+  desde?: Numerico;
+}) {
+  const spec = parseFormulaSpec(escala, "scale");
+  const total = boxCount(spec.intervals, boxParentIntervals(spec.id));
+  const primera = num(desde) ?? 1;
+
+  return (
+    <>
+      {Array.from({ length: total - primera + 1 }, (_, i) => primera + i).map((caja) => (
+        <Mastil
+          key={caja}
+          escala={escala}
+          caja={caja}
+          notasPorCuerda={notasPorCuerda}
+          etiquetas={etiquetas}
+          pie={`Caja ${caja} de ${total}`}
+        />
+      ))}
+    </>
+  );
+}
+
+/**
+ * La escala cuerda a cuerda: seis mástiles de una sola cuerda. Es como se
+ * aprende el mástil de verdad, sin depender de la forma de la mano.
+ *
+ *   <PorCuerdas escala="A minor-pentatonic" />
+ */
+export function PorCuerdas({
+  escala,
+  etiquetas = "note",
+  hasta,
+}: {
+  escala: string;
+  etiquetas?: FretboardLabels;
+  hasta?: Numerico;
+}) {
+  const cuerdas = [6, 5, 4, 3, 2, 1];
+  const nombres = [
+    "6ª (Mi grave)",
+    "5ª (La)",
+    "4ª (Re)",
+    "3ª (Sol)",
+    "2ª (Si)",
+    "1ª (Mi agudo)",
+  ];
+
+  return (
+    <>
+      {cuerdas.map((cuerda, i) => (
+        <Mastil
+          key={cuerda}
+          escala={escala}
+          cuerdas={String(cuerda)}
+          desde="0"
+          hasta={hasta ?? "12"}
+          etiquetas={etiquetas}
+          pie={`Cuerda ${nombres[i]}`}
+        />
+      ))}
+    </>
   );
 }
 
