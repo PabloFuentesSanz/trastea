@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { foreignNotes, parseTab, tabDuration } from "./tab";
+import { foreignNotes, foreignPerBar, parseTab, tabDuration } from "./tab";
 
 describe("parseTab", () => {
   it("lee una columna por token, cuerda:traste", () => {
@@ -135,5 +135,26 @@ describe("foreignNotes", () => {
 
   it("ignora las notas muertas", () => {
     expect(foreignNotes(parseTab("6:x"), SOL_MAYOR, STANDARD)).toEqual([]);
+  });
+});
+
+describe("foreignPerBar", () => {
+  const STANDARD = [40, 45, 50, 55, 59, 64];
+  const CM7 = [0, 3, 7, 10]; // C Eb G Bb
+  const F7 = [5, 9, 0, 3]; // F A C Eb
+
+  it("acepta un arpegio por compás", () => {
+    expect(foreignPerBar(parseTab("5:3 5:6 | 6:1 6:5"), [CM7, F7], STANDARD)).toEqual([]);
+  });
+
+  it("dice en qué compás está la nota ajena", () => {
+    // 5ª cuerda traste 4 es un Do#: no está en Cm7
+    expect(foreignPerBar(parseTab("5:3 5:4 | 6:1"), [CM7, F7], STANDARD)).toEqual([
+      "compás 1: 5:4",
+    ]);
+  });
+
+  it("deja pasar los compases para los que no se declara acorde", () => {
+    expect(foreignPerBar(parseTab("5:3 | 5:4"), [CM7], STANDARD)).toEqual([]);
   });
 });

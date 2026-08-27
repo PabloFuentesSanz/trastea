@@ -181,3 +181,25 @@ export function foreignNotes(
   }
   return fuera;
 }
+
+/**
+ * Notas de cada compás que no pertenecen al acorde de ese compás.
+ * Es lo que necesita una tab de arpegios o de guide tones: ahí no hay una
+ * escala única, hay un acorde por compás, y una nota mal puesta parece
+ * correcta hasta que suena.
+ */
+export function foreignPerBar(
+  bars: TabBar[],
+  chordPitchClasses: readonly (readonly number[])[],
+  tuningMidi: readonly number[],
+): string[] {
+  const fuera: string[] = [];
+  bars.forEach((bar, i) => {
+    const pcs = chordPitchClasses[i];
+    if (!pcs) return;
+    fuera.push(
+      ...foreignNotes([bar], pcs, tuningMidi).map((n) => `compás ${i + 1}: ${n}`),
+    );
+  });
+  return fuera;
+}

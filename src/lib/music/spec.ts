@@ -13,6 +13,7 @@ import {
   mod12,
   parseNote,
   pcToName,
+  semitonesOf,
   toSolfege,
   type IntervalName,
   type NoteName,
@@ -228,4 +229,10 @@ export function notesThatArent(
   return notes
     .filter((n) => mod12(midiAt(tuningMidi, stringIndex(n.string), n.fret)) !== target)
     .map((n) => `${n.string}:${n.fret}`);
+}
+
+/** Alturas (0-11) de una fórmula ya resuelta: la escala o el acorde, sin octava. */
+export function pitchClassesOf(spec: FormulaSpec): number[] {
+  const root = parseNote(spec.root).pc;
+  return semitonesOf(spec.intervals).map((s) => mod12(root + s));
 }

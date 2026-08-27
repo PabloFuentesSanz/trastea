@@ -30,11 +30,15 @@ import {
   type WeekFrontmatter,
   type WikiFrontmatter,
 } from "../src/lib/content/schemas";
-import { notesThatArent, parseFormulaSpec, parseNoteSpec } from "../src/lib/music/spec";
+import {
+  notesThatArent,
+  parseFormulaSpec,
+  parseNoteSpec,
+  pitchClassesOf,
+} from "../src/lib/music/spec";
 import { validateGrid } from "../src/lib/music/grid";
 import { parseFretSpec, voicingFromFrets } from "../src/lib/music/voicing-from-frets";
-import { foreignNotes, parseTab } from "../src/lib/music/tab";
-import { parseNote, semitonesOf } from "../src/lib/music/notes";
+import { foreignNotes, foreignPerBar, parseTab } from "../src/lib/music/tab";
 import { getTuning } from "../src/data/tunings";
 
 const STANDARD_TUNING = getTuning("standard").midi;
@@ -475,12 +479,26 @@ function checkMusicSpecs(file: string, body: string) {
       const escala = /\bescala="([^"]+)"/.exec(tag)?.[1];
       if (escala) {
         const spec = parseFormulaSpec(escala, "scale");
-        const pcs = semitonesOf(spec.intervals).map((s) => parseNote(spec.root).pc + s);
-        const fuera = foreignNotes(bars, pcs, STANDARD_TUNING);
+        const fuera = foreignNotes(bars, pitchClassesOf(spec), STANDARD_TUNING);
         if (fuera.length > 0) {
           errors.push({
             file: rel(file),
             message: `<Tab escala="${escala}">: ${fuera.join(", ")} no está en la escala`,
+          });
+        }
+      }
+      const acordes = /\bacordes="([^"]+)"/.exec(tag)?.[1];
+      if (acordes) {
+        const porCompas = acordes
+          .split("|")
+          .map((c) => c.trim())
+          .filter(Boolean)
+          .map((c) => pitchClassesOf(parseFormulaSpec(c, "chord")));
+        const fuera = foreignPerBar(bars, porCompas, STANDARD_TUNING);
+        if (fuera.length > 0) {
+          errors.push({
+            file: rel(file),
+            message: `<Tab acordes="${acordes}">: ${fuera.join(", ")} no es del acorde de su compás`,
           });
         }
       }
