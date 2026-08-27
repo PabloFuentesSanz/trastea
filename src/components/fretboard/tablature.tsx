@@ -75,19 +75,22 @@ export interface TablatureProps {
   title: string;
   /** texto bajo la pauta: "corcheas", "negras con swing"… */
   subdivision?: string;
+  /** columna que suena ahora, para seguir la tab mientras se reproduce */
+  currentColumn?: number | null;
   lefty?: boolean;
   className?: string;
 }
 
 /**
- * Pauta de tablatura estática en SVG. Misma convención que el mástil: la 1ª
- * cuerda arriba. No suena ni se reproduce —eso es AlphaTab, más adelante—:
- * esto es para *ver* un ejercicio sin tener que leer un párrafo que lo narre.
+ * Pauta de tablatura en SVG. Misma convención que el mástil: la 1ª cuerda
+ * arriba. Con `currentColumn` resalta la columna que suena, para poder
+ * seguirla mientras se reproduce.
  */
 export function Tablature({
   bars,
   title,
   subdivision,
+  currentColumn = null,
   lefty = false,
   className,
 }: TablatureProps) {
@@ -139,6 +142,18 @@ export function Tablature({
           {letter}
         </text>
       ))}
+
+      {currentColumn !== null && placed[currentColumn] && (
+        <rect
+          x={mirror(placed[currentColumn].x) - placed[currentColumn].width / 2}
+          y={staffTop - 4}
+          width={placed[currentColumn].width}
+          height={staffBottom - staffTop + 8}
+          rx={3}
+          fill="var(--primary)"
+          opacity={0.18}
+        />
+      )}
 
       {placed.map((item, i) =>
         item.barLineBefore ? (

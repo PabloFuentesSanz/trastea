@@ -498,6 +498,27 @@ function checkMusicSpecs(file: string, body: string) {
           });
         }
       }
+      // Los compases de una tab tienen que medir todos lo mismo y caer en
+      // pulsos enteros. Si no, las barras de compás mienten y el bucle entra
+      // a destiempo: no se ve mirando, se oye tocando.
+      if (!/tocable="no"/.test(tag)) {
+        const porPulso = Number(/\bporPulso="([^"]+)"/.exec(tag)?.[1] ?? 2);
+        const pulsos = bars.map((b) => b.columns.length / porPulso);
+        const enteros = pulsos.every((p) => Math.abs(p - Math.round(p)) < 1e-9);
+        const iguales = new Set(pulsos).size === 1;
+        if (!enteros) {
+          errors.push({
+            file: rel(file),
+            message: `<Tab porPulso="${porPulso}">: compases de ${pulsos.join(", ")} pulsos, que no son enteros`,
+          });
+        } else if (!iguales) {
+          errors.push({
+            file: rel(file),
+            message: `<Tab porPulso="${porPulso}">: los compases no miden lo mismo (${pulsos.join(", ")} pulsos)`,
+          });
+        }
+      }
+
       const acordes = /\bacordes="([^"]+)"/.exec(tag)?.[1];
       if (acordes) {
         const porCompas = acordes

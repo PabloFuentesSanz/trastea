@@ -15,6 +15,14 @@ const SCHEDULER_INTERVAL_MS = 25;
 /** margen antes del primer sonido, para no llegar tarde al arranque */
 const START_PADDING_S = 0.12;
 
+/** Cuánto pesa cada voz en la mezcla. */
+const VOICE_GAIN: Record<string, number> = {
+  bajo: 0.5,
+  acorde: 0.22,
+  melodia: 0.42,
+  muerta: 0.3,
+};
+
 export interface BackingEngineConfig {
   notes: readonly BackingNote[];
   /** pulsos que dura una vuelta */
@@ -34,6 +42,31 @@ export interface BackingEngine {
   /** pulso en curso, o null si aún está la claqueta (para el resalte visual) */
   currentBeat(): number | null;
   dispose(): void;
+}
+
+/** Golpe seco sin altura: la cuerda apagada del funk y de los ghost notes. */
+function deadNote(time: number, duration: number, gainValue: number) {
+  const ctx = Tone.getContext().rawContext;
+  const noise = ctx.createBufferSource();
+  const buffer = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * 0.06), ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+  noise.buffer = buffer;
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = "bandpass";
+  filter.frequency.value = 320;
+  filter.Q.value = 1.2;
+
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(gainValue, time);
+  gain.gain.exponentialRampToValueAtTime(0.0001, time + Math.max(duration, 0.05));
+
+  noise.connect(filter);
+  filter.connect(gain);
+  gain.connect(ctx.destination);
+  noise.start(time);
+  noise.stop(time + 0.08);
 }
 
 /** Cuerda pulsada de andar por casa: dos ondas y una envolvente corta. */
@@ -114,12 +147,11 @@ export function createBackingEngine(getConfig: () => BackingEngineConfig): Backi
       const hasta = desde + 1;
       for (const note of config.notes) {
         if (note.beat < desde || note.beat >= hasta) continue;
-        pluck(
-          cycleStart + note.beat * secondsPerBeat,
-          note.midi,
-          note.duration * secondsPerBeat,
-          note.velocity * config.volume * (note.voice === "bajo" ? 0.5 : 0.22),
-        );
+        const time = cycleStart + note.beat * secondsPerBeat;
+        const seconds = note.duration * secondsPerBeat;
+        const gain = note.velocity * config.volume * (VOICE_GAIN[note.voice] ?? 0.3);
+        if (note.voice === "muerta") deadNote(time, seconds, gain);
+        else pluck(time, note.midi, seconds, gain);
       }
       cursor = hasta;
 

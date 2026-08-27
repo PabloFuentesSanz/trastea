@@ -35,7 +35,8 @@ export const STYLE_LABELS: Record<BackingStyle, string> = {
   funk: "Funk",
 };
 
-export type BackingVoice = "bajo" | "acorde";
+/** de qué es la nota: cambia el timbre y el volumen con el que suena */
+export type BackingVoice = "bajo" | "acorde" | "melodia" | "muerta";
 
 export interface BackingNote {
   /** posición en pulsos desde el principio de la rejilla */

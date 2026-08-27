@@ -4,6 +4,7 @@ import { Fretboard, type FretboardLabels } from "@/components/fretboard/fretboar
 import { ChordDiagram } from "@/components/fretboard/chord-diagram";
 import { Tablature } from "@/components/fretboard/tablature";
 import { PlayableGrid } from "@/components/backing/playable-grid";
+import { PlayableTab } from "@/components/backing/playable-tab";
 import type { BackingStyle } from "@/lib/backing/groove";
 import { formulaPositions } from "@/lib/music/fretboard";
 import { boxCount, boxWindow, scaleBox } from "@/lib/music/boxes";
@@ -662,6 +663,10 @@ export function Tab({
   escala,
   acordes,
   figuras,
+  porPulso,
+  swing = "no",
+  bpm,
+  tocable = "si",
   pie,
   titulo,
 }: {
@@ -670,7 +675,16 @@ export function Tab({
   escala?: string;
   /** un cifrado por compás: cada nota tiene que ser de SU acorde */
   acordes?: string;
+  /** pie de la pauta: "corcheas", "tresillos"… */
   figuras?: string;
+  /** columnas por pulso: 2 corcheas, 3 tresillos, 4 semicorcheas */
+  porPulso?: Numerico;
+  /** "si" para que las corcheas suenen con swing */
+  swing?: string;
+  /** tempo con el que arranca */
+  bpm?: Numerico;
+  /** "no" en una tab de figuras mezcladas, que sonaría mal a columnas iguales */
+  tocable?: string;
   pie?: string;
   titulo?: string;
 }) {
@@ -693,13 +707,27 @@ export function Tab({
       throw new Error(`${fuera.join(", ")} no es del acorde`);
     }
   }
+
   const compases = bars.length === 1 ? "1 compás" : `${bars.length} compases`;
+  const titulazo = titulo ?? pie ?? `Tablatura de ${compases}`;
+
+  if (tocable === "no") {
+    return (
+      <Figure caption={pie}>
+        <Tablature bars={bars} subdivision={figuras} title={titulazo} />
+      </Figure>
+    );
+  }
+
   return (
     <Figure caption={pie}>
-      <Tablature
+      <PlayableTab
         bars={bars}
+        title={titulazo}
         subdivision={figuras}
-        title={titulo ?? pie ?? `Tablatura de ${compases}`}
+        perBeat={num(porPulso) ?? 2}
+        bpm={num(bpm) ?? 70}
+        swing={swing === "si"}
       />
     </Figure>
   );
