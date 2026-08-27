@@ -8,6 +8,7 @@ import { Mdx } from "@/components/content/mdx";
 import { ChordChip } from "@/components/content/chord-chip";
 import { getSong, getSongLessons, getSongs, getWikiArticle } from "@/lib/content/loader";
 import { relatedSongs, type SongCard } from "@/lib/content/song-filter";
+import { shapeRoot } from "@/lib/content/capo";
 import {
   SONG_LEVEL_LABEL,
   SONG_STYLE_LABEL,
@@ -76,10 +77,17 @@ export default async function CancionPage({
         <Badge variant="outline">
           Nivel {song.level} · {SONG_LEVEL_LABEL[song.level]}
         </Badge>
-        <Badge variant="secondary" className="font-mono">
-          Tono: {song.key}
+        <Badge variant="secondary">
+          {song.capo ? "Suena en" : "Tono:"} <span className="font-mono">{song.key}</span>
         </Badge>
-        {song.capo ? <Badge variant="secondary">Capo {song.capo}</Badge> : null}
+        {song.capo ? (
+          <Badge variant="secondary">
+            Capo {song.capo}
+            {/* con capo, `key` es lo que suena y las formas son otra cosa:
+                decirlo evita que el lector busque las formas de la tonalidad */}
+            {song.chords[0] ? ` · formas de ${shapeRoot(song.chords[0])}` : ""}
+          </Badge>
+        ) : null}
         {song.tuning ? <Badge variant="secondary">{song.tuning}</Badge> : null}
         {song.bpm ? (
           <Badge variant="secondary" className="tabular-nums">

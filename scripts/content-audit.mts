@@ -45,6 +45,7 @@ import { CHORDS } from "../src/data/chords";
 import { getProgression } from "../src/data/progressions";
 import { PRACTICAL_ROOTS } from "../src/lib/music/notes";
 import { clampBpm } from "../src/lib/metronome/pattern";
+import { capoCoherence } from "../src/lib/content/capo";
 
 const STANDARD_TUNING = getTuning("standard").midi;
 
@@ -263,6 +264,21 @@ for (const { fm } of songs) {
 for (const { fm } of exercises) {
   for (const ref of fm.links.wiki) {
     wikiIncoming.set(ref, (wikiIncoming.get(ref) ?? 0) + 1);
+  }
+}
+
+/**
+ * Capo: `chords` son las formas que hace la mano y `key` es lo que suena. Con
+ * capo esas dos cosas no coinciden, y escribir la de las formas en `key` deja
+ * la ficha diciendo que la canción está en un tono en el que no está.
+ */
+for (const { file, fm } of songs) {
+  const desajuste = capoCoherence({ key: fm.key, chords: fm.chords, capo: fm.capo });
+  if (desajuste) {
+    errors.push({
+      file: rel(file),
+      message: `capo ${desajuste.capo} sobre formas de ${desajuste.forma}: suena en ${desajuste.esperado}, pero key dice "${desajuste.declarado}"`,
+    });
   }
 }
 

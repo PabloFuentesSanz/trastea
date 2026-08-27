@@ -63,10 +63,16 @@ Las 304 fichas se escribieron de memoria. El texto pedagógico y la
 clasificación son sólidos; los **datos duros no están verificados uno a uno** y
 son justo los que se ven en la app y alimentan los filtros.
 
-- [ ] Repasar `key` contra una fuente fiable. Convención a fijar y aplicar:
-      `key` = tonalidad real de la grabación, y `capo` describe las formas.
-      Ahora mismo hay fichas con capo donde `key` es la del _shape_, no la que
-      suena (`perfect`, `photograph`, `free-fallin`, `sound-of-silence`…).
+- [x] **`key` con capo — HECHO (27/08).** Convención fijada y **comprobada por
+      máquina**: `chords` son las formas y `key` es lo que suena.
+      `capoCoherence()` en `src/lib/content/capo.ts` deduce lo que suena del
+      primer acorde más el capo y compara raíz y modo (así `Em7` + capo 2 vale
+      como `F#m`). Encontró **11 fichas incoherentes** de las 17 con capo, y
+      todas están arregladas: diez tenían en `key` la tonalidad de las formas
+      (Landslide decía Do y suena en Mib) y `free-fallin` tenía en `chords` los
+      acordes que suenan en vez de las formas. La prosa de varias fichas ya
+      decía el tono correcto, así que el frontmatter era el que mentía.
+      La ficha ahora muestra "Suena en Mib · Capo 3 · formas de Do".
 - [ ] Repasar `bpm` (alimenta el botón "Metrónomo a N") y `capo`.
 - [ ] Repasar `chords` en las fichas de nivel 1-2, que son las que sostienen el
       filtro "acordes que ya sé". Si hay duda, borrar el campo antes que dejarlo
@@ -131,11 +137,45 @@ El agujero no era la notación, era que nada sonaba. Orden acordado:
 - [ ] **Fase 2b — figuras mezcladas dentro de una tab.** Para las 4 que hoy
       no suenan y para poder escribir ritmos de verdad: `cuerda:traste:figura`
       por columna, plicas dibujadas y la regla de que cada compás sume.
-- [ ] **Fase 3 — AlphaTab, acotado.** Solo para `/content/tabs/*.alphatex`:
-      piezas completas, varias voces, notación estándar. Cargado con
-      `import()` dinámico para no pagar el bundle en las otras ~145 páginas.
-      Antes de comprometerse: medir el peso real de AlphaTab **más su
-      SoundFont**, y confirmar la licencia.
+- [ ] **Fase 3 — AlphaTab, acotado.** Medido el 27/08; ver el recuadro de
+      abajo. Sigue en pie, pero solo para `/tabs/[slug]`.
+
+### Medición de AlphaTab (27/08/2026) — no hace falta repetirla
+
+Versión medida: `@coderline/alphatab` 1.8.4. Todo en **gzip**, que es lo que
+baja el navegador:
+
+| Pieza                                      | Peso                   |
+| ------------------------------------------ | ---------------------- |
+| `alphaTab.core.min.mjs`                    | 271 kB                 |
+| `Bravura.woff2` (fuente de notación)       | 305 kB (ya comprimida) |
+| `sonivox.sf3` (SoundFont)                  | 294 kB                 |
+| `sonivox.sf2` (alternativa)                | 694 kB                 |
+| **Total con sonido**                       | **~870 kB**            |
+| **Solo dibujando** (`enablePlayer: false`) | **~576 kB**            |
+
+Para comparar: la base común de la app son **131,4 kB** y el techo por ruta,
+**235 kB**. Una página con AlphaTab completo es **6,6x la aplicación entera**.
+
+**Licencias, las tres compatibles:**
+
+- alphaTab: **MPL-2.0**. Copyleft por fichero: mientras no modifiquemos sus
+  fuentes no hay nada que publicar. Requiere aviso de atribución.
+- Bravura: **OFL** (SIL Open Font License).
+- SoundFont Sonivox: **Apache-2.0**.
+
+**Consecuencias para el diseño:**
+
+- `enablePlayer` es un booleano: **dibujar y sonar son separables**. Queda por
+  evaluar usar AlphaTab solo para renderizar y **nuestro motor** para el
+  sonido: ahorra los 294 kB del SoundFont y unifica el timbre, a cambio de
+  leer el modelo `Score` y arriesgar desincronización del cursor.
+- Nunca dentro de lecciones ni wiki. Hoy hay **106 tabs en 71 ficheros**, todas
+  SVG sin JS, ya sonando, y validadas nota a nota por `content:audit` contra su
+  escala o su acorde. AlphaTab no valida nada de eso: cambiaríamos 0 kB por 870
+  y perderíamos las reglas.
+- Ruta propia `/tabs/[slug]`, `import()` dinámico, SoundFont perezoso y
+  excepción declarada en `scripts/bundle-report.ts`.
 
 No se sustituye `<Tab>` por AlphaTab: perderíamos las reglas de
 `content:audit` que validan cada nota contra su escala o su acorde, y
