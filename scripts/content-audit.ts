@@ -298,6 +298,17 @@ for (const { file, fm, body } of wikis) {
   }
 }
 
+// Regla de contenido: una lección abre con su ficha y enseña lo que
+// introduce. Un día que solo narra es un día que hay que leer dos veces.
+for (const { file, body } of lessons) {
+  if (!/<Ficha\b/.test(body)) {
+    errors.push({
+      file: rel(file),
+      message: "no tiene <Ficha>: el objetivo y la regla del día no pueden ir enterrados en un párrafo",
+    });
+  }
+}
+
 // Regla de contenido: un ejercicio se dibuja, no se narra. Si pide tocar
 // algo, tiene que enseñarlo en un mástil, en una tab o en un diagrama de
 // acorde; y la rutina va en <Rutina>, no en una lista numerada de prosa.

@@ -158,3 +158,28 @@ describe("foreignPerBar", () => {
     expect(foreignPerBar(parseTab("5:3 | 5:4"), [CM7], STANDARD)).toEqual([]);
   });
 });
+
+describe("cantidad de bend", () => {
+  it("acepta un bend sin decir cuánto", () => {
+    const [bar] = parseTab("3:7b");
+    expect(bar.columns[0].bend).toBe(true);
+    expect(bar.columns[0].bendSemitones).toBeUndefined();
+  });
+
+  it("lee los semitonos que sube", () => {
+    const [bar] = parseTab("3:7b1 3:7b2");
+    expect(bar.columns.map((c) => c.bendSemitones)).toEqual([1, 2]);
+  });
+
+  it("combina la cantidad con el acento", () => {
+    const [bar] = parseTab("3:7b2>");
+    expect(bar.columns[0].bendSemitones).toBe(2);
+    expect(bar.columns[0].accent).toBe(true);
+  });
+
+  it("no confunde el bend con un traste que acabe en otra cifra", () => {
+    const [bar] = parseTab("3:12");
+    expect(bar.columns[0].bend).toBe(false);
+    expect(bar.columns[0].events[0].fret).toBe(12);
+  });
+});

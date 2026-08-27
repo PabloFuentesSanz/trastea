@@ -60,6 +60,15 @@ function palmMuteRuns(placed: Placed[]): { from: number; to: number }[] {
 
 const LINK_LABEL: Record<string, string> = { h: "h", p: "p", s: "s" };
 
+/** Cuánto sube el bend, como se escribe en papel. */
+const BEND_LABEL: Record<number, string> = {
+  0: "\u2191",
+  1: "\u2191\u00bd",
+  2: "\u21911",
+  3: "\u2191\u00b9\u00bd",
+  4: "\u21912",
+};
+
 export interface TablatureProps {
   bars: TabBar[];
   /** descripción accesible, p. ej. "Cromático 1-2-3-4 en la 6ª cuerda" */
@@ -194,7 +203,7 @@ export function Tablature({
                   fill="var(--foreground)"
                 >
                   {event.fret}
-                  {column.bend ? "b" : ""}
+                  {column.bend ? BEND_LABEL[column.bendSemitones ?? 0] : ""}
                 </text>
               </g>
             ))}

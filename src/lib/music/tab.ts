@@ -31,6 +31,8 @@ export interface TabColumn {
   accent: boolean;
   palmMute: boolean;
   bend: boolean;
+  /** semitonos que sube el bend: 1 = medio tono, 2 = un tono */
+  bendSemitones?: number;
   /** técnica que une esta columna con la siguiente */
   link?: TabLink;
 }
@@ -69,6 +71,7 @@ function parseColumn(raw: string): TabColumn {
   let accent = false;
   let palmMute = false;
   let bend = false;
+  let bendSemitones: number | undefined;
 
   // los modificadores van pegados al final y pueden combinarse
   for (let changed = true; changed;) {
@@ -81,15 +84,24 @@ function parseColumn(raw: string): TabColumn {
       palmMute = true;
       body = body.slice(0, -1);
       changed = true;
-    } else if (body.endsWith("b")) {
-      bend = true;
-      body = body.slice(0, -1);
-      changed = true;
+    } else {
+      // "b" solo, o "b2" con los semitonos que sube
+      const conCuanto = /b([1-4])$/.exec(body);
+      if (conCuanto) {
+        bend = true;
+        bendSemitones = Number(conCuanto[1]);
+        body = body.slice(0, conCuanto[0].length * -1);
+        changed = true;
+      } else if (body.endsWith("b")) {
+        bend = true;
+        body = body.slice(0, -1);
+        changed = true;
+      }
     }
   }
 
   if (body === "-") {
-    return { events: [], rest: true, accent, palmMute, bend };
+    return { events: [], rest: true, accent, palmMute, bend, bendSemitones };
   }
 
   const events = body.split("+").map((part) => parseEvent(part, raw));
@@ -100,7 +112,7 @@ function parseColumn(raw: string): TabColumn {
     }
     seen.add(event.string);
   }
-  return { events, rest: false, accent, palmMute, bend };
+  return { events, rest: false, accent, palmMute, bend, bendSemitones };
 }
 
 /** Divide la tab en compases y cada compás en columnas. */
