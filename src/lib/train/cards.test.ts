@@ -16,6 +16,19 @@ const EJEMPLOS: TrainCard[] = [
   { type: "chord_notes", root: "C", chordId: "m7" },
   { type: "ear_interval", semitones: 4 },
   { type: "ear_chord", chordId: "dim7" },
+  {
+    type: "scale_degree",
+    root: "A",
+    scaleId: "natural-minor",
+    position: { string: 1, fret: 3 },
+  },
+  {
+    type: "scale_box",
+    root: "A",
+    scaleId: "minor-pentatonic",
+    box: 1,
+    missing: { string: 0, fret: 8 },
+  },
 ];
 
 describe("identidad de las tarjetas", () => {

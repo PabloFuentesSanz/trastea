@@ -18,7 +18,9 @@ export type SrsCardType =
   | "interval_build"
   | "chord_notes"
   | "ear_interval"
-  | "ear_chord";
+  | "ear_chord"
+  | "scale_degree"
+  | "scale_box";
 
 type TableDef<Row, Required extends keyof Row, Generated extends keyof Row> = {
   Row: Row;

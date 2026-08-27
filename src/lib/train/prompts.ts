@@ -8,9 +8,18 @@
  */
 
 import { CHORDS } from "@/data/chords";
-import { mod12, pcToName, spellFormula, type NoteName } from "@/lib/music/notes";
+import { SCALES } from "@/data/scales";
+import {
+  mod12,
+  parseNote,
+  pcToName,
+  spellFormula,
+  toSolfege,
+  type NoteName,
+} from "@/lib/music/notes";
 import { chordPitchClasses, midiAt, type TrainCard } from "./cards";
 import { intervalLabel, intervalMnemonic } from "./intervals";
+import { degreeLabel, scaleDegrees } from "./scales";
 
 export interface CardPrompt {
   question: string;
@@ -36,6 +45,15 @@ function noteAt(position: { string: number; fret: number }): {
 function noteLabel(position: { string: number; fret: number }): string {
   const { sharp, flat } = noteAt(position);
   return sharp === flat ? sharp : `${sharp} (o ${flat})`;
+}
+
+/**
+ * La escala como se dice en voz alta: "La menor natural", no
+ * "A natural-minor (eólico)". El paréntesis del nombre sobra en una pregunta.
+ */
+function scaleTitle(root: NoteName, scaleId: string): string {
+  const nombre = SCALES[scaleId]?.name ?? scaleId;
+  return `${toSolfege(root)} ${nombre.replace(/\s*\(.*\)/, "").toLowerCase()}`;
 }
 
 function chordSymbol(root: NoteName, chordId: string): string {
@@ -92,6 +110,22 @@ export function promptFor(card: TrainCard): CardPrompt {
       return {
         question: "Escucha el acorde: ¿de qué tipo era?",
         answerLabel: CHORDS[card.chordId]?.name ?? card.chordId,
+      };
+
+    case "scale_degree": {
+      const distancia = mod12(midiAt(card.position) - parseNote(card.root).pc);
+      const grado = scaleDegrees(card.scaleId).find((d) => d.semitones === distancia);
+      return {
+        question: `En ${scaleTitle(card.root, card.scaleId)}, ¿qué grado es la nota marcada?`,
+        answerLabel: grado ? degreeLabel(grado.interval) : "no es de la escala",
+        hint: `Esa nota es ${noteLabel(card.position)}`,
+      };
+    }
+
+    case "scale_box":
+      return {
+        question: `Falta una nota de la caja ${card.box} de ${scaleTitle(card.root, card.scaleId)}: tócala`,
+        answerLabel: `cuerda ${guitarStringNumber(card.missing.string)}, traste ${card.missing.fret} — ${noteLabel(card.missing)}`,
       };
   }
 }

@@ -13,7 +13,7 @@ const PAD_BOTTOM = 20;
 const PAD_X = 10;
 const MARKERS = [3, 5, 7, 9, 15, 17];
 
-export type MarkKind = "ask" | "from" | "correct" | "wrong";
+export type MarkKind = "ask" | "from" | "correct" | "wrong" | "hole" | "context";
 
 export interface FretMark {
   position: Position;
@@ -26,6 +26,10 @@ const FILL: Record<MarkKind, string> = {
   from: "var(--muted-foreground)",
   correct: "var(--success)",
   wrong: "var(--destructive)",
+  /** el hueco de la caja: se dibuja el sitio, no la nota */
+  hole: "transparent",
+  /** las notas que están de contexto y no se preguntan */
+  context: "var(--muted)",
 };
 
 /**
@@ -177,8 +181,17 @@ export function TrainFretboard({
             cy={stringY(mark.position.string)}
             r={11}
             fill={FILL[mark.kind]}
-            stroke={mark.kind === "from" ? "var(--background)" : "none"}
+            stroke={
+              mark.kind === "hole"
+                ? "var(--primary)"
+                : mark.kind === "context"
+                  ? "var(--muted-foreground)"
+                  : mark.kind === "from"
+                    ? "var(--background)"
+                    : "none"
+            }
             strokeWidth={2}
+            strokeDasharray={mark.kind === "hole" ? "4 3" : undefined}
           />
           {mark.label && (
             <text
@@ -188,7 +201,11 @@ export function TrainFretboard({
               dominantBaseline="central"
               fontSize={11}
               fontWeight={600}
-              fill="var(--background)"
+              fill={
+                mark.kind === "context" || mark.kind === "hole"
+                  ? "var(--muted-foreground)"
+                  : "var(--background)"
+              }
             >
               {mark.label}
             </text>

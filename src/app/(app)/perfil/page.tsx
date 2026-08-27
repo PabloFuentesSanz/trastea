@@ -85,8 +85,8 @@ export default async function PerfilPage() {
         <CardHeader>
           <CardTitle>Sonido</CardTitle>
           <CardDescription>
-            Con qué instrumento suena todo: las bases, las rejillas y tabs del curso,
-            los acordes de la wiki y los ejercicios de oído. Se queda guardado en este
+            Con qué instrumento suena todo: las bases, las rejillas y tabs del curso, los
+            acordes de la wiki y los ejercicios de oído. Se queda guardado en este
             navegador.
           </CardDescription>
         </CardHeader>

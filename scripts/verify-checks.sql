@@ -69,4 +69,23 @@ begin
 end $$;
 
 reset role;
+
+-- === Comprobación 3: el CHECK de card_type acepta lo del modelo y nada más ===
+-- El test card-types.test.ts ya compara la lista con `CARD_TYPES`; esto
+-- comprueba lo otro: que el constraint de verdad rechaza lo que no está.
+do $$
+declare ana uuid := '11111111-1111-1111-1111-111111111111';
+begin
+  insert into public.srs_cards (user_id, card_type, payload)
+  values (ana, 'scale_box', '{"id": "scale_box:A:minor-pentatonic:1:0:8"}'::jsonb);
+
+  begin
+    insert into public.srs_cards (user_id, card_type, payload)
+    values (ana, 'tipo_inventado', '{"id": "x"}'::jsonb);
+    raise exception 'el CHECK de card_type deja pasar cualquier cosa';
+  exception when check_violation then
+    null; -- correcto: solo entran los tipos declarados
+  end;
+end $$;
+
 \echo '✅ migración aplicada, RLS activa en todas las tablas y los usuarios aislados'

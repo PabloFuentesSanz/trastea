@@ -107,12 +107,10 @@ export default async function EjercicioPage({
 
       {relacionados.length > 0 && (
         <section aria-label="La versión interactiva" className="mt-10">
-          <h2 className="text-xl font-semibold tracking-tight">
-            La versión interactiva
-          </h2>
+          <h2 className="text-xl font-semibold tracking-tight">La versión interactiva</h2>
           <p className="text-muted-foreground mt-1 text-sm">
-            Lo mismo que entrena esta ficha, pero preguntándotelo y llevándote la
-            cuenta de lo que fallas.
+            Lo mismo que entrena esta ficha, pero preguntándotelo y llevándote la cuenta
+            de lo que fallas.
           </p>
           <ul className="mt-3 flex flex-wrap gap-2">
             {relacionados.map((d) => (

@@ -9,6 +9,19 @@ const TODAS: TrainCard[] = [
   { type: "chord_notes", root: "C", chordId: "m7" },
   { type: "ear_interval", semitones: 4 },
   { type: "ear_chord", chordId: "dim7" },
+  {
+    type: "scale_degree",
+    root: "A",
+    scaleId: "natural-minor",
+    position: { string: 1, fret: 3 },
+  },
+  {
+    type: "scale_box",
+    root: "A",
+    scaleId: "minor-pentatonic",
+    box: 1,
+    missing: { string: 0, fret: 8 },
+  },
 ];
 
 describe("promptFor", () => {
@@ -65,6 +78,34 @@ describe("promptFor", () => {
     expect(p.question).not.toContain("3ª mayor");
     expect(p.answerLabel).toBe("3ª mayor");
     expect(p.hint).toContain("Saints");
+  });
+
+  it("grado de la escala: nombra la escala y no el grado", () => {
+    const p = promptFor({
+      type: "scale_degree",
+      root: "A",
+      scaleId: "natural-minor",
+      position: { string: 1, fret: 3 },
+    });
+    expect(p.question).toContain("La menor natural");
+    expect(p.question).not.toContain("3ª menor");
+    expect(p.answerLabel).toBe("3ª menor");
+    // la nota concreta ayuda a atar el grado con el mástil
+    expect(p.hint).toContain("C");
+  });
+
+  it("caja: dice qué caja y de qué escala, y la respuesta es dónde está", () => {
+    const p = promptFor({
+      type: "scale_box",
+      root: "A",
+      scaleId: "minor-pentatonic",
+      box: 1,
+      missing: { string: 0, fret: 8 },
+    });
+    expect(p.question).toContain("caja 1");
+    expect(p.question).toContain("La pentatónica menor");
+    expect(p.answerLabel).toContain("cuerda 6");
+    expect(p.answerLabel).toContain("traste 8");
   });
 
   it("acorde de oído: tampoco se chiva", () => {

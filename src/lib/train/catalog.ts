@@ -9,7 +9,9 @@
  * en `/content/exercises`, porque los escribe una persona.
  */
 
+import type { NoteName } from "@/lib/music/notes";
 import type { TrainCard, Position } from "./cards";
+import { boxesOf, scaleBoxPositions } from "./scales";
 import type { TrainLevel, TrainMode, TrainSkill, TrainTheme } from "./taxonomy";
 
 export interface DrillLevel {
@@ -162,6 +164,60 @@ function chordCards(roots: readonly string[], chordIds: readonly string[]): Trai
   return roots.flatMap((root) =>
     chordIds.map((chordId) => ({ type: "chord_notes" as const, root, chordId })),
   );
+}
+
+/**
+ * Grados: se preguntan sobre las posiciones de las cajas, no sobre trastes
+ * sueltos. Así toda pregunta cae donde de verdad se toca esa escala, y no en
+ * un sitio del mástil al que nunca vas.
+ */
+function degreeCards(
+  roots: readonly NoteName[],
+  scaleIds: readonly string[],
+  boxes?: readonly number[],
+): TrainCard[] {
+  const out: TrainCard[] = [];
+  for (const root of roots) {
+    for (const scaleId of scaleIds) {
+      const cajas = boxes ?? boxesOf(scaleId).slice(0, 1);
+      const vistas = new Set<string>();
+      for (const box of cajas) {
+        if (box > boxesOf(scaleId).length) continue;
+        for (const position of scaleBoxPositions(root, scaleId, box)) {
+          const clave = `${position.string}:${position.fret}`;
+          if (vistas.has(clave)) continue;
+          vistas.add(clave);
+          out.push({ type: "scale_degree", root, scaleId, position });
+        }
+      }
+    }
+  }
+  return out;
+}
+
+/**
+ * Cajas: una tarjeta por nota que se puede esconder. No se esconden las dos
+ * de los extremos —la primera y la última de la caja— porque sin referencia
+ * arriba o abajo no es memoria de la forma, es adivinar.
+ */
+function boxCards(
+  roots: readonly NoteName[],
+  scaleIds: readonly string[],
+  boxes?: readonly number[],
+): TrainCard[] {
+  const out: TrainCard[] = [];
+  for (const root of roots) {
+    for (const scaleId of scaleIds) {
+      for (const box of boxes ?? boxesOf(scaleId)) {
+        if (box > boxesOf(scaleId).length) continue;
+        const posiciones = scaleBoxPositions(root, scaleId, box);
+        for (const missing of posiciones.slice(1, -1)) {
+          out.push({ type: "scale_box", root, scaleId, box, missing });
+        }
+      }
+    }
+  }
+  return out;
 }
 
 // ---------- el catálogo ----------
@@ -378,6 +434,99 @@ export const DRILLS: readonly Drill[] = [
             "7#5",
             "13",
           ]),
+      },
+    ],
+  },
+
+  {
+    slug: "grados-de-la-escala",
+    title: "Grados de la escala",
+    summary:
+      "Una nota marcada dentro de una escala: di qué grado es. Es el paso que separa recorrer una caja de saber qué estás tocando, y sin él no hay improvisación posible.",
+    theme: "escalas",
+    skills: ["grados-de-la-escala", "digitaciones"],
+    mode: "identificar",
+    levels: [
+      {
+        level: 1,
+        label: "Pentatónica menor, caja 1",
+        build: () => degreeCards(["A", "E"], ["minor-pentatonic"], [1]),
+      },
+      {
+        level: 2,
+        label: "Las dos pentatónicas, cajas 1 y 2",
+        build: () =>
+          degreeCards(["A", "E", "G"], ["minor-pentatonic", "major-pentatonic"], [1, 2]),
+      },
+      {
+        level: 3,
+        label: "Mayor y menor natural",
+        build: () => degreeCards(["C", "A", "G"], ["major", "natural-minor"], [1, 2]),
+      },
+      {
+        level: 4,
+        label: "Los modos y el blues",
+        build: () =>
+          degreeCards(
+            ["A", "E", "G"],
+            ["dorian", "mixolydian", "blues", "natural-minor"],
+            [1, 2],
+          ),
+      },
+      {
+        level: 5,
+        label: "Armónica, melódica, alterada y los modos raros",
+        build: () =>
+          degreeCards(
+            ["A", "E"],
+            [
+              "harmonic-minor",
+              "melodic-minor",
+              "altered",
+              "lydian",
+              "phrygian",
+              "locrian",
+            ],
+            [1, 2],
+          ),
+      },
+    ],
+  },
+
+  {
+    slug: "cajas-de-escala",
+    title: "Completar la caja",
+    summary:
+      "Se dibuja una caja con un hueco y tú tocas la nota que falta. Se entrena la forma, no la nota: la misma altura en otra cuerda no vale.",
+    theme: "escalas",
+    skills: ["digitaciones", "grados-de-la-escala"],
+    mode: "identificar",
+    levels: [
+      {
+        level: 1,
+        label: "Pentatónica menor, cajas 1 y 2",
+        build: () => boxCards(["A"], ["minor-pentatonic"], [1, 2]),
+      },
+      {
+        level: 2,
+        label: "Las cinco cajas, en La y en Mi",
+        build: () => boxCards(["A", "E"], ["minor-pentatonic"]),
+      },
+      {
+        level: 3,
+        label: "Las dos pentatónicas y el blues",
+        build: () => boxCards(["A"], ["minor-pentatonic", "major-pentatonic", "blues"]),
+      },
+      {
+        level: 4,
+        label: "Mayor y menor natural, siete cajas",
+        build: () => boxCards(["A"], ["major", "natural-minor"]),
+      },
+      {
+        level: 5,
+        label: "Los cuatro modos, cajas 1 a 4",
+        build: () =>
+          boxCards(["A"], ["dorian", "mixolydian", "lydian", "phrygian"], [1, 2, 3, 4]),
       },
     ],
   },

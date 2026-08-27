@@ -9,6 +9,7 @@ import { TrainSession, type TrainChoices } from "@/components/train/train-sessio
 import { getTrainingDeck, getUserContext } from "@/lib/queries";
 import { DRILLS, drillLevel, getDrill } from "@/lib/train/catalog";
 import type { TrainCard } from "@/lib/train/cards";
+import { scaleBoxPositions } from "@/lib/train/scales";
 import {
   isTrainLevel,
   TRAIN_LEVEL_LABEL,
@@ -22,6 +23,41 @@ export const dynamic = "force-dynamic";
 
 /** Tamaño de sesión: unos cinco minutos con la guitarra en la mano. */
 const SESSION_SIZE = 20;
+
+/**
+ * Cuántos trastes hay que dibujar para que quepa todo lo que se pregunta.
+ * Las cajas altas de una escala se van al traste 17: con doce, la caja 5 de
+ * la pentatónica se sale del dibujo y la pregunta no tiene respuesta posible.
+ */
+function fretsNeeded(cards: readonly TrainCard[]): number {
+  let max = 12;
+  for (const card of cards) {
+    switch (card.type) {
+      case "fretboard_note":
+        max = Math.max(max, card.fret);
+        break;
+      case "interval_name":
+        max = Math.max(max, card.from.fret, card.to.fret);
+        break;
+      case "interval_build":
+        max = Math.max(max, card.from.fret);
+        break;
+      case "scale_degree":
+        max = Math.max(max, card.position.fret);
+        break;
+      case "scale_box":
+        max = Math.max(
+          max,
+          ...scaleBoxPositions(card.root, card.scaleId, card.box).map((p) => p.fret),
+        );
+        break;
+      default:
+        break;
+    }
+  }
+  // un traste de aire a la derecha: pegado al borde no se lee
+  return Math.min(22, max + 1);
+}
 
 export function generateStaticParams() {
   return DRILLS.map((d) => ({ slug: d.slug }));
@@ -153,7 +189,7 @@ export default async function DrillPage({
         cards={deck.session}
         choices={choicesFor(cards)}
         demo={!ctx.userId}
-        frets={drill.slug === "notas-del-mastil" && level.level >= 4 ? 17 : 12}
+        frets={fretsNeeded(deck.session)}
       />
     </main>
   );

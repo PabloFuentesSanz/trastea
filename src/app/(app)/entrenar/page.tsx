@@ -95,13 +95,17 @@ function DrillCard({ drill }: { drill: Drill & { href?: string } }) {
           <Icon className="size-4 text-primary" aria-hidden />
           {TRAIN_THEME_LABEL[drill.theme]} · {TRAIN_MODE_LABEL[drill.mode]}
         </CardDescription>
-        <CardTitle>
-          <Link
-            href={drill.href ?? `/entrenar/${drill.slug}`}
-            className="hover:underline"
-          >
-            {drill.title}
-          </Link>
+        {/* h3 de verdad: una rejilla de tarjetas sin encabezados no se puede
+            recorrer con lector de pantalla */}
+        <CardTitle asChild>
+          <h3>
+            <Link
+              href={drill.href ?? `/entrenar/${drill.slug}`}
+              className="hover:underline"
+            >
+              {drill.title}
+            </Link>
+          </h3>
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-1 flex-col justify-between gap-4">

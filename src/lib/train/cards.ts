@@ -11,7 +11,9 @@
  */
 
 import { CHORDS } from "@/data/chords";
+import { SCALES } from "@/data/scales";
 import { getTuning } from "@/data/tunings";
+import { boxCount } from "@/lib/music/boxes";
 import {
   mod12,
   parseInterval,
@@ -66,13 +68,33 @@ export interface EarChordCard {
   chordId: string;
 }
 
+/** Una nota marcada dentro de una escala: ¿qué grado es? */
+export interface ScaleDegreeCard {
+  type: "scale_degree";
+  root: NoteName;
+  scaleId: string;
+  position: Position;
+}
+
+/** Una caja con un hueco: toca la nota que falta. */
+export interface ScaleBoxCard {
+  type: "scale_box";
+  root: NoteName;
+  scaleId: string;
+  /** 1 = la caja que empieza en la raíz */
+  box: number;
+  missing: Position;
+}
+
 export type TrainCard =
   | FretboardNoteCard
   | IntervalNameCard
   | IntervalBuildCard
   | ChordNotesCard
   | EarIntervalCard
-  | EarChordCard;
+  | EarChordCard
+  | ScaleDegreeCard
+  | ScaleBoxCard;
 
 export type CardType = TrainCard["type"];
 
@@ -83,10 +105,20 @@ export const CARD_TYPES: readonly CardType[] = [
   "chord_notes",
   "ear_interval",
   "ear_chord",
+  "scale_degree",
+  "scale_box",
 ];
 
 const STRINGS = 6;
 const MAX_SEMITONES = 24;
+
+/** Cuántas cajas tiene una escala, contando la digitación que hereda. */
+function boxesDe(scaleId: string): number {
+  const scale = SCALES[scaleId];
+  if (!scale) return 0;
+  const parent = scale.boxParent ? SCALES[scale.boxParent]?.intervals : undefined;
+  return boxCount(scale.intervals, parent);
+}
 
 // ---------- alturas y posiciones ----------
 
@@ -134,6 +166,10 @@ export function cardId(card: TrainCard): string {
       return `ear_interval:${card.semitones}`;
     case "ear_chord":
       return `ear_chord:${card.chordId}`;
+    case "scale_degree":
+      return `scale_degree:${card.root}:${card.scaleId}:${card.position.string}:${card.position.fret}`;
+    case "scale_box":
+      return `scale_box:${card.root}:${card.scaleId}:${card.box}:${card.missing.string}:${card.missing.fret}`;
   }
 }
 
@@ -199,6 +235,22 @@ export function parseCardId(id: string): TrainCard | null {
     case "ear_chord": {
       if (parts.length !== 2 || !(parts[1] in CHORDS)) return null;
       return { type, chordId: parts[1] };
+    }
+    case "scale_degree": {
+      if (parts.length !== 5) return null;
+      if (!isNote(parts[1]) || !parts[2] || !(parts[2] in SCALES)) return null;
+      const p = position(parts[3], parts[4]);
+      return p ? { type, root: parts[1], scaleId: parts[2], position: p } : null;
+    }
+    case "scale_box": {
+      if (parts.length !== 6) return null;
+      if (!isNote(parts[1]) || !parts[2] || !(parts[2] in SCALES)) return null;
+      const box = int(parts[3]);
+      // cada escala tiene sus cajas, y el blues hereda las cinco de la
+      // pentatónica: una caja 6 de blues no es una tarjeta, es basura
+      if (box === null || box < 1 || box > boxesDe(parts[2])) return null;
+      const missing = position(parts[4], parts[5]);
+      return missing ? { type, root: parts[1], scaleId: parts[2], box, missing } : null;
     }
     default:
       return null;
@@ -279,6 +331,20 @@ export function checkAnswer(
     case "ear_chord": {
       if (answer.chordId === undefined) return false;
       return answer.chordId === card.chordId;
+    }
+    case "scale_degree": {
+      if (answer.semitones === undefined) return false;
+      const distancia = mod12(midiAt(card.position, tuningId) - parseNote(card.root).pc);
+      return mod12(answer.semitones) === distancia;
+    }
+    case "scale_box": {
+      // la misma altura en otra cuerda no vale: lo que se entrena es la
+      // digitación, y una caja es una forma concreta, no un conjunto de notas
+      if (!answer.position) return false;
+      return (
+        answer.position.string === card.missing.string &&
+        answer.position.fret === card.missing.fret
+      );
     }
   }
 }

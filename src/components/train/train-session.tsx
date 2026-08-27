@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { gradeCard } from "@/app/actions/srs";
 import { playNotes } from "@/lib/audio/pluck";
 import { CHORDS } from "@/data/chords";
-import { pcToName } from "@/lib/music/notes";
+import { mod12, parseNote, pcToName } from "@/lib/music/notes";
 import {
   cardId,
   checkAnswer,
@@ -22,6 +22,7 @@ import {
 } from "@/lib/train/cards";
 import { INTERVAL_CHOICES } from "@/lib/train/intervals";
 import { promptFor } from "@/lib/train/prompts";
+import { degreeLabel, scaleBoxPositions, scaleDegrees } from "@/lib/train/scales";
 import type { Grade } from "@/lib/srs/scheduler";
 import { TrainFretboard, type FretMark } from "./train-fretboard";
 
@@ -159,7 +160,7 @@ export function TrainSession({
     );
   }
 
-  const marks = fretMarks(card, resultado, tocado);
+  const marks = fretMarks(card, resultado, tocado, frets);
   const esDeOido = card.type.startsWith("ear_");
 
   return (
@@ -190,7 +191,7 @@ export function TrainSession({
             frets={frets}
             ariaLabel={prompt?.question ?? "Mástil"}
             onPick={
-              card.type === "interval_build"
+              card.type === "interval_build" || card.type === "scale_box"
                 ? (position) => {
                     setTocado(position);
                     responder({ position });
@@ -242,7 +243,11 @@ export function TrainSession({
             ? "Toca la nota en el mástil. Vale cualquier cuerda donde esté esa altura."
             : card.type === "chord_notes"
               ? "Marca todas las notas del acorde y comprueba."
-              : "")}
+              : card.type === "scale_box"
+                ? "Toca el hueco de la caja. Aquí sí importa la cuerda: es la digitación."
+                : card.type === "scale_degree"
+                  ? "Las notas grises son la raíz de la escala: cuenta desde ahí."
+                  : "")}
       </p>
     </section>
   );
@@ -253,6 +258,7 @@ function fretMarks(
   card: TrainCard,
   resultado: "none" | "correct" | "wrong",
   tocado: Position | null,
+  frets: number,
 ): FretMark[] {
   switch (card.type) {
     case "fretboard_note":
@@ -287,6 +293,46 @@ function fretMarks(
       }
       return marks;
     }
+    case "scale_degree": {
+      // las raíces se pintan de contexto: el grado se mide desde la raíz, y
+      // sin verla esto sería adivinar en vez de contar
+      const rootPc = mod12(parseNote(card.root).pc);
+      const marks: FretMark[] = [];
+      for (let string = 0; string < 6; string += 1) {
+        for (let fret = 0; fret <= frets; fret += 1) {
+          if (string === card.position.string && fret === card.position.fret) continue;
+          if (mod12(midiAt({ string, fret })) === rootPc) {
+            marks.push({ position: { string, fret }, kind: "context", label: "R" });
+          }
+        }
+      }
+      marks.push({
+        position: card.position,
+        kind: resultado === "none" ? "ask" : resultado,
+        label: "?",
+      });
+      return marks;
+    }
+    case "scale_box": {
+      const caja = scaleBoxPositions(card.root, card.scaleId, card.box);
+      const marks: FretMark[] = caja
+        .filter((p) => p.string !== card.missing.string || p.fret !== card.missing.fret)
+        .map((position) => ({ position, kind: "context" as const }));
+      if (resultado === "none") {
+        marks.push({ position: card.missing, kind: "hole", label: "?" });
+      } else {
+        if (tocado) {
+          marks.push({
+            position: tocado,
+            kind: resultado === "correct" ? "correct" : "wrong",
+          });
+        }
+        if (resultado === "wrong") {
+          marks.push({ position: card.missing, kind: "correct" });
+        }
+      }
+      return marks;
+    }
     default:
       return [];
   }
@@ -307,7 +353,28 @@ function Respuestas({
   onToggle: (pc: number) => void;
   onAnswer: (answer: Answer) => void;
 }) {
-  if (card.type === "interval_build") return null;
+  if (card.type === "interval_build" || card.type === "scale_box") return null;
+
+  if (card.type === "scale_degree") {
+    return (
+      <Rejilla label="Elige el grado">
+        {scaleDegrees(card.scaleId).map((d) => (
+          <Button
+            key={d.interval}
+            variant="outline"
+            className="h-14 flex-col gap-0 leading-tight"
+            disabled={bloqueado}
+            onClick={() => onAnswer({ semitones: d.semitones })}
+          >
+            <span className="text-base font-semibold">{d.interval}</span>
+            <span className="text-muted-foreground text-[10px]">
+              {degreeLabel(d.interval)}
+            </span>
+          </Button>
+        ))}
+      </Rejilla>
+    );
+  }
 
   if (card.type === "fretboard_note") {
     return (
