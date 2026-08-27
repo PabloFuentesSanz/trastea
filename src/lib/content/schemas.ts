@@ -162,6 +162,13 @@ export const wikiFrontmatterSchema = z.object({
   level: z.number().int().min(1).max(3).default(1),
   related: z.array(slugSchema).default([]),
   summary: z.string().min(1),
+  /**
+   * Escala de la que trata el artículo, p. ej. "A minor-pentatonic".
+   * Ponerlo obliga (vía content:audit) a que la ficha muestre TODAS sus
+   * posiciones y su estudio cuerda a cuerda: la regla de contenido no puede
+   * quedarse en una promesa.
+   */
+  scale: z.string().min(1).optional(),
 });
 
 export type WikiFrontmatter = z.infer<typeof wikiFrontmatterSchema>;

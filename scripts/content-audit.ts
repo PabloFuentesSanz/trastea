@@ -261,6 +261,37 @@ for (const { file, fm } of modules) {
     checkRef(file, "quiz", fm.assessment.quiz_slug, quizSlugs, brokenRefs);
 }
 
+// Regla de contenido: si un artículo declara de qué escala trata, tiene que
+// enseñarla entera — todas las cajas y cuerda a cuerda.
+for (const { file, fm, body } of wikis) {
+  const scale = fm.scale;
+  if (!scale) continue;
+
+  try {
+    parseFormulaSpec(scale, "scale");
+  } catch (e) {
+    errors.push({ file: rel(file), message: (e as Error).message });
+    continue;
+  }
+
+  const escapada = scale.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const tiene = (tag: string) =>
+    new RegExp(`<${tag}\\b[^>]*?escala="${escapada}"`).test(body);
+
+  if (!tiene("Cajas")) {
+    errors.push({
+      file: rel(file),
+      message: `trata de "${scale}" pero no muestra todas sus posiciones: falta <Cajas escala="${scale}" />`,
+    });
+  }
+  if (!tiene("PorCuerdas")) {
+    errors.push({
+      file: rel(file),
+      message: `trata de "${scale}" pero no se puede practicar cuerda a cuerda: falta <PorCuerdas escala="${scale}" />`,
+    });
+  }
+}
+
 // slugs duplicados
 function findDuplicates(items: { slug: string; file: string }[], kind: string) {
   const seen = new Map<string, string>();

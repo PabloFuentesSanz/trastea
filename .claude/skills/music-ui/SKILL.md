@@ -83,6 +83,12 @@ metida dentro) lo declaran con `boxParent` en `src/data/scales.ts`.
 Donde se hable de una escala salen **todas** sus cajas (`<Cajas>`), no una de
 muestra, y el estudio **cuerda a cuerda** (`<PorCuerdas>`).
 
+Y no es una promesa: la ficha declara de qué escala trata en el frontmatter
+(`scale: "A minor-pentatonic"`) y `content:audit` **exige** que el cuerpo
+tenga `<Cajas escala="…">` y `<PorCuerdas escala="…">` con esa misma escala.
+Sin el campo no hay obligación —un artículo puede dibujar una escala como
+apoyo sin tratar de ella—, pero si lo pones, o está completo o es build rojo.
+
 ### ⚠️ Las expresiones MDX no se evalúan
 
 En este pipeline `desde={5}` **llega como `undefined`** y `{1 + 1}` en el
