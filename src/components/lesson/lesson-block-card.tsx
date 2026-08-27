@@ -91,7 +91,9 @@ export function LessonBlockCard({
           {done ? <Check className="size-4" /> : block.id.replace("b", "")}
         </span>
         <div className="min-w-0 flex-1">
-          <p className={cn("truncate font-medium", done && "line-through opacity-70")}>
+          <p
+            className={cn("line-clamp-2 font-medium", done && "line-through opacity-70")}
+          >
             {block.title ?? resolvedTitle ?? BLOCK_TYPE_LABEL[block.type]}
           </p>
           <p className="text-xs text-muted-foreground">

@@ -38,6 +38,22 @@ test("la navegación principal lleva a las herramientas", async ({ page }) => {
   await expect(page).toHaveURL(/\/metronomo/);
 });
 
+/**
+ * Las de dentro: una de cada tipo. El desbordamiento no aparece en los
+ * índices, aparece donde entra el contenido — un foco de semana de 122
+ * caracteres empujaba /curso/a-cimientos 247 px fuera del móvil y las
+ * páginas de arriba no lo veían.
+ */
+const PAGINAS_DE_CONTENIDO = [
+  "/curso/a-cimientos",
+  "/curso/b-armonia",
+  "/curso/c-lenguaje",
+  "/curso/a-cimientos/a-cimientos-w01-d1",
+  "/wiki/pentatonica-mayor",
+  "/ejercicios/cantar-resolucion-7-3",
+  "/canciones/spain",
+];
+
 test("no hay scroll horizontal en ninguna página principal", async ({ page }) => {
   for (const [ruta] of PAGINAS) {
     await page.goto(ruta);
@@ -46,5 +62,31 @@ test("no hay scroll horizontal en ninguna página principal", async ({ page }) =
         document.documentElement.scrollWidth > document.documentElement.clientWidth + 2,
     );
     expect(desborda, `${ruta} se desborda a lo ancho`).toBe(false);
+  }
+});
+
+test("no hay scroll horizontal donde entra el contenido", async ({ page }) => {
+  for (const ruta of PAGINAS_DE_CONTENIDO) {
+    await page.goto(ruta);
+    const desborda = await page.evaluate(
+      () =>
+        document.documentElement.scrollWidth > document.documentElement.clientWidth + 2,
+    );
+    expect(desborda, `${ruta} se desborda a lo ancho`).toBe(false);
+  }
+});
+
+test("ningún título se corta a media palabra en el móvil", async ({ page }) => {
+  // `truncate` recorta con puntos suspensivos: en un título de lección no es
+  // elegancia, es información perdida. Donde el texto pueda ser largo va
+  // `line-clamp`, que deja leer dos líneas.
+  for (const ruta of ["/curso/c-lenguaje", ...PAGINAS_DE_CONTENIDO]) {
+    await page.goto(ruta);
+    const cortados = await page.evaluate(() =>
+      [...document.querySelectorAll(".truncate")]
+        .filter((e) => e.scrollWidth > e.clientWidth + 1)
+        .map((e) => e.textContent?.trim() ?? ""),
+    );
+    expect(cortados, `${ruta} corta texto`).toEqual([]);
   }
 });

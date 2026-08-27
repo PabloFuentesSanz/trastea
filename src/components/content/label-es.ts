@@ -187,7 +187,17 @@ const INTERROGATIVOS: Record<string, string> = {
 
 /** Delante de un interrogativo, estas palabras lo confirman como pregunta. */
 const PREPOSICIONES = new Set([
-  "por", "para", "con", "sobre", "a", "de", "en", "hasta", "desde", "y", "sin",
+  "por",
+  "para",
+  "con",
+  "sobre",
+  "a",
+  "de",
+  "en",
+  "hasta",
+  "desde",
+  "y",
+  "sin",
 ]);
 
 /** Delante de un "que", estas lo convierten en relativo: "lo que", "el que". */
@@ -205,7 +215,10 @@ export function humanizeEs(key: string): string {
     .flatMap((trozo) =>
       CIFRADO.test(trozo.toLowerCase()) || ACORDE.test(trozo)
         ? [trozo]
-        : trozo.replace(/([a-zA-Z])(\d)/g, "$1 $2").split(" ").filter(Boolean),
+        : trozo
+            .replace(/([a-zA-Z])(\d)/g, "$1 $2")
+            .split(" ")
+            .filter(Boolean),
     );
 
   const palabras = trozos.map((t) => t.toLowerCase());

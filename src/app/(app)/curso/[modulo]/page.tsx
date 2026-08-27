@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, Check, Circle, Play, Trophy } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Mdx } from "@/components/content/mdx";
 import { getCourse, getModule } from "@/lib/content/loader";
 import { getLessonProgressMap, getUserContext } from "@/lib/queries";
 import { cn } from "@/lib/utils";
+import { tituloSinDia } from "@/lib/content/lesson-title";
 
 export function generateStaticParams() {
   return getCourse().map((m) => ({ modulo: m.frontmatter.slug }));
@@ -55,12 +55,14 @@ export default async function ModuloPage({
       <div className="mt-8 flex flex-col gap-6">
         {mod.weeks.map((week) => (
           <section key={week.frontmatter.slug} aria-label={week.frontmatter.title}>
-            <div className="flex items-baseline justify-between gap-2">
-              <h2 className="text-lg font-medium">
-                Semana {week.frontmatter.order}: {week.frontmatter.title}
-              </h2>
-              <Badge variant="outline">{week.frontmatter.focus}</Badge>
-            </div>
+            <h2 className="text-lg font-medium">
+              Semana {week.frontmatter.order}: {week.frontmatter.title}
+            </h2>
+            {/* el foco es una frase, no una etiqueta: en un badge de una sola
+                línea empujaba la página 300 px fuera de la pantalla */}
+            <p className="mt-1 text-xs font-medium tracking-wide text-primary">
+              {week.frontmatter.focus}
+            </p>
             <p className="mt-1 text-sm text-muted-foreground">
               {week.frontmatter.summary}
             </p>
@@ -95,10 +97,13 @@ export default async function ModuloPage({
                         />
                       )}
                       <span className="min-w-0 flex-1">
-                        <span className={cn("block truncate", done && "opacity-70")}>
-                          {lesson.frontmatter.title}
+                        {/* el "día N" va en la línea de abajo: en el título
+                            se comía una línea entera del móvil */}
+                        <span className={cn("block line-clamp-2", done && "opacity-70")}>
+                          {tituloSinDia(lesson.frontmatter.title)}
                         </span>
                         <span className="block text-xs text-muted-foreground">
+                          Día {lesson.frontmatter.order} ·{" "}
                           {lesson.frontmatter.duration_min} min ·{" "}
                           {lesson.frontmatter.goal}
                         </span>

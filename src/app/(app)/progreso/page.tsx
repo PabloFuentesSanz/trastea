@@ -85,7 +85,7 @@ export default async function ProgresoPage() {
                     <span className="w-24 shrink-0 text-sm tabular-nums text-muted-foreground">
                       {s.date}
                     </span>
-                    <span className="min-w-0 flex-1 truncate text-sm">
+                    <span className="line-clamp-2 min-w-0 flex-1 text-sm">
                       {lesson?.frontmatter.title ?? s.lesson_slug ?? "Sesión libre"}
                     </span>
                     <Badge variant="secondary" className="font-mono">

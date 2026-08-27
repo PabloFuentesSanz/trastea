@@ -14,6 +14,7 @@ import { BlockTimer } from "./block-timer";
 import { EmbeddedMetronome, metronomeConfigForBlock } from "./embedded-metronome";
 import { BLOCK_TYPE_LABEL } from "./lesson-block-card";
 import { chordify } from "@/components/content/chordify";
+import { tituloSinDia } from "@/lib/content/lesson-title";
 
 function todayLocal(): string {
   const d = new Date();
@@ -105,7 +106,9 @@ export function LessonPlayer({
         <div className="mx-auto max-w-3xl">
           <p className="text-xs text-muted-foreground">{breadcrumb}</p>
           <div className="mt-1 flex items-center justify-between gap-3">
-            <h1 className="truncate text-lg font-semibold">{lesson.title}</h1>
+            <h1 className="line-clamp-2 text-lg font-semibold text-balance">
+              {tituloSinDia(lesson.title)}
+            </h1>
             <Button
               variant="outline"
               size="sm"
@@ -183,7 +186,7 @@ export function LessonPlayer({
         >
           <div className="flex items-center justify-between p-4">
             <span className="text-sm text-muted-foreground">
-              {doneCount}/{total} bloques · {lesson.title}
+              {doneCount}/{total} bloques · {tituloSinDia(lesson.title)}
             </span>
             <Button
               variant="ghost"

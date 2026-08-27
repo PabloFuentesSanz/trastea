@@ -191,91 +191,91 @@ export function Fretboard({
         </text>
       ))}
       {/* posiciones */}
-      {dibujadas
-        .map((p, indice) => {
-          const x = fretX(p.fret);
-          const y = stringY(p.string);
-          const fill = colorFor(p);
-          const text = label(p);
-          const guitarString = 6 - p.string;
-          const donde = `Cuerda ${guitarString}, traste ${p.fret}, ${toSolfege(p.note)}`;
-          const interactiva = onPlayNote
-            ? {
-                role: "button",
-                // foco itinerante: el mástil entero es una parada del
-                // tabulador y las flechas recorren sus notas. Con 40 notas
-                // por dibujo, un tabulador por nota hace la página
-                // inservible con teclado.
-                tabIndex: indice === 0 ? 0 : -1,
-                "aria-label": donde,
-                className:
-                  "cursor-pointer focus:outline-none focus-visible:[outline:2px_solid_var(--ring)] focus-visible:[outline-offset:2px]",
-                onClick: () => onPlayNote(p),
-                onKeyDown: (e: KeyboardEvent<SVGGElement>) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    onPlayNote(p);
-                    return;
-                  }
-                  const salto = MOVIMIENTOS[e.key];
-                  if (salto === undefined) return;
+      {dibujadas.map((p, indice) => {
+        const x = fretX(p.fret);
+        const y = stringY(p.string);
+        const fill = colorFor(p);
+        const text = label(p);
+        const guitarString = 6 - p.string;
+        const donde = `Cuerda ${guitarString}, traste ${p.fret}, ${toSolfege(p.note)}`;
+        const interactiva = onPlayNote
+          ? {
+              role: "button",
+              // foco itinerante: el mástil entero es una parada del
+              // tabulador y las flechas recorren sus notas. Con 40 notas
+              // por dibujo, un tabulador por nota hace la página
+              // inservible con teclado.
+              tabIndex: indice === 0 ? 0 : -1,
+              "aria-label": donde,
+              className:
+                "cursor-pointer focus:outline-none focus-visible:[outline:2px_solid_var(--ring)] focus-visible:[outline-offset:2px]",
+              onClick: () => onPlayNote(p),
+              onKeyDown: (e: KeyboardEvent<SVGGElement>) => {
+                if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
-                  const destino =
-                    salto === "inicio"
-                      ? 0
-                      : salto === "final"
-                        ? dibujadas.length - 1
-                        : Math.min(Math.max(indice + salto, 0), dibujadas.length - 1);
-                  const hermanas = e.currentTarget.parentElement?.querySelectorAll<
-                    SVGGElement
-                  >('[role="button"]');
-                  hermanas?.[destino]?.focus();
-                },
-              }
-            : {};
-          return (
-            <g key={`${p.string}-${p.fret}`} {...interactiva}>
-              <title>{`${donde} (${p.interval})`}</title>
-              {onPlayNote && (
-                // diana generosa: en el móvil el círculo de 9 px se falla
-                <circle cx={x} cy={y} r={14} fill="transparent" />
-              )}
-              {p.isRoot ? (
-                <rect
-                  x={x - 9}
-                  y={y - 9}
-                  width={18}
-                  height={18}
-                  rx={4}
-                  fill={fill}
-                  stroke="var(--background)"
-                  strokeWidth={1.5}
-                />
-              ) : (
-                <circle
-                  cx={x}
-                  cy={y}
-                  r={9}
-                  fill={fill}
-                  stroke="var(--background)"
-                  strokeWidth={1.5}
-                />
-              )}
-              {text && (
-                <text
-                  x={x}
-                  y={y + 3.5}
-                  textAnchor="middle"
-                  fontSize={9}
-                  fontWeight={700}
-                  fill="var(--background)"
-                >
-                  {text}
-                </text>
-              )}
-            </g>
-          );
-        })}
+                  onPlayNote(p);
+                  return;
+                }
+                const salto = MOVIMIENTOS[e.key];
+                if (salto === undefined) return;
+                e.preventDefault();
+                const destino =
+                  salto === "inicio"
+                    ? 0
+                    : salto === "final"
+                      ? dibujadas.length - 1
+                      : Math.min(Math.max(indice + salto, 0), dibujadas.length - 1);
+                const hermanas =
+                  e.currentTarget.parentElement?.querySelectorAll<SVGGElement>(
+                    '[role="button"]',
+                  );
+                hermanas?.[destino]?.focus();
+              },
+            }
+          : {};
+        return (
+          <g key={`${p.string}-${p.fret}`} {...interactiva}>
+            <title>{`${donde} (${p.interval})`}</title>
+            {onPlayNote && (
+              // diana generosa: en el móvil el círculo de 9 px se falla
+              <circle cx={x} cy={y} r={14} fill="transparent" />
+            )}
+            {p.isRoot ? (
+              <rect
+                x={x - 9}
+                y={y - 9}
+                width={18}
+                height={18}
+                rx={4}
+                fill={fill}
+                stroke="var(--background)"
+                strokeWidth={1.5}
+              />
+            ) : (
+              <circle
+                cx={x}
+                cy={y}
+                r={9}
+                fill={fill}
+                stroke="var(--background)"
+                strokeWidth={1.5}
+              />
+            )}
+            {text && (
+              <text
+                x={x}
+                y={y + 3.5}
+                textAnchor="middle"
+                fontSize={9}
+                fontWeight={700}
+                fill="var(--background)"
+              >
+                {text}
+              </text>
+            )}
+          </g>
+        );
+      })}
     </svg>
   );
 }

@@ -9,8 +9,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getLesson, getOrderedLessons } from "@/lib/content/loader";
+import { getExercise, getLesson, getOrderedLessons } from "@/lib/content/loader";
 import { getDashboardData, getUserContext, type DashboardData } from "@/lib/queries";
+import { tituloSinDia } from "@/lib/content/lesson-title";
 
 const EMPTY: DashboardData = {
   streak: 0,
@@ -68,7 +69,9 @@ export default async function DashboardPage() {
         <Card className="mt-6 bg-gradient-to-br from-card to-accent/40">
           <CardHeader>
             <CardDescription>Sesión de hoy</CardDescription>
-            <CardTitle className="text-2xl">{current.frontmatter.title}</CardTitle>
+            <CardTitle className="text-2xl text-balance">
+              {tituloSinDia(current.frontmatter.title)}
+            </CardTitle>
             <CardDescription>
               🎯 {current.frontmatter.goal} · {current.frontmatter.duration_min} min
             </CardDescription>
@@ -138,8 +141,8 @@ export default async function DashboardPage() {
                     key={r.exercise_slug}
                     className="flex items-center justify-between gap-2 text-sm"
                   >
-                    <span className="truncate text-muted-foreground">
-                      {r.exercise_slug}
+                    <span className="line-clamp-2 text-muted-foreground">
+                      {getExercise(r.exercise_slug)?.frontmatter.title ?? r.exercise_slug}
                     </span>
                     <Badge variant="secondary" className="font-mono">
                       {r.bpm}

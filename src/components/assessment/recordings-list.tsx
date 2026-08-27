@@ -62,7 +62,7 @@ export function RecordingsList({ items }: { items: RecordingListItem[] }) {
         <li key={item.id} className="rounded-xl border bg-card p-4">
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div className="min-w-0">
-              <p className="truncate font-medium">{item.title}</p>
+              <p className="line-clamp-2 font-medium">{item.title}</p>
               <p className="text-xs text-muted-foreground">
                 {new Date(item.createdAt).toLocaleString("es", {
                   dateStyle: "medium",

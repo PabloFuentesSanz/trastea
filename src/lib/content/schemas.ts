@@ -57,7 +57,15 @@ export const weekFrontmatterSchema = z.object({
   slug: slugSchema,
   title: z.string().min(1),
   order: z.number().int().min(1),
-  focus: z.string().min(1),
+  /**
+   * Subtítulo de la semana en /curso/[modulo]. Es una línea, no un resumen:
+   * uno de 122 caracteres empujaba la página 247 px fuera de la pantalla del
+   * móvil. Lo largo va en `summary`, que es un párrafo y fluye.
+   */
+  focus: z
+    .string()
+    .min(1)
+    .max(60, "el foco es un subtítulo de una línea: 60 caracteres como mucho"),
   summary: z.string().min(1),
 });
 

@@ -55,7 +55,9 @@ export default async function PerfilPage() {
           </div>
           <div className="flex items-center justify-between gap-4 text-sm">
             <span className="text-muted-foreground">Lección actual</span>
-            <span className="truncate">{current?.frontmatter.title ?? "—"}</span>
+            <span className="line-clamp-2 text-right">
+              {current?.frontmatter.title ?? "—"}
+            </span>
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Racha</span>
