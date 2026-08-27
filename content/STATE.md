@@ -12,7 +12,7 @@
 | Ejercicios | 46 |
 | Canciones | 304 |
 | Tabs | 0 |
-| Artículos wiki | 53 |
+| Artículos wiki | 58 |
 | Quizzes | 3 |
 
 ## Módulos
@@ -22,11 +22,6 @@
 - **Módulo B — Armonía y arpegios** (`b-armonia`): 4 semanas, 20 lecciones
 - **Módulo C — Lenguaje y velocidad** (`c-lenguaje`): 4 semanas, 20 lecciones
 - **Avanzado** (`avanzado`) _placeholder_: 0 semanas, 0 lecciones
-
-## ⚠️ Avisos
-
-- content/wiki/acordes-alterados.mdx: artículo wiki huérfano (sin backlinks)
-- content/wiki/intercambio-modal.mdx: artículo wiki huérfano (sin backlinks)
 
 ## Repertorio
 
@@ -73,8 +68,8 @@
 
 ## Cobertura wiki
 
-- Artículos existentes: 53
+- Artículos existentes: 58
 - Referenciados sin existir: 0
-- Huérfanos (sin backlinks): 2 → `acordes-alterados`, `intercambio-modal`
+- Huérfanos (sin backlinks): 0
 
-_Última ejecución: 2026-08-27T13:12:34.873Z_
+_Última ejecución: 2026-08-27T13:18:53.021Z_
