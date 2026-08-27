@@ -213,3 +213,19 @@ export function positionsFromNotes(
     };
   });
 }
+
+/**
+ * Posiciones de `notes` que NO suenan la nota `pitch`, como "3:2".
+ * Un mapa de octavas es una sola nota repartida por el mástil; equivocarse en
+ * una posición no se ve mirando el dibujo, así que se comprueba.
+ */
+export function notesThatArent(
+  notes: readonly NoteSpec[],
+  tuningMidi: readonly number[],
+  pitch: NoteName,
+): string[] {
+  const target = parseNote(pitch).pc;
+  return notes
+    .filter((n) => mod12(midiAt(tuningMidi, stringIndex(n.string), n.fret)) !== target)
+    .map((n) => `${n.string}:${n.fret}`);
+}

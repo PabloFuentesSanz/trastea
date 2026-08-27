@@ -296,3 +296,14 @@ describe("<Mastil caja desdeTraste>", () => {
     expect(bajo.container.textContent).not.toContain("15");
   });
 });
+
+describe("<Mastil cuerdas>", () => {
+  it("acepta una lista de cuerdas y dibuja solo esas", () => {
+    const una = render(<Mastil escala="C major" cuerdas="6" />);
+    const dos = render(<Mastil escala="C major" cuerdas="6, 5" />);
+    const todas = render(<Mastil escala="C major" />);
+
+    expect(board(dos.container).notas).toBe(board(una.container).notas * 2);
+    expect(board(dos.container).notas).toBeLessThan(board(todas.container).notas);
+  });
+});

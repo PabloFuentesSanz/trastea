@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   parseChordSymbol,
   parseFormulaSpec,
+  notesThatArent,
   parseNoteSpec,
   positionsFromNotes,
   windowPositions,
@@ -179,5 +180,25 @@ describe("positionsFromNotes", () => {
   it("convierte a índice interno de cuerda (6ª = 0)", () => {
     expect(positionsFromNotes(parseNoteSpec("6:5"), STANDARD)[0].string).toBe(0);
     expect(positionsFromNotes(parseNoteSpec("1:5"), STANDARD)[0].string).toBe(5);
+  });
+});
+
+describe("notesThatArent", () => {
+  const STANDARD = getTuning("standard").midi;
+
+  it("no encuentra nada en un mapa de octavas correcto", () => {
+    // los seis Soles del mástil
+    expect(
+      notesThatArent(parseNoteSpec("6:3, 5:10, 4:5, 3:0, 2:8, 1:3"), STANDARD, "G"),
+    ).toEqual([]);
+  });
+
+  it("señala la posición que no es esa nota", () => {
+    // 3ª cuerda traste 2 es un La, no un Re
+    expect(notesThatArent(parseNoteSpec("4:0, 3:2"), STANDARD, "D")).toEqual(["3:2"]);
+  });
+
+  it("acepta la misma nota en dos octavas distintas", () => {
+    expect(notesThatArent(parseNoteSpec("3:0, 3:12"), STANDARD, "G")).toEqual([]);
   });
 });

@@ -8,6 +8,7 @@ import { boxCount, boxWindow, scaleBox } from "@/lib/music/boxes";
 import { parseGrid } from "@/lib/music/grid";
 import { foreignNotes, parseTab } from "@/lib/music/tab";
 import {
+  notesThatArent,
   parseFormulaSpec,
   parseNoteSpec,
   positionsFromNotes,
@@ -99,6 +100,7 @@ export function Mastil({
   acorde,
   notas,
   raiz,
+  soloNota,
   caja,
   notasPorCuerda,
   desdeTraste,
@@ -115,6 +117,8 @@ export function Mastil({
   notas?: string;
   /** raíz desde la que medir los intervalos de `notas` */
   raiz?: string;
+  /** afirma que TODAS las de `notas` son esta nota (mapas de octavas) */
+  soloNota?: string;
   /** posición de la escala: 1 = la que empieza en la raíz */
   caja?: Numerico;
   /** 2 para pentatónicas, 3 para escalas de siete notas */
@@ -146,7 +150,13 @@ export function Mastil({
 
   let positions;
   if (parsed) {
-    positions = positionsFromNotes(parsed, STANDARD, raiz ?? spec?.root);
+    positions = positionsFromNotes(parsed, STANDARD, soloNota ?? raiz ?? spec?.root);
+    // Un mapa de octavas es una sola nota repartida por el mástil: si una de
+    // las posiciones no es esa nota, el dibujo miente y no se ve mirando.
+    if (soloNota) {
+      const fuera = notesThatArent(parsed, STANDARD, soloNota);
+      if (fuera.length > 0) throw new Error(`${fuera.join(", ")} no es ${soloNota}`);
+    }
   } else if (numeroCaja !== undefined) {
     if (!spec) throw new Error("<Mastil caja> necesita `escala`");
     positions = scaleBox({

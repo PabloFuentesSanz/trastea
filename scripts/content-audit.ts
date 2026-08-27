@@ -30,7 +30,7 @@ import {
   type WeekFrontmatter,
   type WikiFrontmatter,
 } from "../src/lib/content/schemas";
-import { parseFormulaSpec, parseNoteSpec } from "../src/lib/music/spec";
+import { notesThatArent, parseFormulaSpec, parseNoteSpec } from "../src/lib/music/spec";
 import { validateGrid } from "../src/lib/music/grid";
 import { parseFretSpec, voicingFromFrets } from "../src/lib/music/voicing-from-frets";
 import { foreignNotes, parseTab } from "../src/lib/music/tab";
@@ -441,9 +441,24 @@ function checkMusicSpecs(file: string, body: string) {
     }
   }
 
-  for (const m of body.matchAll(NOTAS_SPEC)) {
+  // Un mapa de octavas dibuja una sola nota por todo el mástil. Si declara
+  // cuál es, se comprueba posición a posición: equivocarse en una no se ve.
+  for (const m of body.matchAll(MASTIL_TAG)) {
+    const tag = m[0];
+    const notas = /\bnotas="([^"]+)"/.exec(tag)?.[1];
+    if (!notas) continue;
     try {
-      parseNoteSpec(m[1]);
+      const parsed = parseNoteSpec(notas);
+      const solo = /\bsoloNota="([^"]+)"/.exec(tag)?.[1];
+      if (solo) {
+        const fuera = notesThatArent(parsed, STANDARD_TUNING, solo);
+        if (fuera.length > 0) {
+          errors.push({
+            file: rel(file),
+            message: `<Mastil soloNota="${solo}">: ${fuera.join(", ")} no es ${solo}`,
+          });
+        }
+      }
     } catch (e) {
       errors.push({ file: rel(file), message: (e as Error).message });
     }
