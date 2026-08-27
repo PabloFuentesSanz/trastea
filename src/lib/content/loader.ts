@@ -4,7 +4,7 @@ import path from "node:path";
 import matter from "gray-matter";
 import { resolveInterlinksWith } from "./interlinks";
 import { cache } from "react";
-import { levelFromWeek, type TrainLevel } from "@/lib/train/taxonomy";
+import { isTrainLevel, levelFromWeek, type TrainLevel } from "@/lib/train/taxonomy";
 import {
   exerciseFrontmatterSchema,
   lessonFrontmatterSchema,
@@ -192,10 +192,16 @@ export const getExerciseUses = cache((): Map<string, ExerciseUse[]> => {
 });
 
 /** Nivel deducido: el de la primera semana que lo pide. */
+/**
+ * El nivel de un ejercicio: la semana del curso en que aparece por primera
+ * vez. Los de práctica libre —los que no están en ninguna lección— lo
+ * declaran en su frontmatter, porque no hay currículo del que deducirlo.
+ */
 export const getExerciseLevel = cache((slug: string): TrainLevel => {
   const usos = getExerciseUses().get(slug) ?? [];
-  if (usos.length === 0) return 3;
-  return levelFromWeek(Math.min(...usos.map((u) => u.week)));
+  if (usos.length > 0) return levelFromWeek(Math.min(...usos.map((u) => u.week)));
+  const declarado = getExercise(slug)?.frontmatter.level;
+  return declarado && isTrainLevel(declarado) ? declarado : 3;
 });
 
 export const getSongs = cache(() =>

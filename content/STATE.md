@@ -9,7 +9,7 @@
 | Módulos | 5 (2 placeholder) |
 | Semanas | 12 |
 | Lecciones-día | 60 |
-| Ejercicios | 46 |
+| Ejercicios | 57 |
 | Canciones | 304 |
 | Tabs | 0 |
 | Artículos wiki | 86 |
@@ -72,4 +72,4 @@
 - Referenciados sin existir: 0
 - Huérfanos (sin backlinks): 0
 
-_Última ejecución: 2026-08-27T20:25:55.451Z_
+_Última ejecución: 2026-08-27T20:50:34.114Z_

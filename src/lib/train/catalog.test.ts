@@ -285,3 +285,47 @@ describe("los intervalos cruzando cuerdas", () => {
     }
   });
 });
+
+describe("de qué trastes se parte", () => {
+  const desdeQueTrastes = (slug: string, nivel: number) => {
+    const mazo = getDrill(slug)!
+      .levels.find((l) => l.level === nivel)!
+      .build();
+    return new Set(
+      mazo.flatMap((c) => (c.type === "interval_build" ? [c.from.fret] : [])),
+    );
+  };
+
+  it("no se pregunta siempre desde los mismos tres trastes", () => {
+    // "Octavas por el mástil" y "Construir intervalos" partían SIEMPRE del
+    // traste 0, 4 u 8, en todos sus niveles: el generador subía de cuatro en
+    // cuatro y paraba en `maxFret - 4`. Un entrenamiento que se llama "por el
+    // mástil" y nunca pasa del traste 8 no entrena el mástil.
+    for (const slug of ["octavas", "construir-intervalos"]) {
+      const trastes = desdeQueTrastes(slug, 3);
+      expect(
+        trastes.size,
+        `${slug}: solo ${[...trastes].join(", ")}`,
+      ).toBeGreaterThanOrEqual(4);
+      // el traste 12 es la otra mitad del mástil: si no se llega ahí, no se
+      // está entrenando el mástil entero
+      expect(
+        Math.max(...trastes),
+        `${slug}: no pasa del traste 8`,
+      ).toBeGreaterThanOrEqual(12);
+    }
+  });
+
+  it("la nota que se pide existe en el mástil", () => {
+    for (const drill of DRILLS) {
+      for (const nivel of drill.levels) {
+        for (const card of nivel.build()) {
+          if (card.type !== "interval_build") continue;
+          // desde donde se parte hasta donde se llega, todo tocable
+          expect(card.from.fret).toBeLessThanOrEqual(17);
+          expect(card.from.fret + card.semitones).toBeLessThanOrEqual(29);
+        }
+      }
+    }
+  });
+});

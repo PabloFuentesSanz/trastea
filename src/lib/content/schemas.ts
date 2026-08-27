@@ -101,12 +101,16 @@ export const exerciseFrontmatterSchema = z.object({
   slug: slugSchema,
   title: z.string().min(1),
   category: exerciseCategorySchema,
-  /**
-   * Qué entrena, con el vocabulario cerrado de /entrenar. No lleva `level`:
-   * el nivel se deduce de la semana del curso en que aparece por primera vez,
-   * y así no puede desincronizarse del currículo.
-   */
+  /** Qué entrena, con el vocabulario cerrado de /entrenar. */
   trains: z.array(z.string().min(1)).default([]),
+  /**
+   * Nivel, SOLO para los ejercicios que no pertenecen al curso de 12 semanas
+   * (los de práctica libre: sweep, tapping, fingerstyle…). Si el ejercicio sí
+   * aparece en una lección, el nivel se deduce de la semana y declararlo aquí
+   * es un error: dos fuentes de verdad que se separan solas. `content:audit`
+   * comprueba las dos direcciones.
+   */
+  level: z.number().int().min(1).max(5).optional(),
   bpm_start: z.number().int().min(20).max(300).optional(),
   bpm_target: z.number().int().min(20).max(300).optional(),
   /** tablatura corta inline en alphaTex */

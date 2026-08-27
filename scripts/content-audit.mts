@@ -43,6 +43,7 @@ import {
   isTrainMode,
   isTrainSkill,
   isTrainTheme,
+  TRAIN_SKILLS,
 } from "../src/lib/train/taxonomy";
 import { parseFretSpec, voicingFromFrets } from "../src/lib/music/voicing-from-frets";
 import { barBeats, foreignNotes, foreignPerBar, parseTab } from "../src/lib/music/tab";
@@ -283,6 +284,52 @@ function checkWikiFormula(file: string, scale: string | undefined, body: string)
   }
 }
 
+/**
+ * Toda destreza del vocabulario tiene por dónde practicarse.
+ *
+ * `/entrenar` ofrece filtrar por "qué quiero mejorar" con las 35 destrezas.
+ * Una que no tenga ni un entrenamiento ni un ejercicio deja al usuario con
+ * una lista vacía y sin saber si es un fallo o es que no existe. Antes había
+ * ocho así, incluidas sweep picking, tapping y fingerstyle.
+ */
+{
+  const cubiertas = new Set<string>();
+  for (const d of DRILLS) for (const s of d.skills) cubiertas.add(s);
+  for (const { fm } of exercises) for (const t of fm.trains) cubiertas.add(t);
+  const sin = TRAIN_SKILLS.filter((s) => !cubiertas.has(s));
+  if (sin.length > 0) {
+    errors.push({
+      file: "content/exercises",
+      message: `sin nada que practicar: ${sin.join(", ")} (ni entrenamiento ni ejercicio)`,
+    });
+  }
+}
+
+/**
+ * El nivel de un ejercicio sale de UNA fuente, no de dos.
+ *
+ * Si está en el curso, lo dice la semana; si es de práctica libre, lo dice su
+ * frontmatter. Declararlo en los dos sitios es dos verdades que se separan
+ * solas, y no declararlo en ninguno deja el ejercicio en un nivel 3 por
+ * defecto que nadie ha decidido.
+ */
+for (const { file, fm } of exercises) {
+  const enElCurso = lessons.some((l) => l.fm.blocks.some((b) => b.exercise === fm.slug));
+  if (enElCurso && fm.level !== undefined) {
+    errors.push({
+      file: rel(file),
+      message: `declara level: ${fm.level} y además lo usa el curso: el nivel sale de la semana, quita el campo`,
+    });
+  }
+  if (!enElCurso && fm.level === undefined) {
+    errors.push({
+      file: rel(file),
+      message:
+        "no lo usa ninguna lección y no declara `level`: sin eso cae en el 3 por defecto",
+    });
+  }
+}
+
 for (const { file, fm, body } of wikis) {
   checkWikiFormula(file, fm.scale, body);
   for (const ref of fm.related) checkRef(file, "wiki", ref, wikiSlugs, brokenRefs);
@@ -356,7 +403,9 @@ for (const { file, fm } of exercises) {
     }
   }
   for (const { file, fm } of exercises) {
-    if (!usados.has(fm.slug)) {
+    // los de práctica libre declaran su nivel a mano y no son un aviso: son
+    // ejercicios de /entrenar que a propósito no están en el curso
+    if (!usados.has(fm.slug) && fm.level === undefined) {
       warnings.push({
         file: rel(file),
         message: "ningún día del curso lo usa: se queda sin nivel deducido",

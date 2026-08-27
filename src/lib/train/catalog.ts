@@ -138,15 +138,25 @@ function crossStringPairs(
   return out;
 }
 
+/**
+ * Puntos de partida repartidos por el mástil.
+ *
+ * Iba de cuatro en cuatro y paraba en `maxFret - 4`, así que se partía
+ * SIEMPRE del traste 0, 4 u 8 — en todos los niveles, incluido el que se
+ * llama "por todo el mástil". El recorte sobraba: la respuesta vale en
+ * cualquier cuerda donde esté esa altura, no hace falta que quepa en la misma.
+ */
 function buildTargets(
   strings: readonly number[],
   maxFret: number,
   semitones: readonly number[],
+  /** cada cuántos trastes se planta un punto de partida */
+  step = 4,
 ): TrainCard[] {
   const out: TrainCard[] = [];
   for (const string of strings) {
     for (const s of semitones) {
-      for (let fret = 0; fret <= maxFret - 4; fret += 4) {
+      for (let fret = 0; fret <= maxFret; fret += step) {
         out.push({ type: "interval_build", from: { string, fret }, semitones: s });
       }
     }
