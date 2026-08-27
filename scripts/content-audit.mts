@@ -39,6 +39,7 @@ import {
 import { validateGrid } from "../src/lib/music/grid";
 import { GROOVES } from "../src/lib/backing/groove";
 import { DRILLS } from "../src/lib/train/catalog";
+import { primerasApariciones } from "../src/lib/content/jargon";
 import {
   isTrainLevel,
   isTrainMode,
@@ -489,6 +490,33 @@ for (const { file, body } of lessons) {
       file: rel(file),
       message:
         "no tiene <Ficha>: el objetivo y la regla del día no pueden ir enterrados en un párrafo",
+    });
+  }
+}
+
+// Regla de contenido: la jerga se presenta la primera vez que se usa. Un día
+// hablaba del "vamp" y del "targeting" sin haber dicho nunca qué son: la
+// teoría estaba en la wiki, pero el que lee no sabe que le falta una palabra
+// hasta que ya se ha perdido. Ver src/lib/content/jargon.ts.
+{
+  const ordenModulos = new Map(modules.map((m) => [m.fm.slug, m.fm.order]));
+  const enOrden = [...lessons].sort((a, b) => {
+    const mod =
+      (ordenModulos.get(a.moduleSlug) ?? 99) - (ordenModulos.get(b.moduleSlug) ?? 99);
+    if (mod !== 0) return mod;
+    if (a.weekOrder !== b.weekOrder) return a.weekOrder - b.weekOrder;
+    return a.fm.order - b.fm.order;
+  });
+  const porId = new Map(enOrden.map((l) => [l.fm.slug, l.file]));
+  for (const uso of primerasApariciones(
+    enOrden.map((l) => ({ id: l.fm.slug, cuerpo: l.body })),
+  )) {
+    if (uso.presentado) continue;
+    errors.push({
+      file: rel(porId.get(uso.dia) ?? uso.dia),
+      message: `estrena "${uso.termino.termino}" sin presentarlo: defínelo aquí (**en negrita**)${
+        uso.termino.wiki ? ` o enlaza [[${uso.termino.wiki}]]` : ""
+      }`,
     });
   }
 }

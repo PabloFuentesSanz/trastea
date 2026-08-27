@@ -90,3 +90,12 @@ test("ningún título se corta a media palabra en el móvil", async ({ page }) =
     expect(cortados, `${ruta} corta texto`).toEqual([]);
   }
 });
+
+test("las tablas del contenido son tablas, no barras impresas", async ({ page }) => {
+  // sin GFM en el pipeline de MDX salían tal cual: "| Acorde | Su 3ª |"
+  for (const ruta of ["/curso/a-cimientos/a-cimientos-w03-d1", "/wiki/turnarounds"]) {
+    await page.goto(ruta);
+    await expect(page.locator("table").first()).toBeVisible();
+    await expect(page.locator("main")).not.toContainText("| ---");
+  }
+});

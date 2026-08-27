@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
+import remarkGfm from "remark-gfm";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import {
@@ -82,7 +83,27 @@ const Em = ({ children, ...rest }: ComponentPropsWithoutRef<"em">) => (
   <em {...rest}>{chordify(children)}</em>
 );
 const Td = ({ children, ...rest }: ComponentPropsWithoutRef<"td">) => (
-  <td {...rest}>{chordify(children)}</td>
+  <td className="border-b px-3 py-2 align-top" {...rest}>
+    {chordify(children)}
+  </td>
+);
+
+/** Una tabla ancha se desplaza dentro de su caja, no empuja la página. */
+const Table = ({ children, ...rest }: ComponentPropsWithoutRef<"table">) => (
+  <div className="not-prose my-5 overflow-x-auto rounded-lg border">
+    <table className="w-full border-collapse text-sm" {...rest}>
+      {children}
+    </table>
+  </div>
+);
+
+const Th = ({ children, ...rest }: ComponentPropsWithoutRef<"th">) => (
+  <th
+    className="border-b bg-card px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wide text-muted-foreground"
+    {...rest}
+  >
+    {children}
+  </th>
 );
 
 const components = {
@@ -91,6 +112,8 @@ const components = {
   li: Li,
   strong: Strong,
   em: Em,
+  table: Table,
+  th: Th,
   td: Td,
   YouTube,
   ToolLink,
@@ -136,6 +159,8 @@ export function Mdx({ source, className }: { source: string; className?: string 
       <MDXRemote
         source={resolveInterlinks(sanitizeMdx(source))}
         components={components}
+        // sin GFM las tablas del contenido salían impresas con las barras
+        options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }}
       />
     </div>
   );
