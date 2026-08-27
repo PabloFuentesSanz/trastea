@@ -26,6 +26,9 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+      # Turbopack no imprime tamaños: se miden del HTML construido y se
+      # comparan con el presupuesto de scripts/bundle-report.ts
+      - run: pnpm bundle:report --check
 
   migracion:
     runs-on: ubuntu-latest

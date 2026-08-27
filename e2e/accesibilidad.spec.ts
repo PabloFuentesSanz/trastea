@@ -115,12 +115,14 @@ test.describe("accesibilidad", () => {
   test("el movimiento se apaga con prefers-reduced-motion", async ({ browser }) => {
     const page = await browser.newPage({ reducedMotion: "reduce" });
     await page.goto("/curso/a-cimientos/a-cimientos-w04-d2");
-    const conMovimiento = await page.evaluate(() =>
-      [...document.querySelectorAll("*")].filter((el) => {
-        const st = getComputedStyle(el);
-        const dur = (s: string) => Math.max(...s.split(",").map((v) => parseFloat(v) || 0));
-        return dur(st.animationDuration) > 0.05 || dur(st.transitionDuration) > 0.05;
-      }).length,
+    const conMovimiento = await page.evaluate(
+      () =>
+        [...document.querySelectorAll("*")].filter((el) => {
+          const st = getComputedStyle(el);
+          const dur = (s: string) =>
+            Math.max(...s.split(",").map((v) => parseFloat(v) || 0));
+          return dur(st.animationDuration) > 0.05 || dur(st.transitionDuration) > 0.05;
+        }).length,
     );
     expect(conMovimiento).toBe(0);
     await page.close();

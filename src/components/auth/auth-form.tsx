@@ -1,11 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,13 +14,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
-
-const schema = z.object({
-  email: z.string().email("Email inválido"),
-  password: z.string().min(8, "Mínimo 8 caracteres"),
-});
-
-type FormValues = z.infer<typeof schema>;
+import {
+  validateCredentials,
+  type CredentialErrors,
+  type Credentials,
+} from "@/lib/auth/credentials";
 
 export function AuthForm({ mode }: { mode: "login" | "registro" }) {
   const router = useRouter();
@@ -31,11 +26,17 @@ export function AuthForm({ mode }: { mode: "login" | "registro" }) {
   const [serverError, setServerError] = useState<string | null>(null);
   const [needsConfirm, setNeedsConfirm] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<FormValues>({ resolver: zodResolver(schema) });
+  const [values, setValues] = useState<Credentials>({ email: "", password: "" });
+  const [errors, setErrors] = useState<CredentialErrors>({});
+  const [submitting, setSubmitting] = useState(false);
+  /** hasta el primer envío no se corrige nada: molesta escribir con el error puesto */
+  const [tocado, setTocado] = useState(false);
+
+  const cambiar = (campo: keyof Credentials) => (e: ChangeEvent<HTMLInputElement>) => {
+    const siguientes = { ...values, [campo]: e.target.value };
+    setValues(siguientes);
+    if (tocado) setErrors(validateCredentials(siguientes));
+  };
 
   if (!isSupabaseConfigured()) {
     return (
@@ -56,8 +57,24 @@ export function AuthForm({ mode }: { mode: "login" | "registro" }) {
     );
   }
 
-  const onSubmit = async (values: FormValues) => {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setTocado(true);
     setServerError(null);
+
+    const encontrados = validateCredentials(values);
+    setErrors(encontrados);
+    if (encontrados.email || encontrados.password) return;
+
+    setSubmitting(true);
+    try {
+      await enviar();
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const enviar = async () => {
     const supabase = createClient();
 
     if (mode === "registro") {
@@ -106,23 +123,21 @@ export function AuthForm({ mode }: { mode: "login" | "registro" }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col gap-4"
-          noValidate
-        >
+        <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
               type="email"
               autoComplete="email"
+              value={values.email}
+              onChange={cambiar("email")}
               aria-invalid={Boolean(errors.email)}
-              {...register("email")}
+              aria-describedby={errors.email ? "email-error" : undefined}
             />
             {errors.email && (
-              <p role="alert" className="text-sm text-destructive">
-                {errors.email.message}
+              <p id="email-error" role="alert" className="text-destructive text-sm">
+                {errors.email}
               </p>
             )}
           </div>
@@ -132,12 +147,14 @@ export function AuthForm({ mode }: { mode: "login" | "registro" }) {
               id="password"
               type="password"
               autoComplete={mode === "login" ? "current-password" : "new-password"}
+              value={values.password}
+              onChange={cambiar("password")}
               aria-invalid={Boolean(errors.password)}
-              {...register("password")}
+              aria-describedby={errors.password ? "password-error" : undefined}
             />
             {errors.password && (
-              <p role="alert" className="text-sm text-destructive">
-                {errors.password.message}
+              <p id="password-error" role="alert" className="text-destructive text-sm">
+                {errors.password}
               </p>
             )}
           </div>
@@ -146,8 +163,8 @@ export function AuthForm({ mode }: { mode: "login" | "registro" }) {
               {serverError}
             </p>
           )}
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Un momento…" : mode === "login" ? "Entrar" : "Crear cuenta"}
+          <Button type="submit" disabled={submitting}>
+            {submitting ? "Un momento…" : mode === "login" ? "Entrar" : "Crear cuenta"}
           </Button>
         </form>
         <p className="mt-4 text-center text-sm text-muted-foreground">
