@@ -27,6 +27,7 @@ import { parseFretSpec, voicingFromFrets } from "@/lib/music/voicing-from-frets"
 import { getTuning } from "@/data/tunings";
 import { getScale, SCALES } from "@/data/scales";
 import { chordify } from "./chordify";
+import { humanizeEs } from "./label-es";
 import { splitInlineLinks } from "./inline-links";
 import { cn } from "@/lib/utils";
 
@@ -533,7 +534,7 @@ export function Ficha(props: Record<string, string | undefined>) {
       {rows.map(([key, value]) => (
         <div key={key} className="bg-card px-3 py-2">
           <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
-            {LABELS[key] ?? humanize(key)}
+            {LABELS[key] ?? humanizeEs(key)}
           </dt>
           <dd className="mt-0.5 text-sm">
             {splitInlineLinks(value).map((trozo, i) =>
@@ -550,19 +551,6 @@ export function Ficha(props: Record<string, string | undefined>) {
       ))}
     </dl>
   );
-}
-
-/**
- * "grado1" → "Grado 1", "esLaEscalaDe" → "Es la escala de": las claves libres
- * de <Ficha> se leen bien sin tener que registrarlas en LABELS.
- */
-function humanize(key: string): string {
-  const spaced = key
-    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
-    .replace(/([a-zA-Z])(\d)/g, "$1 $2")
-    .replace(/[-_]/g, " ")
-    .toLowerCase();
-  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
 }
 
 const LABELS: Record<string, string> = {
