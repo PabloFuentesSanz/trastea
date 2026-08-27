@@ -12,7 +12,7 @@
 | Ejercicios | 46 |
 | Canciones | 304 |
 | Tabs | 0 |
-| Artículos wiki | 70 |
+| Artículos wiki | 77 |
 | Quizzes | 3 |
 
 ## Módulos
@@ -68,8 +68,8 @@
 
 ## Cobertura wiki
 
-- Artículos existentes: 70
+- Artículos existentes: 77
 - Referenciados sin existir: 0
 - Huérfanos (sin backlinks): 0
 
-_Última ejecución: 2026-08-27T13:30:06.691Z_
+_Última ejecución: 2026-08-27T13:34:41.041Z_
