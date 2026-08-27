@@ -41,50 +41,21 @@ temática y acordes que ya sabes. Vocabulario cerrado en
 filtrado puro y testeado en `song-filter.ts`, `/canciones` con facetas y estado
 en la URL, y `content:audit` avisando de colecciones o técnicas sin repertorio.
 
-## 🔴 P0 — Pendientes de la revisión del 26/08 (feedback de Pablo)
+## ✅ P0 — Revisión del 26/08 (feedback de Pablo) — HECHO
 
-Cuatro cosas detectadas al revisar la wiki convertida. La primera es un fallo
-de modelado, no cosmético.
+Las cuatro, con su regla en `content:audit` para que no vuelvan:
 
-### 1. Las cajas de escala están mal modeladas
-
-`<Mastil desde hasta>` recorta por una **ventana rectangular de trastes**, y
-una caja de escala **no es un rectángulo**: es un patrón de digitación con un
-par de trastes distinto por cuerda. Consecuencias reales de lo que hay
-publicado ahora:
-
-- Notas que pertenecen a la caja se quedan fuera si caen a un traste del
-  borde de la ventana.
-- Notas de la caja vecina entran dentro, así que las cajas "se comen" unas a
-  otras y no coinciden con la digitación que se estudia.
-- Se ve sobre todo en las cajas 2-5 de la pentatónica (`pentatonica-menor`,
-  `pentatonicas`, `pentatonica-mayor`, `escala-blues`).
-
-**Qué hay que hacer:** modelar la caja de verdad — pares de trastes por
-cuerda, no una ventana— en `src/data` o en `src/lib/music`, con tests que
-comprueben las cinco cajas de la pentatónica y las digitaciones de la mayor.
-Luego `<Mastil caja="1">` en vez de `desde/hasta` a ojo. Revisar después TODOS
-los artículos ya convertidos que usan `desde/hasta` para una caja.
-
-### 2. Siempre todas las formas, y práctica cuerda a cuerda
-
-Donde se hable de una escala (wiki, lección, ejercicio) deben salir
-**todas sus cajas/formas**, no una de muestra. Y añadir el modo de estudio
-**cuerda a cuerda**: la escala en una sola cuerda, que es como se aprende el
-mástil de verdad y como ya se hace en algunos artículos a mano.
-
-### 3. `/escalas` con modos de vista
-
-Que el explorador ofrezca ver: **diapasón entero · por cajas · por cuerdas**.
-Estado en la URL como el resto de herramientas (`?view=cajas`).
-
-### 4. Los filtros de `/canciones` son inusables
-
-Con 304 fichas, las facetas salen enormes: mucho scroll, no se entiende nada,
-antiintuitivo. Rediseñar — plegables por defecto, buscador dentro de cada
-faceta, chips de lo seleccionado, contador de resultados siempre visible.
-
----
+- [x] **Cajas de escala modeladas de verdad** (`src/lib/music/boxes.ts`):
+      patrón de digitación por cuerda, no ventana rectangular de trastes.
+      `<Mastil caja="1">`, y el audit rechaza `desde/hasta` en un mástil de
+      escala cuyo pie hable de cajas.
+- [x] **Siempre todas las formas y práctica cuerda a cuerda**: un artículo que
+      declara `scale:` tiene que traer `<Cajas>` y `<PorCuerdas>`, o el build
+      cae.
+- [x] **`/escalas` con modos de vista**: entero, por cajas, por cuerdas, con el
+      estado en la URL.
+- [x] **Filtros de `/canciones` rediseñados**: de 133 chips y 7 pantallas hasta
+      el primer resultado a 5 chips y 1,5 pantallas.
 
 ## P0 — Verificar los metadatos musicales del catálogo
 
