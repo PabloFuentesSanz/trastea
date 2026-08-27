@@ -3,6 +3,7 @@ import { Brain, Clock, Sparkles } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { TrainingSession } from "@/components/srs/training-session";
 import { getTrainingDeck, getUserContext } from "@/lib/queries";
+import { drillLevel, getDrill } from "@/lib/train/catalog";
 
 export const metadata: Metadata = { title: "Entrenar" };
 
@@ -14,7 +15,9 @@ const SESSION_SIZE = 20;
 
 export default async function EntrenarPage() {
   const ctx = await getUserContext();
-  const deck = await getTrainingDeck(ctx.userId, SESSION_SIZE);
+  const drill = getDrill("notas-del-mastil")!;
+  const cards = drillLevel(drill, 3).build();
+  const deck = await getTrainingDeck(ctx.userId, cards, SESSION_SIZE);
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-8">
@@ -67,7 +70,10 @@ export default async function EntrenarPage() {
         </p>
       )}
 
-      <TrainingSession cards={deck.session} demo={!ctx.userId} />
+      <TrainingSession
+        cards={deck.session.filter((c) => c.type === "fretboard_note")}
+        demo={!ctx.userId}
+      />
     </main>
   );
 }

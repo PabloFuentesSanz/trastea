@@ -2,7 +2,7 @@
 
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import { dueDate, review, type Grade } from "@/lib/srs/scheduler";
-import { parseCardId } from "@/lib/srs/deck";
+import { parseCardId } from "@/lib/train/cards";
 
 export interface SrsResult {
   ok: boolean;
@@ -18,7 +18,8 @@ export async function gradeCard(input: {
   grade: Grade;
 }): Promise<SrsResult> {
   if (!isSupabaseConfigured()) return { ok: false, error: "demo" };
-  if (!parseCardId(input.cardId)) return { ok: false, error: "tarjeta desconocida" };
+  const card = parseCardId(input.cardId);
+  if (!card) return { ok: false, error: "tarjeta desconocida" };
 
   const supabase = await createClient();
   const {
@@ -30,7 +31,7 @@ export async function gradeCard(input: {
     .from("srs_cards")
     .select("id, interval_days, ease, reps, lapses")
     .eq("user_id", user.id)
-    .eq("card_type", "fretboard_note")
+    .eq("card_type", card.type)
     .eq("payload->>id", input.cardId)
     .maybeSingle();
 
@@ -48,7 +49,7 @@ export async function gradeCard(input: {
 
   const row = {
     user_id: user.id,
-    card_type: "fretboard_note" as const,
+    card_type: card.type,
     payload: { id: input.cardId },
     due_at: due,
     interval_days: next.intervalDays,

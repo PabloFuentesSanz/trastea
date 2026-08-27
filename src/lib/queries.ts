@@ -1,7 +1,7 @@
 import "server-only";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import { currentStreak } from "@/lib/streak";
-import { buildFretboardDeck, cardId, type FretboardNoteCard } from "@/lib/srs/deck";
+import { cardId, type TrainCard } from "@/lib/train/cards";
 import { selectSession, sessionStats, type DueCard } from "@/lib/srs/scheduler";
 import type {
   ExerciseRecordRow,
@@ -202,7 +202,7 @@ export async function getSrsProgress(userId: string): Promise<SrsProgressRow[]> 
 }
 
 export interface TrainingDeck {
-  session: FretboardNoteCard[];
+  session: TrainCard[];
   due: number;
   fresh: number;
   total: number;
@@ -215,14 +215,14 @@ export interface TrainingDeck {
  */
 export async function getTrainingDeck(
   userId: string | null,
+  deck: readonly TrainCard[],
   sessionSize: number,
 ): Promise<TrainingDeck> {
-  const deck = buildFretboardDeck();
   const progress = userId ? await getSrsProgress(userId) : [];
   const byId = new Map(progress.map((p) => [p.cardId, p]));
   const now = Date.now();
 
-  const dueCards: DueCard<FretboardNoteCard>[] = deck.map((card) => {
+  const dueCards: DueCard<TrainCard>[] = deck.map((card) => {
     const saved = byId.get(cardId(card));
     return { card, dueAt: saved?.dueAt ?? now, reps: saved?.reps ?? 0 };
   });
@@ -231,7 +231,12 @@ export async function getTrainingDeck(
   return {
     session: selectSession(dueCards, now, sessionSize),
     ...stats,
-    learned: progress.filter((p) => p.reps > 0 && p.intervalDays >= 1).length,
+    // "consolidada" = acertada al menos una vez y con un día o más de espera,
+    // y solo de este mazo: el progreso de otro entrenamiento no cuenta aquí
+    learned: dueCards.filter((c) => {
+      const saved = byId.get(cardId(c.card));
+      return saved !== undefined && saved.reps > 0 && saved.intervalDays >= 1;
+    }).length,
   };
 }
 

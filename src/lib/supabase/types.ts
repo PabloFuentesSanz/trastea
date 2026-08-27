@@ -11,7 +11,14 @@ export type AssessmentType = "quiz" | "recording" | "checklist";
 export type NoteEntityType = "lesson" | "exercise" | "song" | "wiki" | "free";
 export type UserSongStatus = "learning" | "repertoire" | "wishlist";
 export type ResourceKind = "video" | "article" | "app" | "backing_track" | "other";
-export type SrsCardType = "fretboard_note" | "interval" | "chord_tone";
+/** Espejo del CHECK de srs_cards; la fuente es src/lib/train/cards.ts. */
+export type SrsCardType =
+  | "fretboard_note"
+  | "interval_name"
+  | "interval_build"
+  | "chord_notes"
+  | "ear_interval"
+  | "ear_chord";
 
 type TableDef<Row, Required extends keyof Row, Generated extends keyof Row> = {
   Row: Row;
