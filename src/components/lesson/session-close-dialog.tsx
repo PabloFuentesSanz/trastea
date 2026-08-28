@@ -12,18 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
-
-/** 1 a 5, con lo que significa cada uno dicho en guitarrista. */
-const ANIMOS: { valor: number; cara: string; texto: string }[] = [
-  { valor: 1, cara: "😤", texto: "Peleada" },
-  { valor: 2, cara: "😕", texto: "Espesa" },
-  { valor: 3, cara: "🙂", texto: "Normal" },
-  { valor: 4, cara: "😃", texto: "Buena" },
-  { valor: 5, cara: "🔥", texto: "De las que enganchan" },
-];
-
-export const MAX_NOTA = 280;
+import { MAX_NOTA, MoodPicker } from "./mood-picker";
 
 /**
  * El cierre de la sesión: cómo ha ido y una línea de qué ha pasado.
@@ -56,30 +45,7 @@ export function SessionCloseDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <fieldset className="flex flex-col gap-2">
-          <legend className="mb-2 text-sm font-medium">La sesión</legend>
-          <div className="flex flex-wrap gap-2">
-            {ANIMOS.map((a) => (
-              <button
-                key={a.valor}
-                type="button"
-                aria-pressed={mood === a.valor}
-                onClick={() => setMood(mood === a.valor ? undefined : a.valor)}
-                className={cn(
-                  "flex flex-col items-center gap-1 rounded-lg border px-3 py-2 text-xs transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-                  mood === a.valor
-                    ? "border-primary bg-accent"
-                    : "hover:border-primary/50",
-                )}
-              >
-                <span aria-hidden className="text-lg">
-                  {a.cara}
-                </span>
-                {a.texto}
-              </button>
-            ))}
-          </div>
-        </fieldset>
+        <MoodPicker valor={mood} onCambio={setMood} />
 
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="nota-sesion">Qué ha pasado (opcional)</Label>

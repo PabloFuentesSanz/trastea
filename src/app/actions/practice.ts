@@ -106,6 +106,72 @@ export async function logBpm(input: {
   return { ok: true };
 }
 
+/**
+ * Práctica que no es la lección del día: media hora trasteando, un rato con
+ * el metrónomo, tocar canciones. Antes no había forma de registrarla, así que
+ * un día de práctica de verdad rompía la racha y salía en blanco en el
+ * calendario.
+ */
+export async function logFreeSession(input: {
+  date: string;
+  durationMin: number;
+  mood?: number;
+  notes?: string;
+}): Promise<ActionResult> {
+  const ctx = await requireUser();
+  if (!ctx) return DEMO;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(input.date))
+    return { ok: false, error: "fecha inválida" };
+  if (input.durationMin <= 0 || input.durationMin > 600)
+    return { ok: false, error: "duración fuera de rango" };
+
+  const { error } = await ctx.supabase.from("practice_sessions").insert({
+    user_id: ctx.user.id,
+    date: input.date,
+    lesson_slug: null,
+    duration_min: Math.round(input.durationMin),
+    blocks: [],
+    mood: input.mood ?? null,
+    notes: input.notes ?? null,
+  });
+  if (error) return { ok: false, error: error.message };
+
+  const racha = await actualizarRacha(ctx, input.date);
+  if (racha) return racha;
+
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+/** La racha y la fecha de última práctica, que se tocan desde dos sitios. */
+async function actualizarRacha(
+  ctx: NonNullable<Awaited<ReturnType<typeof requireUser>>>,
+  date: string,
+): Promise<ActionResult | null> {
+  const { data: profile } = await ctx.supabase
+    .from("profiles")
+    .select("streak_days, last_practice_date")
+    .eq("id", ctx.user.id)
+    .maybeSingle();
+
+  const streak = nextStreak(
+    {
+      streakDays: profile?.streak_days ?? 0,
+      lastPracticeDate: profile?.last_practice_date ?? null,
+    },
+    date,
+  );
+
+  const { error } = await ctx.supabase
+    .from("profiles")
+    .update({
+      streak_days: streak.streakDays,
+      last_practice_date: streak.lastPracticeDate,
+    })
+    .eq("id", ctx.user.id);
+  return error ? { ok: false, error: error.message } : null;
+}
+
 export type CompletedBlockSummary = {
   id: string;
   type: string;

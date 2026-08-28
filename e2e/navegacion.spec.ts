@@ -154,7 +154,10 @@ test("al cerrar una lección se puede apuntar cómo ha ido", async ({ page }) =>
   await page.goto("/curso/a-cimientos/a-cimientos-w01-d1");
 
   // marcar un bloque para poder cerrar
-  await page.getByRole("button", { name: /Abrir bloque/ }).first().click();
+  await page
+    .getByRole("button", { name: /Abrir bloque/ })
+    .first()
+    .click();
   await page
     .getByRole("button", { name: /Hecho|Completar bloque/ })
     .first()
@@ -165,6 +168,18 @@ test("al cerrar una lección se puede apuntar cómo ha ido", async ({ page }) =>
   await expect(dialogo).toBeVisible();
   await dialogo.getByRole("button", { name: /Normal/ }).click();
   await dialogo.getByLabel(/Qué ha pasado/).fill("el cambio a Bb no llega");
+  await dialogo.getByRole("button", { name: "Guardar sesión" }).click();
+  await expect(dialogo).toBeHidden();
+});
+
+test("la práctica que no es la lección del día también se registra", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Registrar práctica libre" }).click();
+
+  const dialogo = page.getByRole("dialog", { name: "Práctica libre" });
+  await expect(dialogo).toBeVisible();
+  await dialogo.getByRole("button", { name: "45 min" }).click();
+  await expect(dialogo.getByLabel("Minutos practicados")).toHaveValue("45");
   await dialogo.getByRole("button", { name: "Guardar sesión" }).click();
   await expect(dialogo).toBeHidden();
 });

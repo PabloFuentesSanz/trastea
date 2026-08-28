@@ -13,6 +13,7 @@ import { getCourse, getExercises, getLesson } from "@/lib/content/loader";
 import { tituloSinDia } from "@/lib/content/lesson-title";
 import { GoalList } from "@/components/progress/goal-list";
 import { WeekSummary } from "@/components/progress/week-summary";
+import { FreeSessionDialog } from "@/components/progress/free-session-dialog";
 import { resumenDeMetas } from "@/lib/progress/goals";
 import { mapaDelCurso } from "@/lib/progress/course-map";
 import { queTocaAhora } from "@/lib/progress/next";
@@ -118,10 +119,15 @@ export default async function ProgresoPage() {
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-8">
-      <h1 className="text-3xl font-semibold tracking-tight">Progreso</h1>
-      <p className="mt-1 text-muted-foreground">
-        Lo que se mide, mejora. Lo que no, se estanca (otra vez).
-      </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-3xl font-semibold tracking-tight">Progreso</h1>
+          <p className="mt-1 text-muted-foreground">
+            Lo que se mide, mejora. Lo que no, se estanca (otra vez).
+          </p>
+        </div>
+        <FreeSessionDialog variant="outline" />
+      </div>
 
       {/* Qué toca ahora: la respuesta a "me siento con la guitarra, ¿y ahora?" */}
       {acciones.length > 0 && (

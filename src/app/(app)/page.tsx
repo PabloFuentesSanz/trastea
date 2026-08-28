@@ -12,6 +12,7 @@ import {
 import { getExercise, getLesson, getOrderedLessons } from "@/lib/content/loader";
 import { getDashboardData, getUserContext, type DashboardData } from "@/lib/queries";
 import { tituloSinDia } from "@/lib/content/lesson-title";
+import { FreeSessionDialog } from "@/components/progress/free-session-dialog";
 
 const EMPTY: DashboardData = {
   streak: 0,
@@ -153,6 +154,14 @@ export default async function DashboardPage() {
             )}
           </CardContent>
         </Card>
+      </div>
+
+      {/* Lo que tocas fuera de la lección también cuenta */}
+      <div className="mt-6 flex flex-wrap items-center gap-3 rounded-xl border bg-card p-4">
+        <p className="min-w-0 flex-1 text-sm text-muted-foreground">
+          ¿Has tocado por tu cuenta? Regístralo y cuenta para la racha.
+        </p>
+        <FreeSessionDialog />
       </div>
 
       {/* Accesos rápidos */}

@@ -16,12 +16,7 @@ import { BLOCK_TYPE_LABEL } from "./lesson-block-card";
 import { chordify } from "@/components/content/chordify";
 import { tituloSinDia } from "@/lib/content/lesson-title";
 import { SessionCloseDialog } from "./session-close-dialog";
-
-function todayLocal(): string {
-  const d = new Date();
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-}
+import { todayLocal } from "@/lib/date";
 
 export function LessonPlayer({
   lesson,
