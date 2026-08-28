@@ -120,3 +120,16 @@ test("el glosario no se subraya a sí mismo", async ({ page }) => {
   await page.goto("/wiki/glosario");
   await expect(page.getByRole("button", { name: /^Qué es / })).toHaveCount(0);
 });
+
+test("/progreso responde a dónde estoy, qué llevo y qué toca ahora", async ({ page }) => {
+  await page.goto("/progreso");
+  const toca = page.getByRole("region", { name: "Qué toca ahora" });
+  await expect(toca).toBeVisible();
+  await expect(page.getByRole("region", { name: "Dónde estás" })).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "Objetivos de velocidad" }),
+  ).toBeVisible();
+
+  // lo que propone lleva a algún sitio de verdad
+  await expect(toca.getByRole("link").first()).toHaveAttribute("href", /^\//);
+});

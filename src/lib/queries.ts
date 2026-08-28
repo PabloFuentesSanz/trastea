@@ -1,6 +1,7 @@
 import "server-only";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import { currentStreak } from "@/lib/streak";
+import { metasDeBpm, type EjercicioConMeta, type Meta } from "@/lib/progress/goals";
 import { cardId, type TrainCard } from "@/lib/train/cards";
 import { selectSession, sessionStats, type DueCard } from "@/lib/srs/scheduler";
 import type {
@@ -279,6 +280,24 @@ export async function getSrsProgress(
       },
     ];
   });
+}
+
+/**
+ * Las metas de bpm del curso con lo que llevas registrado. El reloj vive
+ * aquí, con el resto de las consultas, y no en el render.
+ */
+export async function getMetasDeBpm(
+  userId: string | null,
+  ejercicios: readonly EjercicioConMeta[],
+): Promise<Meta[]> {
+  const registros = userId ? await getBpmRecords(userId) : [];
+  return metasDeBpm(ejercicios, registros, Date.now());
+}
+
+/** Cuántas tarjetas de repaso están vencidas ahora mismo, de todos los mazos. */
+export async function getRepasosVencidos(userId: string, ahora = Date.now()) {
+  const progreso = await getSrsProgress(userId);
+  return progreso.filter((p) => p.reps > 0 && p.dueAt <= ahora).length;
 }
 
 export interface TrainingDeck {
