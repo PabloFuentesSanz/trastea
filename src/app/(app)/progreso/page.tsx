@@ -12,6 +12,7 @@ import { PracticeHeatmap } from "@/components/progress/practice-heatmap";
 import { getCourse, getExercises, getLesson } from "@/lib/content/loader";
 import { tituloSinDia } from "@/lib/content/lesson-title";
 import { GoalList } from "@/components/progress/goal-list";
+import { WeekSummary } from "@/components/progress/week-summary";
 import { resumenDeMetas } from "@/lib/progress/goals";
 import { mapaDelCurso } from "@/lib/progress/course-map";
 import { queTocaAhora } from "@/lib/progress/next";
@@ -25,10 +26,27 @@ import {
   getRecentSessions,
   getMetasDeBpm,
   getRepasosVencidos,
+  getResumenSemanal,
   getUserContext,
 } from "@/lib/queries";
 
 export const metadata: Metadata = { title: "Progreso" };
+
+/** las caritas del cierre de sesión, para releer el diario de un vistazo */
+const MOOD_CARA: Record<number, string> = {
+  1: "😤",
+  2: "😕",
+  3: "🙂",
+  4: "😃",
+  5: "🔥",
+};
+const MOOD_TEXTO: Record<number, string> = {
+  1: "peleada",
+  2: "espesa",
+  3: "normal",
+  4: "buena",
+  5: "de las que enganchan",
+};
 
 /** semanas que enseña el calendario: medio año cabe sin agobiar en móvil */
 const WEEKS = 26;
@@ -53,6 +71,7 @@ export default async function ProgresoPage() {
     : [[], [], [], new Map(), 0, await getMetasDeBpm(null, ejerciciosConMeta)];
 
   const today = new Date().toISOString().slice(0, 10);
+  const semana = await getResumenSemanal(ctx.userId, today);
   const ejercicios = getExercises();
 
   const titles = Object.fromEntries(
@@ -140,6 +159,22 @@ export default async function ProgresoPage() {
           </Card>
         </section>
       )}
+
+      {/* La semana: la unidad en la que se nota si algo mejora */}
+      <section aria-label="Tu semana">
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Tu semana</CardTitle>
+            <CardDescription>
+              Lo que llevas hecho, lo que ha subido y lo que apuntaste al cerrar cada
+              sesión.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <WeekSummary resumen={semana} titulos={titles} />
+          </CardContent>
+        </Card>
+      </section>
 
       {/* Dónde estás: el arco entero del curso */}
       <section aria-label="Dónde estás">
@@ -244,10 +279,23 @@ export default async function ProgresoPage() {
                     <span className="w-24 shrink-0 text-sm tabular-nums text-muted-foreground">
                       {s.date}
                     </span>
-                    <span className="line-clamp-2 min-w-0 flex-1 text-sm">
-                      {lesson
-                        ? tituloSinDia(lesson.frontmatter.title)
-                        : (s.lesson_slug ?? "Sesión libre")}
+                    <span className="min-w-0 flex-1">
+                      <span className="line-clamp-2 block text-sm">
+                        {s.mood !== null && (
+                          <span aria-label={`Sesión: ${MOOD_TEXTO[s.mood] ?? ""}`}>
+                            {MOOD_CARA[s.mood] ?? ""}{" "}
+                          </span>
+                        )}
+                        {lesson
+                          ? tituloSinDia(lesson.frontmatter.title)
+                          : (s.lesson_slug ?? "Sesión libre")}
+                      </span>
+                      {/* el diario: lo que escribiste al cerrar la sesión */}
+                      {s.notes && (
+                        <span className="mt-0.5 block text-xs text-muted-foreground">
+                          {s.notes}
+                        </span>
+                      )}
                     </span>
                     <Badge variant="secondary" className="font-mono">
                       {s.duration_min}&#8217;

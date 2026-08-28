@@ -5,8 +5,19 @@ import { useMetronome } from "@/hooks/use-metronome";
 import type { MetronomeConfig } from "@/lib/metronome/pattern";
 import { paramsFromConfig } from "@/lib/metronome/url";
 import { MetronomePanel } from "./metronome-panel";
+import { BpmQuickLog, type EjercicioParaMarcar } from "./bpm-quick-log";
 
-export function MetronomePageClient({ initial }: { initial: MetronomeConfig }) {
+export function MetronomePageClient({
+  initial,
+  ejercicios,
+  ejercicioInicial,
+  demo,
+}: {
+  initial: MetronomeConfig;
+  ejercicios: EjercicioParaMarcar[];
+  ejercicioInicial?: string;
+  demo: boolean;
+}) {
   const metronome = useMetronome(initial);
 
   // El estado de la herramienta vive en la URL: cualquier lección puede
@@ -17,6 +28,14 @@ export function MetronomePageClient({ initial }: { initial: MetronomeConfig }) {
   }, []);
 
   return (
-    <MetronomePanel metronome={metronome} globalShortcuts onConfigChange={syncUrl} />
+    <>
+      <MetronomePanel metronome={metronome} globalShortcuts onConfigChange={syncUrl} />
+      <BpmQuickLog
+        ejercicios={ejercicios}
+        inicial={ejercicioInicial}
+        bpm={metronome.config.bpm}
+        demo={demo}
+      />
+    </>
   );
 }

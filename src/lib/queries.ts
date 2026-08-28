@@ -2,6 +2,7 @@ import "server-only";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import { currentStreak } from "@/lib/streak";
 import { metasDeBpm, type EjercicioConMeta, type Meta } from "@/lib/progress/goals";
+import { resumenSemanal, semanaCerrada, type ResumenSemana } from "@/lib/progress/week";
 import { cardId, type TrainCard } from "@/lib/train/cards";
 import { selectSession, sessionStats, type DueCard } from "@/lib/srs/scheduler";
 import type {
@@ -292,6 +293,62 @@ export async function getMetasDeBpm(
 ): Promise<Meta[]> {
   const registros = userId ? await getBpmRecords(userId) : [];
   return metasDeBpm(ejercicios, registros, Date.now());
+}
+
+/**
+ * El resumen de una semana. El reloj y el rango se resuelven aquí; la
+ * aritmética es pura y vive en lib/progress/week.
+ */
+export async function getResumenSemanal(
+  userId: string | null,
+  hoy: string,
+  atras = 0,
+): Promise<ResumenSemana> {
+  const rango = semanaCerrada(hoy, atras);
+  if (!userId) return resumenSemanal(rango, [], [], []);
+
+  const supabase = await createClient();
+  const [sesionesRes, registrosRes, leccionesRes] = await Promise.all([
+    supabase
+      .from("practice_sessions")
+      .select("date, duration_min, lesson_slug, notes, mood")
+      .eq("user_id", userId)
+      .gte("date", rango.desde)
+      .lte("date", rango.hasta),
+    supabase
+      .from("exercise_records")
+      .select("exercise_slug, bpm, recorded_at")
+      .eq("user_id", userId)
+      .lte("recorded_at", `${rango.hasta}T23:59:59Z`)
+      // el histórico solo se usa para saber de dónde venías: con esto sobra
+      .order("recorded_at", { ascending: false })
+      .limit(2000),
+    supabase
+      .from("lesson_progress")
+      .select("lesson_slug, completed_at")
+      .eq("user_id", userId)
+      .eq("status", "done"),
+  ]);
+
+  return resumenSemanal(
+    rango,
+    sesionesRes.data ?? [],
+    registrosRes.data ?? [],
+    leccionesRes.data ?? [],
+  );
+}
+
+/** El ejercicio en el que registraste bpm por última vez. */
+export async function getUltimoEjercicioMarcado(userId: string): Promise<string | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("exercise_records")
+    .select("exercise_slug")
+    .eq("user_id", userId)
+    .order("recorded_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return data?.exercise_slug ?? null;
 }
 
 /** Cuántas tarjetas de repaso están vencidas ahora mismo, de todos los mazos. */

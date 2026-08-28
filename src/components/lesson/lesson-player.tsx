@@ -15,6 +15,7 @@ import { EmbeddedMetronome, metronomeConfigForBlock } from "./embedded-metronome
 import { BLOCK_TYPE_LABEL } from "./lesson-block-card";
 import { chordify } from "@/components/content/chordify";
 import { tituloSinDia } from "@/lib/content/lesson-title";
+import { SessionCloseDialog } from "./session-close-dialog";
 
 function todayLocal(): string {
   const d = new Date();
@@ -46,6 +47,7 @@ export function LessonPlayer({
   const [bpmByBlock, setBpmByBlock] = useState<Record<string, number>>({});
   const [completed, setCompleted] = useState(alreadyCompleted);
   const [focus, setFocus] = useState(false);
+  const [cerrando, setCerrando] = useState(false);
   const [pending, startTransition] = useTransition();
 
   const state = useMemo<LessonPlayerState>(
@@ -68,7 +70,7 @@ export function LessonPlayer({
   const currentBlock: LessonBlock | null =
     lesson.blocks.find((b) => !doneBlocks.has(b.id)) ?? null;
 
-  const finishLesson = () => {
+  const finishLesson = (diario: { mood?: number; notes?: string } = {}) => {
     startTransition(async () => {
       const blocks = lesson.blocks
         .filter((b) => doneBlocks.has(b.id))
@@ -83,6 +85,7 @@ export function LessonPlayer({
         date: todayLocal(),
         durationMin: blocks.reduce((sum, b) => sum + b.min, 0),
         blocks,
+        ...diario,
       });
       if (!result.ok && result.error !== "demo") {
         toast.error(`No se pudo guardar la sesión: ${result.error}`);
@@ -90,6 +93,7 @@ export function LessonPlayer({
       }
       setCompleted(true);
       setFocus(false);
+      setCerrando(false);
       toast.success(
         result.ok
           ? "Sesión guardada. 🔥 La racha sigue."
@@ -160,7 +164,7 @@ export function LessonPlayer({
               <Button
                 size="lg"
                 className="h-12 min-w-56 text-base"
-                onClick={finishLesson}
+                onClick={() => setCerrando(true)}
                 disabled={pending || doneCount === 0}
               >
                 <Check aria-hidden />
@@ -175,6 +179,13 @@ export function LessonPlayer({
           )}
         </div>
       </div>
+
+      <SessionCloseDialog
+        abierto={cerrando}
+        guardando={pending}
+        onCerrar={() => setCerrando(false)}
+        onGuardar={finishLesson}
+      />
 
       {/* Modo focus */}
       {focus && (
@@ -236,7 +247,14 @@ export function LessonPlayer({
           ) : (
             <div className="flex flex-1 flex-col items-center justify-center gap-4">
               <p className="text-xl">Todos los bloques hechos 🎉</p>
-              <Button size="lg" onClick={finishLesson} disabled={pending || completed}>
+              <Button
+                size="lg"
+                onClick={() => {
+                  setFocus(false);
+                  setCerrando(true);
+                }}
+                disabled={pending || completed}
+              >
                 <Check aria-hidden /> Completar lección
               </Button>
             </div>

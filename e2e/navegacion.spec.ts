@@ -133,3 +133,38 @@ test("/progreso responde a dónde estoy, qué llevo y qué toca ahora", async ({
   // lo que propone lleva a algún sitio de verdad
   await expect(toca.getByRole("link").first()).toHaveAttribute("href", /^\//);
 });
+
+test("el bpm se guarda desde el metrónomo, no solo dentro de una lección", async ({
+  page,
+}) => {
+  await page.goto("/metronomo?bpm=96");
+  const marca = page.getByRole("region", { name: "Guardar la marca" });
+  await expect(marca).toBeVisible();
+
+  // hasta elegir ejercicio, no hay nada que guardar
+  const guardar = marca.getByRole("button", { name: /Guardar 96 bpm/ });
+  await expect(guardar).toBeDisabled();
+
+  await marca.getByRole("combobox").click();
+  await page.getByRole("option").first().click();
+  await expect(guardar).toBeEnabled();
+});
+
+test("al cerrar una lección se puede apuntar cómo ha ido", async ({ page }) => {
+  await page.goto("/curso/a-cimientos/a-cimientos-w01-d1");
+
+  // marcar un bloque para poder cerrar
+  await page.getByRole("button", { name: /Abrir bloque/ }).first().click();
+  await page
+    .getByRole("button", { name: /Hecho|Completar bloque/ })
+    .first()
+    .click();
+
+  await page.getByRole("button", { name: "Completar lección" }).click();
+  const dialogo = page.getByRole("dialog", { name: "¿Cómo ha ido?" });
+  await expect(dialogo).toBeVisible();
+  await dialogo.getByRole("button", { name: /Normal/ }).click();
+  await dialogo.getByLabel(/Qué ha pasado/).fill("el cambio a Bb no llega");
+  await dialogo.getByRole("button", { name: "Guardar sesión" }).click();
+  await expect(dialogo).toBeHidden();
+});
