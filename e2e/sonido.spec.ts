@@ -75,6 +75,54 @@ test.describe("lo que suena", () => {
       .toBeGreaterThan(5);
   });
 
+  test("lo que suena pasa por la sala, y dos pulsaciones no son idénticas", async ({
+    page,
+  }) => {
+    // el modelo de cuerda ya estaba bien; lo que faltaba era la sala, el
+    // estéreo y que repetir una nota no sonara a ametralladora
+    await page.addInitScript(() => {
+      const w = window as unknown as { __audio: Record<string, number[]> };
+      w.__audio = { convolver: [], panner: [], detune: [] };
+      const proto = window.AudioContext.prototype;
+      const conv = proto.createConvolver;
+      proto.createConvolver = function (this: AudioContext) {
+        w.__audio.convolver.push(1);
+        return conv.call(this);
+      };
+      const pan = proto.createStereoPanner;
+      proto.createStereoPanner = function (this: AudioContext) {
+        w.__audio.panner.push(1);
+        return pan.call(this);
+      };
+      const src = proto.createBufferSource;
+      proto.createBufferSource = function (this: AudioContext) {
+        const nodo = src.call(this);
+        const start = nodo.start.bind(nodo);
+        nodo.start = ((t?: number) => {
+          w.__audio.detune.push(nodo.detune.value);
+          return start(t);
+        }) as typeof nodo.start;
+        return nodo;
+      };
+    });
+
+    await page.goto("/curso/a-cimientos/a-cimientos-w03-d1");
+    const nota = page.getByRole("button", { name: "Cuerda 3, traste 9, Mi" }).first();
+    for (let i = 0; i < 4; i += 1) {
+      await nota.click();
+      await page.waitForTimeout(200);
+    }
+
+    const audio = await page.evaluate(
+      () => (window as unknown as { __audio: Record<string, number[]> }).__audio,
+    );
+    // una sala para toda la app, un paneo por nota
+    expect(audio.convolver).toHaveLength(1);
+    expect(audio.panner.length).toBeGreaterThanOrEqual(4);
+    // y cuatro pulsaciones de la misma nota, cuatro afinaciones distintas
+    expect(new Set(audio.detune).size).toBeGreaterThan(2);
+  });
+
   test("el metrónomo arranca y para", async ({ page }) => {
     await contarAudio(page);
     await page.goto("/metronomo?bpm=120");

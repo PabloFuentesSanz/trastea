@@ -5,6 +5,8 @@ import {
   backingLength,
   backingNotes,
   bassMidi,
+  esGolpeAbajo,
+  ordenDeRasgueo,
   type BackingStyle,
 } from "./groove";
 import { mod12, parseNote } from "@/lib/music/notes";
@@ -143,5 +145,40 @@ describe("el bajo se queda en su registro", () => {
         expect(midi).toBeLessThanOrEqual(52);
       }
     }
+  });
+});
+
+describe("rasgueo", () => {
+  it("en el pulso la púa va hacia abajo; en la 'y', hacia arriba", () => {
+    expect(esGolpeAbajo(0)).toBe(true);
+    expect(esGolpeAbajo(2)).toBe(true);
+    expect(esGolpeAbajo(1.5)).toBe(false);
+    expect(esGolpeAbajo(0.5)).toBe(false);
+  });
+
+  it("hacia abajo empieza por la cuerda más grave", () => {
+    const orden = ordenDeRasgueo([64, 48, 55], true);
+    expect(orden.get(48)).toBe(0);
+    expect(orden.get(64)).toBe(2);
+  });
+
+  it("hacia arriba, al revés", () => {
+    const orden = ordenDeRasgueo([64, 48, 55], false);
+    expect(orden.get(64)).toBe(0);
+    expect(orden.get(48)).toBe(2);
+  });
+
+  it("las notas del acorde salen con su orden de rasgueo", () => {
+    const notas = backingNotes(parseGrid("C"), { style: "recto" }).filter(
+      (n) => n.voice === "acorde",
+    );
+    expect(notas.length).toBeGreaterThan(1);
+    const indices = notas.map((n) => n.strumIndex);
+    expect(indices.every((i) => typeof i === "number")).toBe(true);
+    // en un mismo golpe no hay dos cuerdas con el mismo orden
+    const delPrimerGolpe = notas.filter((n) => n.beat === notas[0].beat);
+    expect(new Set(delPrimerGolpe.map((n) => n.strumIndex)).size).toBe(
+      delPrimerGolpe.length,
+    );
   });
 });

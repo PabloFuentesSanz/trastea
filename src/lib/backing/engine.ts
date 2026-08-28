@@ -8,7 +8,7 @@
 
 import type { BackingNote } from "./groove";
 import { audioContext, audioNow, resumeAudio } from "@/lib/audio/context";
-import { pluckAt, stringBuffer } from "@/lib/audio/pluck";
+import { pluckAt, salaEntrada, stringBuffer } from "@/lib/audio/pluck";
 
 const LOOKAHEAD_S = 0.15;
 const SCHEDULER_INTERVAL_MS = 25;
@@ -46,6 +46,9 @@ export interface BackingEngine {
   dispose(): void;
 }
 
+/** Lo que tarda la púa en pasar de una cuerda a la siguiente. */
+const RASGUEO_S = 0.011;
+
 /** Golpe seco sin altura: la cuerda apagada del funk y de los ghost notes. */
 function deadNote(time: number, duration: number, gainValue: number) {
   const ctx = audioContext();
@@ -64,9 +67,10 @@ function deadNote(time: number, duration: number, gainValue: number) {
   gain.gain.setValueAtTime(gainValue, time);
   gain.gain.exponentialRampToValueAtTime(0.0001, time + Math.max(duration, 0.05));
 
+  // la cuerda apagada es música, así que pasa por la misma sala que el resto
   noise.connect(filter);
   filter.connect(gain);
-  gain.connect(ctx.destination);
+  gain.connect(salaEntrada());
   noise.start(time);
   noise.stop(time + 0.08);
 }
@@ -122,7 +126,11 @@ export function createBackingEngine(getConfig: () => BackingEngineConfig): Backi
       const hasta = desde + 1;
       for (const note of config.notes) {
         if (note.beat < desde || note.beat >= hasta) continue;
-        const time = cycleStart + note.beat * secondsPerBeat;
+        // el rasgueo: cada cuerda entra unos milisegundos después de la
+        // anterior. Seis notas exactamente a la vez suenan a teclado, no a
+        // púa bajando por las cuerdas
+        const time =
+          cycleStart + note.beat * secondsPerBeat + (note.strumIndex ?? 0) * RASGUEO_S;
         const seconds = note.duration * secondsPerBeat;
         const gain = note.velocity * config.volume * (VOICE_GAIN[note.voice] ?? 0.3);
         if (note.voice === "muerta") deadNote(time, seconds, gain);

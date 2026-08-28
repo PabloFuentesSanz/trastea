@@ -47,6 +47,29 @@ export interface BackingNote {
   /** 0-1, para que el groove tenga relieve */
   velocity: number;
   voice: BackingVoice;
+  /**
+   * Orden dentro del rasgueo: 0 es la primera cuerda que toca la púa. Nadie
+   * ataca seis cuerdas a la vez —eso es un teclado—, así que el motor separa
+   * cada nota unos milisegundos siguiendo este orden.
+   */
+  strumIndex?: number;
+}
+
+/** Un golpe que cae en el pulso se rasguea hacia abajo; el de la "y", hacia arriba. */
+export function esGolpeAbajo(beat: number): boolean {
+  return Math.abs(beat - Math.round(beat)) < 1e-6;
+}
+
+/**
+ * Qué cuerda toca la púa primero. Hacia abajo empieza por la más grave;
+ * hacia arriba, por la más aguda.
+ */
+export function ordenDeRasgueo(
+  midis: readonly number[],
+  haciaAbajo: boolean,
+): Map<number, number> {
+  const ordenadas = [...midis].sort((a, b) => (haciaAbajo ? a - b : b - a));
+  return new Map(ordenadas.map((midi, i) => [midi, i]));
 }
 
 /** Golpe del patrón: pulso dentro del compás, duración e intensidad. */
@@ -266,6 +289,9 @@ export function backingNotes(
       for (const [beat, duration, velocity] of groove.chord) {
         const at = barStart + withSwing(beat, groove.swing);
         if (at < from || at >= to) continue;
+        // en el pulso se rasguea hacia abajo (de grave a aguda) y en el "y"
+        // hacia arriba, que es lo que hace la mano de verdad
+        const orden = ordenDeRasgueo(midis, esGolpeAbajo(beat));
         for (const midi of midis) {
           notes.push({
             beat: at,
@@ -273,6 +299,7 @@ export function backingNotes(
             midi,
             velocity,
             voice: "acorde",
+            strumIndex: orden.get(midi),
           });
         }
       }
