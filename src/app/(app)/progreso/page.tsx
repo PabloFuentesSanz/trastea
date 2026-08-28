@@ -13,6 +13,7 @@ import { getCourse, getExercises, getLesson } from "@/lib/content/loader";
 import { tituloSinDia } from "@/lib/content/lesson-title";
 import { GoalList } from "@/components/progress/goal-list";
 import { WeekSummary } from "@/components/progress/week-summary";
+import { MasteryMap } from "@/components/progress/mastery-map";
 import { FreeSessionDialog } from "@/components/progress/free-session-dialog";
 import { resumenDeMetas } from "@/lib/progress/goals";
 import { mapaDelCurso } from "@/lib/progress/course-map";
@@ -27,6 +28,7 @@ import {
   getRecentSessions,
   getMetasDeBpm,
   getRepasosVencidos,
+  getMapaDelMastil,
   getResumenSemanal,
   getUserContext,
 } from "@/lib/queries";
@@ -73,6 +75,7 @@ export default async function ProgresoPage() {
 
   const today = new Date().toISOString().slice(0, 10);
   const semana = await getResumenSemanal(ctx.userId, today);
+  const mastil = await getMapaDelMastil(ctx.userId);
   const ejercicios = getExercises();
 
   const titles = Object.fromEntries(
@@ -225,6 +228,21 @@ export default async function ProgresoPage() {
                 </Link>
               </Button>
             )}
+          </CardContent>
+        </Card>
+      </section>
+
+      {/* El mástil que dominas: lo sabía el SRS y no se veía en ningún sitio */}
+      <section aria-label="El mástil que dominas">
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>El mástil que dominas</CardTitle>
+            <CardDescription>
+              Nota a nota, según lo que tardas en volver a fallarla.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <MasteryMap mapa={mastil} />
           </CardContent>
         </Card>
       </section>

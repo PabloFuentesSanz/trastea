@@ -39,22 +39,27 @@ test.describe("el centro de entrenamiento", () => {
 
   test("subir de nivel cambia de verdad lo que se pregunta", async ({ page }) => {
     // El caso que se vio usándolo: de principiante a avanzado seguían saliendo
-    // las mismas preguntas en la 6ª cuerda. La sesión cogía siempre las
-    // primeras veinte cartas del mazo, y los mazos se generan cuerda a cuerda.
-    const cuerdasEn = async (nivel: number, cargas: number) => {
-      const vistas = new Set<number>();
+    // las mismas preguntas. Eran dos cosas — la sesión se llenaba de repasos
+    // vencidos, y los niveles 4 y 5 arrastraban entero el nivel 3.
+    const alturasDeLaPregunta = () =>
+      page
+        .locator("svg > g > circle")
+        .evaluateAll((els) => new Set(els.map((e) => e.getAttribute("cy"))).size);
+
+    const cruzanEn = async (nivel: number, cargas: number) => {
+      let cruzan = 0;
       for (let i = 0; i < cargas; i += 1) {
         await page.goto(`/entrenar/reconocer-intervalos?nivel=${nivel}`);
-        const alturas = await page
-          .locator("svg > g > circle")
-          .evaluateAll((els) => els.map((e) => e.getAttribute("cy")));
-        for (const y of alturas) if (y) vistas.add(Number(y));
+        if ((await alturasDeLaPregunta()) > 1) cruzan += 1;
       }
-      return vistas.size;
+      return cruzan;
     };
 
-    // el nivel 4 usa las seis cuerdas: en varias cargas tienen que aparecer
-    expect(await cuerdasEn(4, 8)).toBeGreaterThanOrEqual(4);
+    // el 1 es en la misma cuerda; el 4 y el 5, cruzando. Siempre, no de vez
+    // en cuando
+    expect(await cruzanEn(1, 4)).toBe(0);
+    expect(await cruzanEn(4, 4)).toBe(4);
+    expect(await cruzanEn(5, 4)).toBe(4);
   });
 
   test("un entrenamiento de oído dura una sesión entera", async ({ page }) => {

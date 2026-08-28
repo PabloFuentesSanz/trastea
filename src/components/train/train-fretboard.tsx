@@ -13,7 +13,17 @@ const PAD_BOTTOM = 20;
 const PAD_X = 10;
 const MARKERS = [3, 5, 7, 9, 15, 17];
 
-export type MarkKind = "ask" | "from" | "correct" | "wrong" | "hole" | "context";
+export type MarkKind =
+  | "ask"
+  | "from"
+  | "correct"
+  | "wrong"
+  | "hole"
+  | "context"
+  // el mapa de dominio: qué notas te salen solas y cuáles se te caen
+  | "dominada"
+  | "en-marcha"
+  | "floja";
 
 export interface FretMark {
   position: Position;
@@ -30,6 +40,9 @@ const FILL: Record<MarkKind, string> = {
   hole: "transparent",
   /** las notas que están de contexto y no se preguntan */
   context: "var(--muted)",
+  dominada: "var(--success)",
+  "en-marcha": "var(--primary)",
+  floja: "var(--destructive)",
 };
 
 /**

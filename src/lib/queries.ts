@@ -3,6 +3,7 @@ import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import { currentStreak } from "@/lib/streak";
 import { metasDeBpm, type EjercicioConMeta, type Meta } from "@/lib/progress/goals";
 import { resumenSemanal, semanaCerrada, type ResumenSemana } from "@/lib/progress/week";
+import { mapaDelMastil, type NotaDelMapa } from "@/lib/progress/mastery";
 import { cardId, type TrainCard } from "@/lib/train/cards";
 import { selectSession, sessionStats, type DueCard } from "@/lib/srs/scheduler";
 import type {
@@ -336,6 +337,13 @@ export async function getResumenSemanal(
     registrosRes.data ?? [],
     leccionesRes.data ?? [],
   );
+}
+
+/** El mástil que dominas: qué notas te salen solas y cuáles se te caen. */
+export async function getMapaDelMastil(userId: string | null): Promise<NotaDelMapa[]> {
+  if (!userId) return [];
+  const progreso = await getSrsProgress(userId, ["fretboard_note"]);
+  return mapaDelMastil(progreso);
 }
 
 /** El ejercicio en el que registraste bpm por última vez. */

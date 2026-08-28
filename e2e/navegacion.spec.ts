@@ -129,6 +129,7 @@ test("/progreso responde a dónde estoy, qué llevo y qué toca ahora", async ({
   await expect(
     page.getByRole("region", { name: "Objetivos de velocidad" }),
   ).toBeVisible();
+  await expect(page.getByRole("region", { name: "El mástil que dominas" })).toBeVisible();
 
   // lo que propone lleva a algún sitio de verdad
   await expect(toca.getByRole("link").first()).toHaveAttribute("href", /^\//);
