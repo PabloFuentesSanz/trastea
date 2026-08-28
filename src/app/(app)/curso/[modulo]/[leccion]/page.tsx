@@ -10,11 +10,17 @@ import {
   getLesson,
   getModule,
   getSong,
+  getSongs,
   getTerminosNuevos,
   getWikiArticle,
   nextLessonSlug,
 } from "@/lib/content/loader";
 import { getLessonProgress, getUserContext } from "@/lib/queries";
+import {
+  alternativasParaPracticar,
+  enlaceDeCatalogo,
+} from "@/lib/content/song-alternatives";
+import { toSongCard, type SongCard } from "@/lib/content/song-filter";
 import { drillsForSkills } from "@/lib/train/catalog";
 import { isTrainSkill, levelFromWeek } from "@/lib/train/taxonomy";
 
@@ -50,6 +56,25 @@ export default async function LeccionPage({
     : null;
 
   const breadcrumb = `${mod.frontmatter.title} · Semana ${lesson.weekOrder} · Día ${lesson.frontmatter.order}`;
+
+  // Alternativas del catálogo para cada canción del día: mismas técnicas y
+  // nunca por encima del techo del módulo.
+  const catalogo = getSongs().map((s) => toSongCard(s.frontmatter));
+  const alternativas = new Map<string, { lista: SongCard[]; href: string }>();
+  for (const block of lesson.frontmatter.blocks) {
+    const suya = block.song ? getSong(block.song) : null;
+    if (!suya) continue;
+    const tecnicas = suya.frontmatter.techniques;
+    alternativas.set(block.id, {
+      lista: alternativasParaPracticar(catalogo, {
+        tecnicas,
+        nivelMaximo: mod.frontmatter.max_song_level,
+        excluir: suya.frontmatter.slug,
+        estilo: suya.frontmatter.style,
+      }),
+      href: enlaceDeCatalogo(tecnicas, mod.frontmatter.max_song_level),
+    });
+  }
 
   return (
     <main className="w-full px-4 pb-10">
@@ -124,6 +149,38 @@ export default async function LeccionPage({
                   )}
                 </p>
               )}
+              {/* si la del curso no engancha, otras que entrenan lo mismo: el
+                  catálogo tiene 304 y las lecciones apuntaban a 16 */}
+              {song && alternativas.get(block.id)?.lista.length ? (
+                <div className="mt-2 text-sm">
+                  <p className="text-muted-foreground">
+                    ¿No te dice nada? Estas entrenan lo mismo:
+                  </p>
+                  <ul className="mt-1 flex flex-wrap gap-x-3 gap-y-1">
+                    {alternativas.get(block.id)?.lista.map((alt) => (
+                      <li key={alt.slug}>
+                        <Link
+                          href={`/canciones/${alt.slug}`}
+                          className="text-primary underline-offset-4 hover:underline"
+                        >
+                          {alt.title}
+                        </Link>{" "}
+                        <span className="text-muted-foreground text-xs">
+                          — {alt.artist}
+                        </span>
+                      </li>
+                    ))}
+                    <li>
+                      <Link
+                        href={alternativas.get(block.id)?.href ?? "/canciones"}
+                        className="text-muted-foreground text-xs underline-offset-4 hover:underline"
+                      >
+                        ver todas
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+              ) : null}
             </LessonBlockCard>
           );
         })}

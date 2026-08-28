@@ -3,28 +3,12 @@ import type { Metadata } from "next";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SongBrowser } from "@/components/content/song-browser";
 import { getSongs } from "@/lib/content/loader";
-import type { SongCard } from "@/lib/content/song-filter";
+import { toSongCard, type SongCard } from "@/lib/content/song-filter";
 
 export const metadata: Metadata = { title: "Canciones" };
 
 export default function CancionesPage() {
-  const songs: SongCard[] = getSongs().map(({ frontmatter }) => ({
-    slug: frontmatter.slug,
-    title: frontmatter.title,
-    artist: frontmatter.artist,
-    level: frontmatter.level,
-    key: frontmatter.key,
-    purpose: frontmatter.purpose,
-    style: frontmatter.style,
-    techniques: frontmatter.techniques,
-    collections: frontmatter.collections,
-    chords: frontmatter.chords,
-    progression: frontmatter.progression,
-    year: frontmatter.year,
-    bpm: frontmatter.bpm,
-    tuning: frontmatter.tuning,
-    capo: frontmatter.capo,
-  }));
+  const songs: SongCard[] = getSongs().map((s) => toSongCard(s.frontmatter));
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-8">

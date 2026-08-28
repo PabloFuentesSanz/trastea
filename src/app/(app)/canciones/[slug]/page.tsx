@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Mdx } from "@/components/content/mdx";
 import { ChordChip } from "@/components/content/chord-chip";
 import { getSong, getSongLessons, getSongs, getWikiArticle } from "@/lib/content/loader";
-import { relatedSongs, type SongCard } from "@/lib/content/song-filter";
+import { relatedSongs, toSongCard } from "@/lib/content/song-filter";
 import { shapeRoot } from "@/lib/content/capo";
 import { getTuning } from "@/data/tunings";
 import {
@@ -16,24 +16,6 @@ import {
   collectionLabel,
   techniqueLabel,
 } from "@/lib/content/song-taxonomy";
-
-function toCard(
-  frontmatter: ReturnType<typeof getSongs>[number]["frontmatter"],
-): SongCard {
-  return {
-    slug: frontmatter.slug,
-    title: frontmatter.title,
-    artist: frontmatter.artist,
-    level: frontmatter.level,
-    key: frontmatter.key,
-    purpose: frontmatter.purpose,
-    style: frontmatter.style,
-    techniques: frontmatter.techniques,
-    collections: frontmatter.collections,
-    chords: frontmatter.chords,
-    year: frontmatter.year,
-  };
-}
 
 export function generateStaticParams() {
   return getSongs().map((s) => ({ slug: s.frontmatter.slug }));
@@ -50,8 +32,8 @@ export default async function CancionPage({
   const song = entry.frontmatter;
   const lessons = getSongLessons(slug);
   const similar = relatedSongs(
-    getSongs().map((s) => toCard(s.frontmatter)),
-    toCard(song),
+    getSongs().map((s) => toSongCard(s.frontmatter)),
+    toSongCard(song),
   );
 
   return (

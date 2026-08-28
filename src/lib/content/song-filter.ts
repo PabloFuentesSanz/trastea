@@ -4,6 +4,7 @@
  * repertorio por técnica y nivel.
  */
 
+import type { SongFrontmatter } from "./schemas";
 import {
   SONG_COLLECTIONS,
   SONG_STYLES,
@@ -12,6 +13,30 @@ import {
   type SongStyle,
   type SongTechnique,
 } from "./song-taxonomy";
+
+/**
+ * De frontmatter a tarjeta. Estaba escrito tres veces —en el catálogo, en la
+ * ficha y ahora en la lección— y cada copia se olvidaba de un campo distinto.
+ */
+export function toSongCard(fm: SongFrontmatter): SongCard {
+  return {
+    slug: fm.slug,
+    title: fm.title,
+    artist: fm.artist,
+    level: fm.level,
+    key: fm.key,
+    purpose: fm.purpose,
+    style: fm.style,
+    techniques: fm.techniques,
+    collections: fm.collections,
+    chords: fm.chords,
+    progression: fm.progression,
+    year: fm.year,
+    bpm: fm.bpm,
+    tuning: fm.tuning,
+    capo: fm.capo,
+  };
+}
 
 export interface SongCard {
   slug: string;
