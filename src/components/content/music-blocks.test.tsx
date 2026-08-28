@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { render } from "@testing-library/react";
-import { Mastil, num, nums, Tab } from "./music-blocks";
+import { Mastil, num, nums, Rejilla, Tab } from "./music-blocks";
 
 function board(container: HTMLElement) {
   // el primer <svg> puede ser el icono del botón de escuchar; el mástil es
@@ -307,5 +307,47 @@ describe("<Mastil cuerdas>", () => {
 
     expect(board(dos.container).notas).toBe(board(una.container).notas * 2);
     expect(board(dos.container).notas).toBeLessThan(board(todas.container).notas);
+  });
+});
+
+describe("qué hacer con lo que suena", () => {
+  it("la rejilla enseña la instrucción como instrucción, no como pie", () => {
+    const { container } = render(
+      <Rejilla
+        compases="C | Am | F | G"
+        pie="Cuatro acordes en bucle"
+        queHacer="Una nota por compás: la 3ª del acorde que entra."
+      />,
+    );
+    const instruccion = container.querySelector("[data-que-hacer]");
+    expect(instruccion?.textContent).toContain("Qué haces");
+    expect(instruccion?.textContent).toContain("la 3ª del acorde que entra");
+    // el pie sigue siendo el pie
+    expect(container.querySelector("figcaption")?.textContent).toBe(
+      "Cuatro acordes en bucle",
+    );
+  });
+
+  it("sin instrucción no dibuja la tira vacía", () => {
+    const { container } = render(<Rejilla compases="C | Am" />);
+    expect(container.querySelector("[data-que-hacer]")).toBeNull();
+  });
+
+  it("la tab también la lleva", () => {
+    const { container } = render(
+      <Tab notas="6:3 6:5 6:7 -" queHacer="A 60 bpm, mirando la mano izquierda." />,
+    );
+    expect(container.querySelector("[data-que-hacer]")?.textContent).toContain(
+      "A 60 bpm",
+    );
+  });
+
+  it("y el mástil, cuando hace falta decir qué hacer con el dibujo", () => {
+    const { container } = render(
+      <Mastil escala="C major" cuerdas="6" queHacer="Di la nota antes de pisarla." />,
+    );
+    expect(container.querySelector("[data-que-hacer]")?.textContent).toContain(
+      "Di la nota",
+    );
   });
 });

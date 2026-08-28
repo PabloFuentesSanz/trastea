@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
 import { resolveInterlinksWith } from "./interlinks";
+import { terminosPorDia, type Termino } from "./jargon";
 import { cache } from "react";
 import { isTrainLevel, levelFromWeek, type TrainLevel } from "@/lib/train/taxonomy";
 import {
@@ -111,6 +112,18 @@ export const getModule = cache((slug: string): ModuleEntry | null => {
 /** Todas las lecciones en orden de curso (módulo → semana → día). */
 export const getOrderedLessons = cache((): LessonEntry[] => {
   return getCourse().flatMap((m) => m.weeks.flatMap((w) => w.lessons));
+});
+
+/**
+ * Las palabras que estrena cada lección. Se derivan del propio texto en el
+ * orden del curso (ver jargon.ts), así que no hay nada que mantener a mano:
+ * si una palabra se adelanta a otra semana, la lista se mueve sola.
+ */
+export const getTerminosNuevos = cache((slug: string): Termino[] => {
+  const mapa = terminosPorDia(
+    getOrderedLessons().map((l) => ({ id: l.frontmatter.slug, cuerpo: l.body })),
+  );
+  return mapa.get(slug) ?? [];
 });
 
 export const getLesson = cache((slug: string): LessonEntry | null => {

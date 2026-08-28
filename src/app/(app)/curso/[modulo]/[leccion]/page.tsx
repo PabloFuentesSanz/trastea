@@ -10,6 +10,7 @@ import {
   getLesson,
   getModule,
   getSong,
+  getTerminosNuevos,
   getWikiArticle,
   nextLessonSlug,
 } from "@/lib/content/loader";
@@ -43,6 +44,7 @@ export default async function LeccionPage({
 
   const next = nextLessonSlug(leccion);
   const nextLesson = next ? getLesson(next) : null;
+  const terminos = getTerminosNuevos(leccion);
   const nextHref = nextLesson
     ? `/curso/${nextLesson.moduleSlug}/${nextLesson.frontmatter.slug}`
     : null;
@@ -125,6 +127,25 @@ export default async function LeccionPage({
             </LessonBlockCard>
           );
         })}
+
+        {terminos.length > 0 && (
+          <section aria-label="Palabras nuevas" className="mt-2">
+            <h2 className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+              <BookOpen className="size-4" aria-hidden /> Palabras que estrenas hoy
+            </h2>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {terminos.map((t) => (
+                <Link
+                  key={t.termino}
+                  href={t.wiki ? `/wiki/${t.wiki}` : "/wiki/glosario"}
+                  className="rounded-full border px-3 py-1 text-sm text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
+                >
+                  {t.termino}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {lesson.frontmatter.wiki_refs.length > 0 && (
           <section aria-label="Teoría relacionada" className="mt-2">

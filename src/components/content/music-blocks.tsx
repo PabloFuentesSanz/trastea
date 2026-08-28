@@ -69,14 +69,37 @@ export function nums(value: string | number[] | undefined): number[] | undefined
   return list.every(Number.isFinite) && list.length > 0 ? list : undefined;
 }
 
+/**
+ * La instrucción de un bloque: qué haces tú mientras esto suena.
+ *
+ * El pie describe lo que se ve ("la 3ª de cada acorde: Mi, Do, La, Si") y eso
+ * no es lo mismo que decirle a alguien qué tiene que tocar. Faltaba en 52
+ * bloques del curso, y la queja fue exactamente esa: "no sé qué quieres que
+ * haga con esa base".
+ */
+function QueHacer({ children }: { children?: string }) {
+  if (!children) return null;
+  return (
+    <p
+      data-que-hacer
+      className="mt-1.5 flex gap-2 rounded-md border border-primary/30 bg-accent/30 px-3 py-2 text-sm"
+    >
+      <span className="shrink-0 font-medium text-primary">Qué haces:</span>
+      <span>{children}</span>
+    </p>
+  );
+}
+
 function Figure({
   children,
   caption,
+  queHacer,
   className,
   maxWidth,
 }: {
   children: ReactNode;
   caption?: string;
+  queHacer?: string;
   className?: string;
   /** ancho natural del dibujo: una caja de 4 trastes no debe ocupar 1000 px */
   maxWidth?: number;
@@ -89,6 +112,7 @@ function Figure({
           {caption}
         </figcaption>
       )}
+      <QueHacer>{queHacer}</QueHacer>
     </figure>
   );
 }
@@ -119,6 +143,7 @@ export function Mastil({
   cuerdas,
   etiquetas = "interval",
   pie,
+  queHacer,
   zurdo = false,
   mudo = false,
 }: {
@@ -141,6 +166,8 @@ export function Mastil({
   cuerdas?: string | number[];
   etiquetas?: FretboardLabels;
   pie?: string;
+  /** qué tiene que hacer quien lee, con este dibujo delante */
+  queHacer?: string;
   zurdo?: boolean;
   /** para el rarísimo caso en que el dibujo no deba sonar */
   mudo?: boolean;
@@ -208,7 +235,7 @@ export function Mastil({
   const natural = cells >= 12 ? undefined : 90 + cells * 78;
 
   return (
-    <Figure caption={pie} maxWidth={natural}>
+    <Figure caption={pie} queHacer={queHacer} maxWidth={natural}>
       {mudo ? (
         <Fretboard
           positions={positions}
@@ -244,6 +271,7 @@ export function Mastil({
 export function Rejilla({
   compases,
   pie,
+  queHacer,
   porLinea,
   bpm,
   estilo = "recto",
@@ -251,6 +279,8 @@ export function Rejilla({
 }: {
   compases: string;
   pie?: string;
+  /** qué tocas tú mientras la base gira */
+  queHacer?: string;
   porLinea?: Numerico;
   /** tempo con el que arranca la base */
   bpm?: Numerico;
@@ -293,6 +323,7 @@ export function Rejilla({
         {pie && (
           <figcaption className="mt-1.5 text-xs text-muted-foreground">{pie}</figcaption>
         )}
+        <QueHacer>{queHacer}</QueHacer>
       </figure>
     );
   }
@@ -309,6 +340,7 @@ export function Rejilla({
       {pie && (
         <figcaption className="mt-1.5 text-xs text-muted-foreground">{pie}</figcaption>
       )}
+      <QueHacer>{queHacer}</QueHacer>
     </figure>
   );
 }
@@ -687,6 +719,7 @@ export function Tab({
   bpm,
   tocable = "si",
   pie,
+  queHacer,
   titulo,
 }: {
   notas: string;
@@ -708,6 +741,8 @@ export function Tab({
   bpm?: Numerico;
   /** "no" para una tab que solo se mira (un dibujo de ritmo sin altura) */
   tocable?: string;
+  /** a qué tempo y qué vigilas mientras la tocas */
+  queHacer?: string;
   pie?: string;
   titulo?: string;
 }) {
@@ -736,14 +771,14 @@ export function Tab({
 
   if (tocable === "no") {
     return (
-      <Figure caption={pie}>
+      <Figure caption={pie} queHacer={queHacer}>
         <Tablature bars={bars} subdivision={figuras} title={titulazo} />
       </Figure>
     );
   }
 
   return (
-    <Figure caption={pie}>
+    <Figure caption={pie} queHacer={queHacer}>
       <PlayableTab
         bars={bars}
         title={titulazo}

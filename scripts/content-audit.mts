@@ -39,7 +39,7 @@ import {
 import { validateGrid } from "../src/lib/music/grid";
 import { GROOVES } from "../src/lib/backing/groove";
 import { DRILLS } from "../src/lib/train/catalog";
-import { primerasApariciones } from "../src/lib/content/jargon";
+import { JERGA, primerasApariciones } from "../src/lib/content/jargon";
 import {
   isTrainLevel,
   isTrainMode,
@@ -518,6 +518,45 @@ for (const { file, body } of lessons) {
         uso.termino.wiki ? ` o enlaza [[${uso.termino.wiki}]]` : ""
       }`,
     });
+  }
+}
+
+// El vocabulario del curso y el glosario son la misma lista o no sirven de
+// nada: "targeting" y "diana" se usaban en la semana 3 y no estaban en el
+// glosario. La ficha manda; jargon.ts no puede vigilar una palabra que luego
+// el alumno no pueda buscar.
+{
+  const glosarioFile = path.join(CONTENT, "wiki", "glosario.mdx");
+  if (fs.existsSync(glosarioFile)) {
+    const glosario = readMdx(glosarioFile).body.toLowerCase();
+    for (const t of JERGA) {
+      const entrada = new RegExp(
+        `\\*\\*[^*]*${t.termino.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[^*]*\\*\\*`,
+      );
+      if (!entrada.test(glosario)) {
+        errors.push({
+          file: rel(glosarioFile),
+          message: `le falta "${t.termino}", que el curso sí usa (ver src/lib/content/jargon.ts)`,
+        });
+      }
+    }
+  }
+}
+
+// Regla de contenido: en una lección, lo que suena dice qué hacer con ello.
+// El pie describe lo que se ve ("la 3ª de cada acorde: Mi, Do, La, Si"); la
+// instrucción es otra cosa y faltaba en 52 bloques. En los ejercicios no hace
+// falta: allí la instrucción es la <Rutina>.
+for (const { file, body } of lessons) {
+  for (const tag of ["Rejilla", "Tab"]) {
+    const bloques = body.match(new RegExp(`<${tag}\\b[^>]*?/>`, "g")) ?? [];
+    const sinDecir = bloques.filter((b) => !/\bqueHacer=/.test(b));
+    if (sinDecir.length > 0) {
+      errors.push({
+        file: rel(file),
+        message: `${sinDecir.length} <${tag}> sin \`queHacer\`: lo que suena tiene que decir qué haces tú mientras suena`,
+      });
+    }
   }
 }
 

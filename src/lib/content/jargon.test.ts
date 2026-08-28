@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { JERGA, mencionado, presentado, primerasApariciones } from "./jargon";
+import {
+  JERGA,
+  mencionado,
+  presentado,
+  primerasApariciones,
+  terminosPorDia,
+} from "./jargon";
 
 const vamp = { termino: "vamp", alias: ["vamps"] };
 const guide = { termino: "guide tone", alias: ["guide tones"], wiki: "guide-tones" };
@@ -71,5 +77,27 @@ describe("primerasApariciones", () => {
   it("la lista de jerga no repite términos", () => {
     const nombres = JERGA.map((t) => t.termino);
     expect(new Set(nombres).size).toBe(nombres.length);
+  });
+});
+
+describe("terminosPorDia", () => {
+  const dias = [
+    { id: "d1", cuerpo: "un **vamp** y un **riff**" },
+    { id: "d2", cuerpo: "más vamp, y ahora un **lick**" },
+  ];
+  const jerga = [
+    { termino: "vamp" },
+    { termino: "riff", alias: ["riffs"] },
+    { termino: "lick", alias: ["licks"] },
+  ];
+
+  it("agrupa por el día que estrena cada palabra", () => {
+    const mapa = terminosPorDia(dias, jerga);
+    expect(mapa.get("d1")?.map((t) => t.termino)).toEqual(["vamp", "riff"]);
+    expect(mapa.get("d2")?.map((t) => t.termino)).toEqual(["lick"]);
+  });
+
+  it("un día que no estrena nada no aparece", () => {
+    expect(terminosPorDia([{ id: "d3", cuerpo: "nada nuevo" }], jerga).size).toBe(0);
   });
 });

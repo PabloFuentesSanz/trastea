@@ -100,6 +100,21 @@ export function presentado(cuerpo: string, t: Termino): boolean {
   );
 }
 
+/**
+ * Las palabras que estrena cada día, para poder enseñárselas al alumno en su
+ * lección: "hoy entran vamp, targeting y diana".
+ */
+export function terminosPorDia(
+  dias: readonly { id: string; cuerpo: string }[],
+  jerga: readonly Termino[] = JERGA,
+): Map<string, Termino[]> {
+  const porDia = new Map<string, Termino[]>();
+  for (const { termino, dia } of primerasApariciones(dias, jerga)) {
+    porDia.set(dia, [...(porDia.get(dia) ?? []), termino]);
+  }
+  return porDia;
+}
+
 /** El primer día del curso que usa cada término, en el orden en que se estudia. */
 export function primerasApariciones(
   dias: readonly { id: string; cuerpo: string }[],
