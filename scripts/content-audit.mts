@@ -39,7 +39,12 @@ import {
 import { validateGrid } from "../src/lib/music/grid";
 import { GROOVES } from "../src/lib/backing/groove";
 import { DRILLS } from "../src/lib/train/catalog";
-import { JERGA, primerasApariciones } from "../src/lib/content/jargon";
+import {
+  JERGA,
+  mencionado,
+  presentado,
+  primerasApariciones,
+} from "../src/lib/content/jargon";
 import {
   isTrainLevel,
   isTrainMode,
@@ -517,6 +522,23 @@ for (const { file, body } of lessons) {
       message: `estrena "${uso.termino.termino}" sin presentarlo: defínelo aquí (**en negrita**)${
         uso.termino.wiki ? ` o enlaza [[${uso.termino.wiki}]]` : ""
       }`,
+    });
+  }
+}
+
+// A un ejercicio se entra por su cuenta desde /entrenar, sin haber leído la
+// lección que presentó la palabra. No se le pide que la explique otra vez:
+// basta con que su ficha enlace donde se explica (o el glosario, para las que
+// no tienen ficha propia).
+for (const { file, fm, body } of exercises) {
+  const enlazadas = new Set(fm.links.wiki);
+  for (const t of JERGA) {
+    if (!mencionado(body, t) || presentado(body, t)) continue;
+    const destino = t.wiki ?? "glosario";
+    if (enlazadas.has(destino)) continue;
+    errors.push({
+      file: rel(file),
+      message: `usa "${t.termino}" sin explicarlo ni enlazarlo: añade ${destino} a links.wiki`,
     });
   }
 }
