@@ -183,3 +183,32 @@ test("la práctica que no es la lección del día también se registra", async (
   await dialogo.getByRole("button", { name: "Guardar sesión" }).click();
   await expect(dialogo).toBeHidden();
 });
+
+test("el nivel del entrenamiento cambia de verdad lo que se pregunta", async ({
+  page,
+}) => {
+  // el nivel 5 es "cruzando cuerdas": las dos notas marcadas tienen que estar
+  // a alturas distintas del mástil. Antes salía lo mismo que en principiante.
+  const alturas = async () =>
+    page
+      .locator("main svg[aria-label]")
+      .first()
+      .evaluate((el) => {
+        const marcadas = [...el.querySelectorAll("circle, rect")].filter((s) => {
+          const fill = s.getAttribute("fill") ?? "";
+          return (
+            fill.includes("primary") ||
+            fill.includes("chart") ||
+            fill.includes("foreground")
+          );
+        });
+        return new Set(marcadas.map((m) => m.getAttribute("cy") ?? m.getAttribute("y")))
+          .size;
+      });
+
+  await page.goto("/entrenar/reconocer-intervalos?nivel=1");
+  expect(await alturas()).toBe(1);
+
+  await page.goto("/entrenar/reconocer-intervalos?nivel=5");
+  expect(await alturas()).toBeGreaterThan(1);
+});

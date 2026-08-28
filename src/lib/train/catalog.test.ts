@@ -66,14 +66,23 @@ describe("catálogo de entrenamientos", () => {
     }
   });
 
-  it("un nivel nunca es más pequeño que el anterior", () => {
+  /**
+   * Antes esto exigía que un nivel no fuera más pequeño que el anterior, y esa
+   * idea es justo la que rompió "reconocer intervalos": para crecer, el nivel
+   * 5 arrastraba entero el 3, sus tarjetas ya estudiadas llenaban la sesión y
+   * el nivel avanzado preguntaba lo de principiante. Lo que importa no es el
+   * tamaño, es que traiga material que no estaba.
+   */
+  it("cada nivel trae material que no estaba en el anterior", () => {
     for (const drill of DRILLS) {
-      const tamaños = drill.levels.map((l) => l.build().length);
-      for (let i = 1; i < tamaños.length; i += 1) {
+      for (let i = 1; i < drill.levels.length; i += 1) {
+        const previo = new Set(drill.levels[i - 1].build().map(cardId));
+        const actual = drill.levels[i].build().map(cardId);
+        const nuevas = actual.filter((id) => !previo.has(id));
         expect(
-          tamaños[i],
+          nuevas.length / actual.length,
           `${drill.slug} n${drill.levels[i].level}`,
-        ).toBeGreaterThanOrEqual(tamaños[i - 1]);
+        ).toBeGreaterThan(0.1);
       }
     }
   });

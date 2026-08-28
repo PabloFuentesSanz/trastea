@@ -340,24 +340,22 @@ export const DRILLS: readonly Drill[] = [
         label: "Todos, incluido el tritono, en la misma cuerda",
         build: () => sameStringPairs(ALL_STRINGS, 12, TODOS),
       },
+      // Los niveles 4 y 5 son SOLO cuerdas cruzadas. Antes arrastraban también
+      // todo el nivel 3, y como esas ya estaban estudiadas y vencidas, la
+      // sesión de "avanzado" se llenaba de preguntas de principiante. Lo que
+      // toca repasar ya lo trae el SRS por su cuenta.
       {
         level: 4,
         label: "Cruzando a la cuerda de al lado",
-        build: () => [
-          ...sameStringPairs(ALL_STRINGS, 12, TODOS),
-          ...crossStringPairs([0, 1, 2], 12, DIATONICOS),
-        ],
+        build: () => crossStringPairs([0, 1, 2], 12, DIATONICOS),
       },
       {
         level: 5,
         label: "Cruzando cuerdas por todo el mástil",
-        build: () => [
-          ...sameStringPairs(ALL_STRINGS, 12, TODOS),
-          // paso más ancho: con los doce intervalos en las cinco parejas de
-          // cuerdas, un paso de 5 se va de las 300 tarjetas y el nivel deja
-          // de poder estudiarse
-          ...crossStringPairs(ALL_STRINGS, 12, TODOS, 6),
-        ],
+        // paso más ancho: con los doce intervalos en las cinco parejas de
+        // cuerdas, un paso de 5 se va de las 300 tarjetas y el nivel deja
+        // de poder estudiarse
+        build: () => crossStringPairs(ALL_STRINGS, 12, TODOS, 6),
       },
     ],
   },

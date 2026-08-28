@@ -92,6 +92,9 @@ export interface DueCard<T> {
  * la 6ª cuerda, y subir de nivel no cambiaba nada de lo que veías. El azar
  * entra por parámetro para que esto siga siendo puro y comprobable.
  */
+/** Cuánto de una sesión puede ser repaso: el resto se guarda para lo nuevo. */
+export const PROPORCION_REPASO = 0.6;
+
 export function selectSession<T>(
   cards: readonly DueCard<T>[],
   now: number,
@@ -109,7 +112,23 @@ export function selectSession<T>(
   const disponibles = [...due, ...fresh];
   if (disponibles.length === 0) return [];
 
-  const sesion = disponibles.slice(0, size).map((c) => c.card);
+  // Los repasos vencidos no pueden comerse la sesión entera. Al subir de
+  // nivel, las tarjetas de los niveles anteriores están todas vencidas y
+  // llenaban las diez preguntas: pulsabas "avanzado" y seguías respondiendo
+  // lo de principiante. Se reservan cuatro de cada diez para lo que aún no
+  // has visto, y si no hay material nuevo, lo vencido se queda con todo.
+  const tope = Math.ceil(size * PROPORCION_REPASO);
+  const elegidas = [
+    ...due.slice(0, tope),
+    ...fresh.slice(0, size - Math.min(due.length, tope)),
+  ];
+  // lo que sobre se rellena con el resto, sea de donde sea
+  for (const c of disponibles) {
+    if (elegidas.length >= size) break;
+    if (!elegidas.includes(c)) elegidas.push(c);
+  }
+
+  const sesion = elegidas.slice(0, size).map((c) => c.card);
   // Un mazo más pequeño que la sesión se da otra vuelta. "Acordes de oído"
   // nivel 1 son dos tarjetas y la sesión se acababa en dos preguntas; en los
   // ejercicios de oído la repetición ES el ejercicio, porque la raíz se

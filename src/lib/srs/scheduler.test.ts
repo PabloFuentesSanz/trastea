@@ -104,6 +104,40 @@ describe("selectSession", () => {
     { card: "nueva-2", dueAt: now, reps: 0 },
   ];
 
+  it("el material nuevo siempre entra en la sesión, aunque haya repasos de sobra", () => {
+    // el caso real: llevas semanas con el nivel 1 de "reconocer intervalos" y
+    // pulsas el nivel 5. Sus veinte tarjetas viejas están vencidas y llenaban
+    // la sesión entera, así que el nivel avanzado seguía preguntando lo de
+    // principiante.
+    const viejas = Array.from({ length: 20 }, (_, i) => ({
+      card: `vieja-${i}`,
+      dueAt: now - (20 - i) * DAY,
+      reps: 3,
+    }));
+    const nuevas = Array.from({ length: 20 }, (_, i) => ({
+      card: `nueva-${i}`,
+      dueAt: now,
+      reps: 0,
+    }));
+
+    const sesion = selectSession([...viejas, ...nuevas], now, 10, secuencia(7));
+    const cuantasNuevas = sesion.filter((c) => c.startsWith("nueva-")).length;
+    expect(cuantasNuevas).toBeGreaterThanOrEqual(4);
+    // y lo vencido sigue teniendo la mayor parte: repasar no es opcional
+    expect(sesion.filter((c) => c.startsWith("vieja-")).length).toBeGreaterThan(
+      cuantasNuevas - 1,
+    );
+  });
+
+  it("sin material nuevo, lo vencido ocupa la sesión entera", () => {
+    const viejas = Array.from({ length: 12 }, (_, i) => ({
+      card: `vieja-${i}`,
+      dueAt: now - (12 - i) * DAY,
+      reps: 3,
+    }));
+    expect(selectSession(viejas, now, 10, secuencia(3))).toHaveLength(10);
+  });
+
   it("prioriza lo vencido, lo más atrasado primero", () => {
     expect(selectSession(deck, now, 2)).toEqual(["vencida-hace-3d", "vencida-hoy"]);
   });
