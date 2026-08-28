@@ -543,6 +543,20 @@ for (const { file, fm, body } of exercises) {
   }
 }
 
+// La afinación de una canción es un id de /src/data/tunings.ts, no texto
+// libre: así la ficha abre el afinador ya puesto en ella. Las raras que
+// todavía no están modeladas van en `tuning_note`, y entonces no se ofrece
+// afinador — mandar a alguien a unas notas que no hemos verificado es peor
+// que no ofrecer nada.
+for (const { file, fm } of songs) {
+  if (fm.tuning && fm.tuning_note) {
+    errors.push({
+      file: rel(file),
+      message: "tiene `tuning` y `tuning_note`: o está modelada o no lo está",
+    });
+  }
+}
+
 // El vocabulario del curso y el glosario son la misma lista o no sirven de
 // nada: "targeting" y "diana" se usaban en la semana 3 y no estaban en el
 // glosario. La ficha manda; jargon.ts no puede vigilar una palabra que luego

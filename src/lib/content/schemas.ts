@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { SONG_COLLECTIONS, SONG_STYLES, SONG_TECHNIQUES } from "./song-taxonomy";
+import { TUNING_IDS } from "@/data/tunings";
 
 /**
  * Frontmatter de todo el contenido MDX, validado en build y en content:audit.
@@ -155,7 +156,17 @@ export const songFrontmatterSchema = z.object({
   /** tempo aproximado del original, para el metrónomo */
   bpm: z.number().int().min(20).max(300).optional(),
   /** afinación; ausente = estándar (E A D G B E) */
-  tuning: z.string().optional(),
+  /**
+   * Afinación, por su id en /src/data/tunings.ts: así la ficha puede abrir el
+   * afinador en esa afinación. Era texto libre ("Abierta (BDDDDD)"), que se
+   * lee bien y no sirve para nada más.
+   */
+  tuning: z.enum(TUNING_IDS).optional(),
+  /**
+   * Para las afinaciones raras que todavía no están modeladas: se cuenta,
+   * pero no se ofrece afinador porque no sabríamos a qué notas mandarte.
+   */
+  tuning_note: z.string().optional(),
   /** traste del capo; ausente o 0 = sin capo */
   capo: z.number().int().min(0).max(12).optional(),
   youtube_url: z.string().url().optional(),

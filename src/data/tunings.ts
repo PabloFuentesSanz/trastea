@@ -68,6 +68,13 @@ export const TUNINGS: Record<string, TuningDef> = {
 
 export type TuningId = keyof typeof TUNINGS;
 
+/**
+ * Los ids, para poder cerrar el vocabulario del contenido: una canción que
+ * declare una afinación que no existe rompe el build en vez de enseñar un
+ * botón que lleva a la afinación equivocada.
+ */
+export const TUNING_IDS = Object.keys(TUNINGS) as [TuningId, ...TuningId[]];
+
 export function getTuning(id: string): TuningDef {
   const tuning = TUNINGS[id];
   if (!tuning) throw new Error(`Afinación desconocida: "${id}"`);

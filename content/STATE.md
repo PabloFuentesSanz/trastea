@@ -10,7 +10,7 @@
 | Semanas | 12 |
 | Lecciones-día | 60 |
 | Ejercicios | 70 |
-| Canciones | 304 |
+| Canciones | 303 |
 | Tabs | 0 |
 | Artículos wiki | 87 |
 | Quizzes | 3 |
@@ -30,19 +30,19 @@
 | 1 | 37 |
 | 2 | 99 |
 | 3 | 93 |
-| 4 | 56 |
+| 4 | 55 |
 | 5 | 19 |
 
 ### Colecciones
 
 - De fogata (`fogata`): 104
-- Riffs legendarios (`riffs-legendarios`): 61
+- Riffs legendarios (`riffs-legendarios`): 60
 - Tus primeras canciones (`primeras-canciones`): 55
 - Intros que todos reconocen (`intros-reconocibles`): 50
 - Standards de jazz (`jazz-standards`): 40
 - Blues esencial (`blues-esencial`): 37
 - Instrumentales bonitas (`instrumentales-bonitas`): 37
-- Técnica avanzada (`tecnica-avanzada`): 36
+- Técnica avanzada (`tecnica-avanzada`): 35
 - Para el metrónomo (`practica-con-metronomo`): 27
 - En español (`en-espanol`): 26
 - Indie y alternativo (`indie-y-alternativo`): 24
@@ -72,4 +72,8 @@
 - Referenciados sin existir: 0
 - Huérfanos (sin backlinks): 0
 
-_Última ejecución: 2026-08-28T08:55:27.279Z_
+## ❌ Errores de validación
+
+- content/songs/everlong.mdx: frontmatter inválido: [
+
+_Última ejecución: 2026-08-28T09:05:54.270Z_

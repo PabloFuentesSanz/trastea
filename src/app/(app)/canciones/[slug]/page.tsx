@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ExternalLink, Gauge, ListMusic, Play, Video } from "lucide-react";
+import { ExternalLink, Gauge, Guitar, ListMusic, Play, Video } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -9,6 +9,7 @@ import { ChordChip } from "@/components/content/chord-chip";
 import { getSong, getSongLessons, getSongs, getWikiArticle } from "@/lib/content/loader";
 import { relatedSongs, type SongCard } from "@/lib/content/song-filter";
 import { shapeRoot } from "@/lib/content/capo";
+import { getTuning } from "@/data/tunings";
 import {
   SONG_LEVEL_LABEL,
   SONG_STYLE_LABEL,
@@ -88,7 +89,21 @@ export default async function CancionPage({
             {song.chords[0] ? ` · formas de ${shapeRoot(song.chords[0])}` : ""}
           </Badge>
         ) : null}
-        {song.tuning ? <Badge variant="secondary">{song.tuning}</Badge> : null}
+        {/* la afinación abre el afinador ya puesto en ella: es lo primero que
+            hay que hacer para tocar el tema, y estaba a cuatro pasos */}
+        {song.tuning ? (
+          <Badge variant="secondary" asChild>
+            <Link href={`/afinador?afinacion=${song.tuning}`}>
+              <Guitar className="size-3" aria-hidden />
+              {getTuning(song.tuning).name}
+            </Link>
+          </Badge>
+        ) : null}
+        {song.tuning_note ? (
+          <Badge variant="secondary" title="El afinador todavía no trae esta">
+            {song.tuning_note}
+          </Badge>
+        ) : null}
         {song.bpm ? (
           <Badge variant="secondary" className="tabular-nums">
             {song.bpm} bpm
