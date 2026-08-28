@@ -18,7 +18,9 @@ import {
 } from "./music-blocks";
 import { Cancion, Canciones } from "./song-blocks";
 import { chordify } from "./chordify";
-import { resolveInterlinks } from "@/lib/content/loader";
+import { getGlosario, resolveInterlinks } from "@/lib/content/loader";
+import { remarkTerminos } from "@/lib/content/remark-terms";
+import { Termino } from "./termino";
 
 function SmartLink({ href = "", children, ...rest }: ComponentPropsWithoutRef<"a">) {
   if (href.startsWith("/")) {
@@ -148,7 +150,19 @@ function sanitizeMdx(source: string): string {
  * un ejercicio salía impreso con los corchetes. Pasaba de verdad en el
  * ejercicio del primer día del curso.
  */
-export function Mdx({ source, className }: { source: string; className?: string }) {
+export function Mdx({
+  source,
+  className,
+  glosario = true,
+}: {
+  source: string;
+  className?: string;
+  /** false en el propio glosario: allí las definiciones ya están escritas */
+  glosario?: boolean;
+}) {
+  const entradas = glosario ? getGlosario() : [];
+  const porNombre = new Map(entradas.map((e) => [e.termino, e]));
+
   return (
     <div
       className={cn(
@@ -158,9 +172,28 @@ export function Mdx({ source, className }: { source: string; className?: string 
     >
       <MDXRemote
         source={resolveInterlinks(sanitizeMdx(source))}
-        components={components}
+        components={{
+          ...components,
+          Termino: ({ nombre, children }: { nombre: string; children: ReactNode }) => {
+            const entrada = porNombre.get(nombre);
+            if (!entrada) return <>{children}</>;
+            return (
+              <Termino
+                nombre={entrada.termino}
+                definicion={entrada.definicion}
+                ficha={entrada.ficha}
+              >
+                {children}
+              </Termino>
+            );
+          },
+        }}
         // sin GFM las tablas del contenido salían impresas con las barras
-        options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }}
+        options={{
+          mdxOptions: {
+            remarkPlugins: [remarkGfm, remarkTerminos(entradas)],
+          },
+        }}
       />
     </div>
   );

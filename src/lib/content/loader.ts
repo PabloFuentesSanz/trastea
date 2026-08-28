@@ -4,6 +4,7 @@ import path from "node:path";
 import matter from "gray-matter";
 import { resolveInterlinksWith } from "./interlinks";
 import { terminosPorDia, type Termino } from "./jargon";
+import { parseGlosario, type EntradaGlosario } from "./glossary";
 import { cache } from "react";
 import { isTrainLevel, levelFromWeek, type TrainLevel } from "@/lib/train/taxonomy";
 import {
@@ -235,6 +236,15 @@ export const getWikiArticles = cache(() =>
 
 export const getWikiArticle = cache((slug: string) => {
   return getWikiArticles().find((w) => w.frontmatter.slug === slug) ?? null;
+});
+
+/**
+ * El glosario, leído una vez. Es la fuente de las definiciones que se enseñan
+ * al pulsar una palabra en cualquier página de contenido.
+ */
+export const getGlosario = cache((): EntradaGlosario[] => {
+  const articulo = getWikiArticle("glosario");
+  return articulo ? parseGlosario(articulo.body) : [];
 });
 
 export const getQuizzes = cache(() =>

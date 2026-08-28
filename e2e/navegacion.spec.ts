@@ -99,3 +99,24 @@ test("las tablas del contenido son tablas, no barras impresas", async ({ page })
     await expect(page.locator("main")).not.toContainText("| ---");
   }
 });
+
+test("una palabra del glosario se consulta sin salir de la página", async ({ page }) => {
+  await page.goto("/curso/a-cimientos/a-cimientos-w03-d1");
+
+  const vamp = page.getByRole("button", { name: "Qué es Vamp" });
+  await vamp.click();
+  await expect(page.getByRole("dialog")).toContainText("progresión corta");
+
+  // se cierra con Escape y se abre con teclado, y la página no se ha movido
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await vamp.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await expect(page).toHaveURL(/a-cimientos-w03-d1/);
+});
+
+test("el glosario no se subraya a sí mismo", async ({ page }) => {
+  await page.goto("/wiki/glosario");
+  await expect(page.getByRole("button", { name: /^Qué es / })).toHaveCount(0);
+});

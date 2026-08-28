@@ -64,7 +64,8 @@ export default async function WikiArticlePage({
       </div>
       <p className="mt-3 text-muted-foreground">{article.frontmatter.summary}</p>
 
-      <Mdx source={body} className="mt-6" />
+      {/* en el propio glosario las definiciones ya están escritas */}
+      <Mdx source={body} className="mt-6" glosario={slug !== "glosario"} />
 
       {article.frontmatter.related.length > 0 && (
         <>
