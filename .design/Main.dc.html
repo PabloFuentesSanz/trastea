@@ -1,0 +1,166 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; background: #f6f2ea; font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif; color: #1d1a15; }
+    a { color: #a63c26; text-decoration: none; }
+    a:hover { color: #7d2c1b; }
+    .pauta { height: 9px; background: repeating-linear-gradient(to bottom, #cfc6b4 0 1px, transparent 1px 5px); }
+    .cap { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: #6b6154; }
+  </style>
+</helmet>
+
+<div style="width: 390px; min-height: 1320px; background: #f6f2ea; display: flex; flex-direction: column;">
+
+  <!-- cabecera: hilo del curso -->
+  <div style="padding: 20px 22px 0; display: flex; flex-direction: column; gap: 10px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+      <span class="cap">Módulo A &middot; Semana 3 &middot; Día 1</span>
+      <span style="display: flex; align-items: center; gap: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #6b6154;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6b6154" stroke-width="1.8" stroke-linecap="round"><path d="M8 3v3M16 3v3M4 9h16M5 6h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1Z"/></svg>
+        40 min
+      </span>
+    </div>
+
+    <h1 style="margin: 0; font-family: 'Instrument Serif', Georgia, serif; font-size: 40px; line-height: 1.03; font-weight: 400; letter-spacing: -0.01em; text-wrap: pretty;">
+      La escala mayor <em style="font-style: italic; color: #a63c26;">de verdad</em>
+    </h1>
+
+    <!-- progreso como cinco trastes, no como barra genérica -->
+    <div style="display: flex; align-items: center; gap: 10px; margin-top: 2px;">
+      <div style="display: flex; gap: 4px; flex-grow: 1;">
+        <span style="height: 6px; flex-grow: 1; background: #a63c26; border-radius: 1px;"></span>
+        <span style="height: 6px; flex-grow: 1; background: #a63c26; border-radius: 1px;"></span>
+        <span style="height: 6px; flex-grow: 1; background: #d9d0be; border-radius: 1px;"></span>
+        <span style="height: 6px; flex-grow: 1; background: #d9d0be; border-radius: 1px;"></span>
+        <span style="height: 6px; flex-grow: 1; background: #d9d0be; border-radius: 1px;"></span>
+      </div>
+      <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #6b6154;">2/5</span>
+    </div>
+  </div>
+
+  <div class="pauta" style="margin: 18px 0 0;"></div>
+
+  <!-- objetivo del día: la promesa, en una línea -->
+  <div style="margin: 18px 22px 0; padding: 14px 16px; background: #fffdf8; border: 1px solid #e2d9c7; border-left: 3px solid #a63c26;">
+    <span class="cap" style="display: block; margin-bottom: 5px;">Objetivo de hoy</span>
+    <p style="margin: 0; font-size: 15px; line-height: 1.45;">Escala mayor de Do en corcheas a <strong style="font-family: 'IBM Plex Mono', monospace; font-weight: 500;">60&nbsp;bpm</strong> limpia, diciendo los grados.</p>
+  </div>
+
+  <!-- ficha: lista de definición con filetes, sin cajas -->
+  <div style="margin: 24px 22px 0; display: flex; flex-direction: column;">
+    <div style="display: flex; gap: 14px; padding: 10px 0; border-top: 1px solid #e2d9c7;">
+      <span class="cap" style="width: 104px; flex-shrink: 0; padding-top: 2px;">Hoy aprendes</span>
+      <span style="font-size: 14px; line-height: 1.45;">Una raíz con nombre y siete grados que puedes decir</span>
+    </div>
+    <div style="display: flex; gap: 14px; padding: 10px 0; border-top: 1px solid #e2d9c7;">
+      <span class="cap" style="width: 104px; flex-shrink: 0; padding-top: 2px;">La regla</span>
+      <span style="font-size: 14px; line-height: 1.45;">Empieza y termina en la <strong>raíz</strong>, no en la nota más grave</span>
+    </div>
+    <div style="display: flex; gap: 14px; padding: 10px 0; border-top: 1px solid #e2d9c7; border-bottom: 1px solid #e2d9c7;">
+      <span class="cap" style="width: 104px; flex-shrink: 0; padding-top: 2px;">En diapasón</span>
+      <span style="font-size: 14px; line-height: 1.45;">Entra la 2ª cuerda, la única que queda</span>
+    </div>
+  </div>
+
+  <!-- sección: título serif + texto de manual -->
+  <h2 style="margin: 26px 22px 0; font-family: 'Instrument Serif', Georgia, serif; font-size: 25px; font-weight: 400; line-height: 1.15;">Qué es un vamp</h2>
+  <p style="margin: 8px 22px 0; font-size: 15px; line-height: 1.55; color: #3a352c;">Una progresión corta que da vueltas sin final. No es una canción: es un laboratorio. Como no cambia nunca, puedes gastar la cabeza entera en una sola cosa.</p>
+
+  <!-- rejilla como pauta de compases -->
+  <div style="margin: 16px 22px 0; border: 1px solid #d9d0be; background: #fffdf8;">
+    <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));">
+      <div style="padding: 14px 0 12px; text-align: center; border-right: 1px solid #e2d9c7;">
+        <span style="display: block; font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #a39885;">1</span>
+        <span style="font-family: 'Instrument Serif', Georgia, serif; font-size: 26px;">C</span>
+      </div>
+      <div style="padding: 14px 0 12px; text-align: center; border-right: 1px solid #e2d9c7;">
+        <span style="display: block; font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #a39885;">2</span>
+        <span style="font-family: 'Instrument Serif', Georgia, serif; font-size: 26px;">Am</span>
+      </div>
+      <div style="padding: 14px 0 12px; text-align: center; border-right: 1px solid #e2d9c7;">
+        <span style="display: block; font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #a39885;">3</span>
+        <span style="font-family: 'Instrument Serif', Georgia, serif; font-size: 26px;">F</span>
+      </div>
+      <div style="padding: 14px 0 12px; text-align: center;">
+        <span style="display: block; font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #a39885;">4</span>
+        <span style="font-family: 'Instrument Serif', Georgia, serif; font-size: 26px;">G</span>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-top: 1px solid #e2d9c7;">
+      <button style="display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 20px; border: none; background: #1d1a15; color: #f6f2ea; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="#f6f2ea"><path d="M7 4.5v15l13-7.5z"/></svg>
+        Tocar
+      </button>
+      <span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #6b6154;">80 bpm &middot; recto</span>
+    </div>
+  </div>
+
+  <!-- qué haces: la instrucción, marcada como nota al margen del maestro -->
+  <div style="margin: 12px 22px 0; display: flex; gap: 11px; padding: 12px 14px; background: rgba(166, 60, 38, 0.06); border-left: 3px solid #a63c26;">
+    <span class="cap" style="color: #a63c26; padding-top: 2px; flex-shrink: 0;">Qué haces</span>
+    <span style="font-size: 14px; line-height: 1.45; color: #3a352c;">Una nota por compás: la 3ª del acorde que entra, en el primer tiempo.</span>
+  </div>
+
+  <!-- bloques de la sesión -->
+  <div class="pauta" style="margin: 24px 0 0;"></div>
+  <div style="margin: 18px 22px 0; display: flex; flex-direction: column; gap: 10px;">
+    <span class="cap">La sesión de hoy</span>
+
+    <div style="display: flex; align-items: center; gap: 13px; padding: 13px 15px; background: #fffdf8; border: 1px solid #e2d9c7;">
+      <span style="width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%; background: #1d1a15; color: #f6f2ea; display: flex; align-items: center; justify-content: center;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f6f2ea" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      </span>
+      <span style="min-width: 0; flex-grow: 1;">
+        <span style="display: block; font-size: 14px; font-weight: 500; text-decoration: line-through; color: #6b6154;">Escala mayor, 2 posiciones</span>
+        <span style="display: block; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #8a7f6e;">Técnica &middot; 8 min &middot; 60 bpm</span>
+      </span>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 13px; padding: 13px 15px; background: #fffdf8; border: 1px solid #a63c26;">
+      <span style="width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%; border: 1.5px solid #a63c26; color: #a63c26; display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', monospace; font-size: 12px;">3</span>
+      <span style="min-width: 0; flex-grow: 1;">
+        <span style="display: block; font-size: 14px; font-weight: 500;">Cantar los grados</span>
+        <span style="display: block; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #8a7f6e;">Oído &middot; 7 min</span>
+      </span>
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#a63c26" stroke-width="1.8" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg>
+    </div>
+  </div>
+
+  <div style="flex-grow: 1;"></div>
+
+  <!-- navegación: pauta viva, la pestaña activa es la nota -->
+  <div style="margin-top: 26px; border-top: 1px solid #d9d0be; background: #fffdf8; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 8px 4px 14px;">
+    <span style="display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 6px 0; min-height: 44px;">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#8a7f6e" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+      <span class="cap" style="font-size: 9px; letter-spacing: .08em;">Inicio</span>
+    </span>
+    <span style="display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 6px 0; min-height: 44px;">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#8a7f6e" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4.5v15l13-7.5z"/></svg>
+      <span class="cap" style="font-size: 9px; letter-spacing: .08em;">Hoy</span>
+    </span>
+    <span style="display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 6px 0; min-height: 44px; position: relative;">
+      <span style="position: absolute; top: 0; width: 22px; height: 2px; background: #a63c26;"></span>
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#a63c26" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 8l10 5 10-5z"/><path d="M6 11v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/></svg>
+      <span class="cap" style="font-size: 9px; letter-spacing: .08em; color: #a63c26;">Curso</span>
+    </span>
+    <span style="display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 6px 0; min-height: 44px;">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#8a7f6e" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 21h14z"/><path d="M12 3v18"/></svg>
+      <span class="cap" style="font-size: 9px; letter-spacing: .08em;">Metrónomo</span>
+    </span>
+    <span style="display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 6px 0; min-height: 44px;">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#8a7f6e" stroke-width="1.7" stroke-linecap="round"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
+      <span class="cap" style="font-size: 9px; letter-spacing: .08em;">Más</span>
+    </span>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

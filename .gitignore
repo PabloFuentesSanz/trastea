@@ -44,3 +44,7 @@ next-env.d.ts
 /test-results/
 /playwright-report/
 /blob-report/
+
+# el lienzo de diseño se monta desde .design/*.dc.html
+.design/*.html
+!.design/*.dc.html

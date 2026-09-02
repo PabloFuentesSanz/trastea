@@ -1,0 +1,74 @@
+{
+  "artboards": [
+    {
+      "file": "Main.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 1320,
+      "title": "A · Papel pautado (recomendada)"
+    },
+    {
+      "file": "Estudio.dc.html",
+      "x": 510,
+      "y": 0,
+      "w": 390,
+      "h": 1320,
+      "title": "B · Estudio"
+    },
+    {
+      "file": "Diapason.dc.html",
+      "x": 1020,
+      "y": 0,
+      "w": 390,
+      "h": 1320,
+      "title": "C · Diapasón"
+    },
+    {
+      "file": "Sistema.dc.html",
+      "x": 1530,
+      "y": 0,
+      "w": 880,
+      "h": 1180,
+      "title": "Sistema de la dirección A"
+    }
+  ],
+  "annotations": [
+    {
+      "id": "brief",
+      "x": 0,
+      "y": -240,
+      "w": 400,
+      "text": "Tres direcciones para el rediseño, la MISMA pantalla en las tres: día 1 de la semana 3.\n\nMismo contenido, mismo alcance: lo único que cambia es el sistema visual. Elige una y la llevo a toda la app."
+    },
+    {
+      "id": "dir-a",
+      "x": 0,
+      "y": -128,
+      "w": 400,
+      "text": "A · PAPEL PAUTADO — un método de guitarra que suena.\nPapel cálido, serif editorial, la pauta de cinco líneas como única filigrana, cero cajas redondeadas. El color se gasta solo en lo que hay que hacer.\nA favor: lo más didáctico y lo menos «app de IA»; se lee de maravilla y el contenido manda.\nEn contra: con la guitarra en la mano y luz baja deslumbra — por eso las herramientas invierten a tinta (ver el sistema)."
+    },
+    {
+      "id": "dir-b",
+      "x": 510,
+      "y": -128,
+      "w": 400,
+      "text": "B · ESTUDIO — la lección como una toma de estudio.\nNegro con verde, cifras mono enormes, medidores de segmentos, la rejilla como un secuenciador con cabezal.\nA favor: es lo mejor para tocar de noche y lo que más «suena» a música; los números se leen a dos metros.\nEn contra: sigue siendo una app oscura con un acento — el vecindario del que quieres salir — y leer teoría largo rato cansa."
+    },
+    {
+      "id": "dir-c",
+      "x": 1020,
+      "y": -128,
+      "w": 400,
+      "text": "C · DIAPASÓN — el mástil como retícula del sistema.\nClaro y frío, todo cuelga de seis líneas-cuerda, los inlays hacen de marcadores de progreso, un índigo saturado y nada más.\nA favor: el más moderno y el más ordenado; la metáfora es estructural, no decorativa.\nEn contra: el más frío de los tres, y el que menos ayuda a que un párrafo largo se lea como un libro."
+    },
+    {
+      "id": "sistema",
+      "x": 1530,
+      "y": -128,
+      "w": 420,
+      "text": "El sistema de la A, por si te convence: paleta con sus contrastes medidos, escala tipográfica, la inversión a tinta para metrónomo/afinador/bases, y las piezas que ya existen en la app (instrucción «Qué haces», palabra del glosario, objetivo de bpm).\n\nSi eliges B o C te dibujo el suyo igual."
+    }
+  ],
+  "launch": { "view": "canvas" }
+}

@@ -1,0 +1,175 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; background: #f6f2ea; font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif; color: #1d1a15; }
+    a { color: #a63c26; } a:hover { color: #7d2c1b; }
+    .cap { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: #6b6154; }
+    .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+    .pauta { height: 9px; background: repeating-linear-gradient(to bottom, #cfc6b4 0 1px, transparent 1px 5px); }
+  </style>
+</helmet>
+
+<div style="width: 880px; min-height: 1180px; background: #f6f2ea; padding: 40px 44px; box-sizing: border-box; display: flex; flex-direction: column; gap: 34px;">
+
+  <div>
+    <span class="cap">Trastea &middot; sistema visual</span>
+    <h1 style="margin: 8px 0 0; font-family: 'Instrument Serif', Georgia, serif; font-size: 46px; font-weight: 400; line-height: 1;">Papel pautado</h1>
+    <p style="margin: 10px 0 0; max-width: 560px; font-size: 15px; line-height: 1.55; color: #3a352c;">Un método de guitarra que suena. La página manda: papel cálido, tinta, y la pauta de cinco líneas como única filigrana. El color se gasta solo en lo que hay que hacer.</p>
+  </div>
+
+  <div class="pauta"></div>
+
+  <!-- color -->
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    <span class="cap">Color &middot; dos tintas y un papel</span>
+    <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px;">
+      <div>
+        <div style="height: 64px; background: #f6f2ea; border: 1px solid #d9d0be;"></div>
+        <span class="mono" style="display: block; margin-top: 6px; font-size: 11px;">papel</span>
+        <span class="mono" style="display: block; font-size: 10px; color: #8a7f6e;">#f6f2ea</span>
+      </div>
+      <div>
+        <div style="height: 64px; background: #fffdf8; border: 1px solid #d9d0be;"></div>
+        <span class="mono" style="display: block; margin-top: 6px; font-size: 11px;">tarjeta</span>
+        <span class="mono" style="display: block; font-size: 10px; color: #8a7f6e;">#fffdf8</span>
+      </div>
+      <div>
+        <div style="height: 64px; background: #1d1a15;"></div>
+        <span class="mono" style="display: block; margin-top: 6px; font-size: 11px;">tinta</span>
+        <span class="mono" style="display: block; font-size: 10px; color: #8a7f6e;">#1d1a15</span>
+      </div>
+      <div>
+        <div style="height: 64px; background: #6b6154;"></div>
+        <span class="mono" style="display: block; margin-top: 6px; font-size: 11px;">grafito</span>
+        <span class="mono" style="display: block; font-size: 10px; color: #8a7f6e;">#6b6154</span>
+      </div>
+      <div>
+        <div style="height: 64px; background: #a63c26;"></div>
+        <span class="mono" style="display: block; margin-top: 6px; font-size: 11px;">óxido</span>
+        <span class="mono" style="display: block; font-size: 10px; color: #8a7f6e;">acción</span>
+      </div>
+      <div>
+        <div style="height: 64px; background: #2f6b4f;"></div>
+        <span class="mono" style="display: block; margin-top: 6px; font-size: 11px;">verde</span>
+        <span class="mono" style="display: block; font-size: 10px; color: #8a7f6e;">hecho</span>
+      </div>
+    </div>
+    <p style="margin: 0; font-size: 13px; color: #6b6154; line-height: 1.5;">Óxido y verde comparten claridad y croma: hacen pareja sin pelearse. Tinta sobre papel da 14:1; grafito sobre papel, 6:1; óxido sobre papel, 5,3:1 — todo por encima de AA.</p>
+  </div>
+
+  <!-- tipografía -->
+  <div style="display: flex; gap: 40px;">
+    <div style="flex-grow: 1;">
+      <span class="cap">Tipografía</span>
+      <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: flex; align-items: baseline; gap: 14px; border-bottom: 1px solid #e2d9c7; padding-bottom: 10px;">
+          <span class="mono" style="width: 86px; flex-shrink: 0; font-size: 10px; color: #8a7f6e;">Display 40/1.03</span>
+          <span style="font-family: 'Instrument Serif', Georgia, serif; font-size: 34px;">La escala mayor</span>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 14px; border-bottom: 1px solid #e2d9c7; padding-bottom: 10px;">
+          <span class="mono" style="width: 86px; flex-shrink: 0; font-size: 10px; color: #8a7f6e;">Sección 25</span>
+          <span style="font-family: 'Instrument Serif', Georgia, serif; font-size: 25px;">Qué es un vamp</span>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 14px; border-bottom: 1px solid #e2d9c7; padding-bottom: 10px;">
+          <span class="mono" style="width: 86px; flex-shrink: 0; font-size: 10px; color: #8a7f6e;">Cuerpo 15/1.55</span>
+          <span style="font-size: 15px;">Una progresión corta que da vueltas sin final.</span>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 14px; border-bottom: 1px solid #e2d9c7; padding-bottom: 10px;">
+          <span class="mono" style="width: 86px; flex-shrink: 0; font-size: 10px; color: #8a7f6e;">Etiqueta 10</span>
+          <span class="cap">Qué haces &middot; en diapasón</span>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 14px;">
+          <span class="mono" style="width: 86px; flex-shrink: 0; font-size: 10px; color: #8a7f6e;">Cifra 44</span>
+          <span class="mono" style="font-size: 40px; font-weight: 500; letter-spacing: -0.03em;">104<span style="font-size: 15px; color: #6b6154;"> bpm</span></span>
+        </div>
+      </div>
+      <p style="margin: 12px 0 0; font-size: 13px; color: #6b6154; line-height: 1.5;">Instrument Serif para lo que se lee; IBM&nbsp;Plex Sans para lo que se usa; IBM&nbsp;Plex Mono para todo lo que es un número: bpm, trastes, compases, cronómetro.</p>
+    </div>
+
+    <!-- modo escenario -->
+    <div style="width: 300px; flex-shrink: 0;">
+      <span class="cap">El mismo sistema, de noche</span>
+      <div style="margin-top: 12px; background: #1d1a15; padding: 18px; color: #f2ede3;">
+        <span class="mono" style="font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: #a39885;">Metrónomo</span>
+        <div style="margin-top: 10px; display: flex; align-items: baseline; gap: 8px;">
+          <span class="mono" style="font-size: 56px; font-weight: 500; letter-spacing: -0.03em; line-height: 1;">80</span>
+          <span class="mono" style="font-size: 13px; color: #a39885;">bpm</span>
+        </div>
+        <div style="margin-top: 14px; display: flex; gap: 5px;">
+          <span style="height: 8px; flex-grow: 1; background: #e07a4f;"></span>
+          <span style="height: 8px; flex-grow: 1; background: #4a443a;"></span>
+          <span style="height: 8px; flex-grow: 1; background: #7e756a;"></span>
+          <span style="height: 8px; flex-grow: 1; background: #4a443a;"></span>
+        </div>
+        <button style="margin-top: 16px; width: 100%; height: 44px; border: none; background: #e07a4f; color: #1d1a15; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer;">Arrancar</button>
+      </div>
+      <p style="margin: 10px 0 0; font-size: 13px; color: #6b6154; line-height: 1.5;">Se lee sobre papel y se toca sobre tinta: las herramientas (metrónomo, afinador, bases) invierten el sistema para no deslumbrar con la guitarra en la mano.</p>
+    </div>
+  </div>
+
+  <div class="pauta"></div>
+
+  <!-- componentes -->
+  <div>
+    <span class="cap">Piezas</span>
+    <div style="margin-top: 14px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px;">
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <span class="mono" style="font-size: 10px; color: #8a7f6e;">Acciones &middot; 44px de alto</span>
+        <button style="height: 44px; border: none; background: #1d1a15; color: #f6f2ea; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer;">Completar lección</button>
+        <button style="height: 44px; border: 1px solid #1d1a15; background: transparent; color: #1d1a15; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; cursor: pointer;">Escuchar</button>
+        <button style="height: 44px; border: 1px solid #d9d0be; background: #fffdf8; color: #8a7f6e; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px;">Sin registrar</button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <span class="mono" style="font-size: 10px; color: #8a7f6e;">Instrucción &middot; qué haces</span>
+        <div style="display: flex; gap: 11px; padding: 12px 14px; background: rgba(166,60,38,0.06); border-left: 3px solid #a63c26;">
+          <span class="cap" style="color: #a63c26; padding-top: 2px; flex-shrink: 0;">Qué haces</span>
+          <span style="font-size: 13.5px; line-height: 1.45; color: #3a352c;">Una nota por compás, en el primer tiempo.</span>
+        </div>
+        <span class="mono" style="font-size: 10px; color: #8a7f6e; margin-top: 4px;">Palabra del glosario</span>
+        <span style="font-size: 15px;">Tocamos sobre un <span style="border-bottom: 2px dotted #a63c26;">vamp</span> de cuatro acordes.</span>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <span class="mono" style="font-size: 10px; color: #8a7f6e;">Objetivo de velocidad</span>
+        <div style="background: #fffdf8; border: 1px solid #e2d9c7; padding: 12px 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline;">
+            <span style="font-size: 14px;">Cromático 1-2-3-4</span>
+            <span class="mono" style="font-size: 13px;">104<span style="color: #8a7f6e;"> / 110</span></span>
+          </div>
+          <div style="margin-top: 9px; height: 5px; background: #ece5d6;">
+            <div style="width: 82%; height: 100%; background: #a63c26;"></div>
+          </div>
+          <span class="mono" style="display: block; margin-top: 6px; font-size: 10px; color: #8a7f6e;">FALTAN 6 BPM</span>
+        </div>
+        <div style="background: #fffdf8; border: 1px solid #e2d9c7; padding: 12px 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline;">
+            <span style="font-size: 14px;">3nps, 7 patrones</span>
+            <span class="mono" style="font-size: 13px;">100<span style="color: #8a7f6e;"> / 100</span></span>
+          </div>
+          <div style="margin-top: 9px; height: 5px; background: #ece5d6;">
+            <div style="width: 100%; height: 100%; background: #2f6b4f;"></div>
+          </div>
+          <span class="mono" style="display: block; margin-top: 6px; font-size: 10px; color: #2f6b4f;">CONSEGUIDA</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: auto; padding-top: 18px; border-top: 1px solid #e2d9c7; display: flex; gap: 26px;">
+    <span style="font-size: 12.5px; color: #6b6154; line-height: 1.5; flex-grow: 1;"><strong style="color: #1d1a15;">Accesible por construcción:</strong> nada depende solo del color (el estado también se dice con texto), foco visible en óxido de 2px, dianas de 44px y contraste AA en todas las combinaciones de arriba.</span>
+    <span style="font-size: 12.5px; color: #6b6154; line-height: 1.5; flex-grow: 1;"><strong style="color: #1d1a15;">Coste del cambio:</strong> son fichas de color, dos fuentes y radios a 0. La estructura de componentes que ya existe no se toca.</span>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

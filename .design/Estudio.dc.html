@@ -1,0 +1,168 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+  <style>
+    body { margin: 0; background: #0c1011; font-family: "Archivo", ui-sans-serif, system-ui, sans-serif; color: #e6eae9; }
+    a { color: #f0a63a; text-decoration: none; }
+    a:hover { color: #ffc069; }
+    .mono { font-family: "JetBrains Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+    .tag { font-family: "JetBrains Mono", monospace; font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: #7e8b88; }
+  </style>
+</helmet>
+
+<div style="width: 390px; min-height: 1320px; background: #0c1011; display: flex; flex-direction: column;">
+
+  <!-- barra de transporte: la lección como una toma de estudio -->
+  <div style="padding: 16px 18px 14px; border-bottom: 1px solid #1c2426; display: flex; flex-direction: column; gap: 12px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+      <span class="tag">A / S03 / D01</span>
+      <span style="display: flex; align-items: center; gap: 7px;">
+        <span style="width: 6px; height: 6px; border-radius: 50%; background: #46d39a;"></span>
+        <span class="mono" style="font-size: 11px; color: #7e8b88;">EN CURSO &middot; 40:00</span>
+      </span>
+    </div>
+
+    <h1 style="margin: 0; font-size: 27px; line-height: 1.1; font-weight: 700; letter-spacing: -0.02em;">La escala mayor de verdad</h1>
+
+    <!-- medidor de bloques, como un VU de segmentos -->
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <div style="display: flex; gap: 3px; flex-grow: 1;">
+        <span style="height: 10px; flex-grow: 1; background: #f0a63a;"></span>
+        <span style="height: 10px; flex-grow: 1; background: #f0a63a;"></span>
+        <span style="height: 10px; flex-grow: 1; background: #1c2426;"></span>
+        <span style="height: 10px; flex-grow: 1; background: #1c2426;"></span>
+        <span style="height: 10px; flex-grow: 1; background: #1c2426;"></span>
+      </div>
+      <span class="mono" style="font-size: 12px; color: #f0a63a;">02/05</span>
+    </div>
+  </div>
+
+  <!-- objetivo: placa grabada -->
+  <div style="margin: 16px 18px 0; border: 1px solid #1c2426; background: #101617;">
+    <div style="padding: 9px 14px; border-bottom: 1px solid #1c2426; display: flex; justify-content: space-between; align-items: center;">
+      <span class="tag" style="color: #f0a63a;">Objetivo</span>
+      <span class="mono" style="font-size: 11px; color: #7e8b88;">60 BPM</span>
+    </div>
+    <p style="margin: 0; padding: 13px 14px; font-size: 14px; line-height: 1.5; color: #c9d2d0;">Escala mayor de Do en corcheas a 60 bpm limpia, diciendo los grados.</p>
+  </div>
+
+  <!-- ficha como tabla de patch -->
+  <div style="margin: 18px 18px 0; border: 1px solid #1c2426;">
+    <div style="display: flex; gap: 12px; padding: 11px 14px; border-bottom: 1px solid #1c2426;">
+      <span class="tag" style="width: 92px; flex-shrink: 0; padding-top: 2px;">Hoy</span>
+      <span style="font-size: 13.5px; line-height: 1.45; color: #c9d2d0;">Una raíz con nombre y siete grados que puedes decir</span>
+    </div>
+    <div style="display: flex; gap: 12px; padding: 11px 14px; border-bottom: 1px solid #1c2426;">
+      <span class="tag" style="width: 92px; flex-shrink: 0; padding-top: 2px;">La regla</span>
+      <span style="font-size: 13.5px; line-height: 1.45; color: #c9d2d0;">Empieza y termina en la <strong style="color: #e6eae9;">raíz</strong></span>
+    </div>
+    <div style="display: flex; gap: 12px; padding: 11px 14px;">
+      <span class="tag" style="width: 92px; flex-shrink: 0; padding-top: 2px;">Diapasón</span>
+      <span style="font-size: 13.5px; line-height: 1.45; color: #c9d2d0;">Entra la 2ª cuerda, la única que queda</span>
+    </div>
+  </div>
+
+  <h2 style="margin: 24px 18px 0; font-size: 19px; font-weight: 600; letter-spacing: -0.01em;">Qué es un vamp</h2>
+  <p style="margin: 7px 18px 0; font-size: 14px; line-height: 1.55; color: #9aa5a3;">Una progresión corta que da vueltas sin final. No es una canción: es un laboratorio.</p>
+
+  <!-- secuenciador: la rejilla con cabezal de reproducción -->
+  <div style="margin: 14px 18px 0; border: 1px solid #1c2426; background: #101617;">
+    <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-bottom: 1px solid #1c2426;">
+      <div style="padding: 13px 0 11px; text-align: center; border-right: 1px solid #1c2426; background: rgba(240, 166, 58, 0.1); border-top: 2px solid #f0a63a;">
+        <span class="mono" style="display: block; font-size: 9px; color: #f0a63a;">01</span>
+        <span style="font-size: 20px; font-weight: 600;">C</span>
+      </div>
+      <div style="padding: 13px 0 11px; text-align: center; border-right: 1px solid #1c2426; border-top: 2px solid transparent;">
+        <span class="mono" style="display: block; font-size: 9px; color: #5c6a67;">02</span>
+        <span style="font-size: 20px; font-weight: 600; color: #c9d2d0;">Am</span>
+      </div>
+      <div style="padding: 13px 0 11px; text-align: center; border-right: 1px solid #1c2426; border-top: 2px solid transparent;">
+        <span class="mono" style="display: block; font-size: 9px; color: #5c6a67;">03</span>
+        <span style="font-size: 20px; font-weight: 600; color: #c9d2d0;">F</span>
+      </div>
+      <div style="padding: 13px 0 11px; text-align: center; border-top: 2px solid transparent;">
+        <span class="mono" style="display: block; font-size: 9px; color: #5c6a67;">04</span>
+        <span style="font-size: 20px; font-weight: 600; color: #c9d2d0;">G</span>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 12px; padding: 11px 12px;">
+      <button style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: none; border-radius: 50%; background: #f0a63a; cursor: pointer;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="#0c1011"><path d="M7 4.5v15l13-7.5z"/></svg>
+      </button>
+      <span style="display: flex; flex-direction: column; gap: 4px; flex-grow: 1;">
+        <span class="mono" style="font-size: 22px; font-weight: 700; letter-spacing: -0.02em;">80<span style="font-size: 11px; color: #7e8b88; font-weight: 400;"> BPM</span></span>
+        <span style="height: 4px; background: #1c2426; position: relative;">
+          <span style="position: absolute; left: 0; top: 0; bottom: 0; width: 42%; background: #46d39a;"></span>
+          <span style="position: absolute; left: 42%; top: -4px; width: 3px; height: 12px; background: #e6eae9;"></span>
+        </span>
+      </span>
+    </div>
+  </div>
+
+  <!-- qué haces -->
+  <div style="margin: 12px 18px 0; display: flex; gap: 11px; padding: 12px 13px; background: rgba(70, 211, 154, 0.08); border: 1px solid rgba(70, 211, 154, 0.3);">
+    <span class="tag" style="color: #46d39a; padding-top: 2px; flex-shrink: 0;">Qué haces</span>
+    <span style="font-size: 13.5px; line-height: 1.45; color: #c9d2d0;">Una nota por compás: la 3ª del acorde que entra, en el primer tiempo.</span>
+  </div>
+
+  <!-- bloques -->
+  <div style="margin: 22px 18px 0; display: flex; flex-direction: column; gap: 8px;">
+    <span class="tag">Sesión &middot; 5 bloques</span>
+
+    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid #1c2426; background: #101617;">
+      <span style="width: 24px; height: 24px; flex-shrink: 0; background: #46d39a; display: flex; align-items: center; justify-content: center;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#0c1011" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      </span>
+      <span style="min-width: 0; flex-grow: 1;">
+        <span style="display: block; font-size: 13.5px; font-weight: 500; color: #7e8b88; text-decoration: line-through;">Escala mayor, 2 posiciones</span>
+        <span class="mono" style="display: block; font-size: 10.5px; color: #5c6a67;">TÉCNICA &middot; 8 MIN &middot; 60 BPM</span>
+      </span>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid #f0a63a; background: rgba(240, 166, 58, 0.06);">
+      <span class="mono" style="width: 24px; height: 24px; flex-shrink: 0; border: 1px solid #f0a63a; color: #f0a63a; display: flex; align-items: center; justify-content: center; font-size: 12px;">3</span>
+      <span style="min-width: 0; flex-grow: 1;">
+        <span style="display: block; font-size: 13.5px; font-weight: 500;">Cantar los grados</span>
+        <span class="mono" style="display: block; font-size: 10.5px; color: #7e8b88;">OÍDO &middot; 7 MIN</span>
+      </span>
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#f0a63a" stroke-width="1.8" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg>
+    </div>
+  </div>
+
+  <div style="flex-grow: 1;"></div>
+
+  <div style="margin-top: 24px; border-top: 1px solid #1c2426; background: #0f1415; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 8px 4px 14px;">
+    <span style="display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 6px 0; min-height: 44px;">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#5c6a67" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+      <span class="tag" style="font-size: 8.5px;">Inicio</span>
+    </span>
+    <span style="display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 6px 0; min-height: 44px;">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#5c6a67" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4.5v15l13-7.5z"/></svg>
+      <span class="tag" style="font-size: 8.5px;">Hoy</span>
+    </span>
+    <span style="display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 6px 0; min-height: 44px; position: relative;">
+      <span style="position: absolute; top: -1px; width: 100%; height: 2px; background: #f0a63a;"></span>
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#f0a63a" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 8l10 5 10-5z"/><path d="M6 11v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/></svg>
+      <span class="tag" style="font-size: 8.5px; color: #f0a63a;">Curso</span>
+    </span>
+    <span style="display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 6px 0; min-height: 44px;">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#5c6a67" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 21h14z"/><path d="M12 3v18"/></svg>
+      <span class="tag" style="font-size: 8.5px;">Metrónomo</span>
+    </span>
+    <span style="display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 6px 0; min-height: 44px;">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#5c6a67" stroke-width="1.7" stroke-linecap="round"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
+      <span class="tag" style="font-size: 8.5px;">Más</span>
+    </span>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
