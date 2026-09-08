@@ -20,7 +20,9 @@ test.describe("canciones", () => {
     await page.getByRole("combobox", { name: /ordenar las canciones/i }).click();
     await page.getByRole("option", { name: /por título/i }).click();
     await expect(page).toHaveURL(/orden=titulo/);
-    const titulos = await page.locator("main li a span.font-medium").allInnerTexts();
+    const titulos = await page
+      .locator("main li a > span:first-child > span:first-child")
+      .allInnerTexts();
     const ordenados = [...titulos].sort((a, b) => a.localeCompare(b, "es"));
     expect(titulos.slice(0, 5)).toEqual(ordenados.slice(0, 5));
   });
