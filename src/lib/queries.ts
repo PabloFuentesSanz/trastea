@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import { currentStreak } from "@/lib/streak";
 import { metasDeBpm, type EjercicioConMeta, type Meta } from "@/lib/progress/goals";
@@ -20,24 +21,33 @@ export interface AppUserContext {
   profile: ProfileRow | null;
 }
 
-export async function getUserContext(): Promise<AppUserContext> {
+/**
+ * Quién está usando la app, UNA vez por petición.
+ *
+ * Esto se llamaba desde cada página y cada llamada hacía una ida a la
+ * autenticación de Supabase (`getUser`) más la consulta del perfil — y el
+ * middleware ya había hecho otra ida igual. Tres viajes de red antes de
+ * pintar nada, en cada navegación: era la mitad de "la app va lenta".
+ * `getClaims` verifica la firma del token en local, y `cache` hace que dos
+ * componentes de la misma petición compartan la respuesta.
+ */
+export const getUserContext = cache(async (): Promise<AppUserContext> => {
   if (!isSupabaseConfigured()) {
     return { configured: false, userId: null, profile: null };
   }
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { configured: true, userId: null, profile: null };
+  const { data } = await supabase.auth.getClaims();
+  const userId = data?.claims.sub;
+  if (!userId) return { configured: true, userId: null, profile: null };
 
   const { data: profile } = await supabase
     .from("profiles")
     .select("*")
-    .eq("id", user.id)
+    .eq("id", userId)
     .maybeSingle();
 
-  return { configured: true, userId: user.id, profile: profile ?? null };
-}
+  return { configured: true, userId, profile: profile ?? null };
+});
 
 function todayLocal(): string {
   return new Date().toISOString().slice(0, 10);

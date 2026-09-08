@@ -16,11 +16,9 @@ const DEMO: ActionResult = { ok: false, error: "demo" };
 async function requireUser() {
   if (!isSupabaseConfigured()) return null;
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
-  return { supabase, user };
+  const { data } = await supabase.auth.getClaims();
+  if (!data?.claims.sub) return null;
+  return { supabase, user: { id: data.claims.sub } };
 }
 
 /** Primera lección real del curso (para onboarding y fallback de /hoy). */

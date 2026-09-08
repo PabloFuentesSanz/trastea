@@ -27,10 +27,11 @@ export async function middleware(request: NextRequest) {
     },
   });
 
-  // Importante: no ejecutar lógica entre createServerClient y getUser.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Importante: no ejecutar lógica entre createServerClient y la lectura de
+  // la sesión. `getClaims` verifica el token en local (refresca la cookie si
+  // toca) en vez de ir al servidor de auth en cada petición.
+  const { data } = await supabase.auth.getClaims();
+  const user = data?.claims.sub ? { id: data.claims.sub } : null;
 
   const { pathname } = request.nextUrl;
 

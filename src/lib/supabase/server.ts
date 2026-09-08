@@ -26,11 +26,10 @@ export async function createClient() {
   });
 }
 
+/** El id del usuario con sesión, verificando el token en local. */
 export async function getUser() {
   if (!isSupabaseConfigured()) return null;
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return user;
+  const { data } = await supabase.auth.getClaims();
+  return data?.claims.sub ? { id: data.claims.sub } : null;
 }

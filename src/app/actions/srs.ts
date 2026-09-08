@@ -22,9 +22,8 @@ export async function gradeCard(input: {
   if (!card) return { ok: false, error: "tarjeta desconocida" };
 
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: sesion } = await supabase.auth.getClaims();
+  const user = sesion?.claims.sub ? { id: sesion.claims.sub } : null;
   if (!user) return { ok: false, error: "demo" };
 
   const { data: existing } = await supabase
