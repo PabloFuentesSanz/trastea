@@ -5,7 +5,7 @@ import {
   getDrill,
   drillLevel,
   filterDrills,
-  CAMBIOS_DE_ACORDE_SLUG,
+  DRILLS_CON_PAGINA_PROPIA,
 } from "./catalog";
 import { cardId, parseCardId, type TrainCard } from "./cards";
 import { selectSession } from "@/lib/srs/scheduler";
@@ -44,13 +44,13 @@ describe("catálogo de entrenamientos", () => {
 
   // el de cambios de acorde se hace con la guitarra y un cronómetro: no
   // tiene mazo y su nivel solo dice qué parejas se proponen
-  const CON_MAZO = DRILLS.filter((d) => d.slug !== CAMBIOS_DE_ACORDE_SLUG);
+  const CON_MAZO = DRILLS.filter((d) => !DRILLS_CON_PAGINA_PROPIA.has(d.slug));
 
-  it("el único sin mazo es el de cambios de acorde, y lo dice su modalidad", () => {
+  it("solo los de página propia van sin mazo, y no son de identificar", () => {
     for (const drill of DRILLS) {
       const vacio = drill.levels.every((l) => l.build().length === 0);
-      expect(vacio, drill.slug).toBe(drill.slug === CAMBIOS_DE_ACORDE_SLUG);
-      if (vacio) expect(drill.mode).toBe("cronometrado");
+      expect(vacio, drill.slug).toBe(DRILLS_CON_PAGINA_PROPIA.has(drill.slug));
+      if (vacio) expect(drill.mode).not.toBe("identificar");
     }
   });
 

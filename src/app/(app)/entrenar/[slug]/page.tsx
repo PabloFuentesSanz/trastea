@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { TrainSession, type TrainChoices } from "@/components/train/train-session";
 import { getTrainingDeck, getUserContext } from "@/lib/queries";
 import {
-  CAMBIOS_DE_ACORDE_SLUG,
+  DRILLS_CON_PAGINA_PROPIA,
   DRILLS,
   drillLevel,
   getDrill,
@@ -65,8 +65,8 @@ function fretsNeeded(cards: readonly TrainCard[]): number {
 }
 
 export function generateStaticParams() {
-  // el de cambios de acorde tiene página propia
-  return DRILLS.filter((d) => d.slug !== CAMBIOS_DE_ACORDE_SLUG).map((d) => ({
+  // los que se hacen con la guitarra tienen página propia
+  return DRILLS.filter((d) => !DRILLS_CON_PAGINA_PROPIA.has(d.slug)).map((d) => ({
     slug: d.slug,
   }));
 }
@@ -116,9 +116,9 @@ export default async function DrillPage({
   if (!drill) notFound();
 
   const sp = await searchParams;
-  if (slug === CAMBIOS_DE_ACORDE_SLUG) {
+  if (DRILLS_CON_PAGINA_PROPIA.has(slug)) {
     const nivel = typeof sp.nivel === "string" ? `?nivel=${sp.nivel}` : "";
-    redirect(`/entrenar/cambios-de-acorde${nivel}`);
+    redirect(`/entrenar/${slug === "rasgueo-con-el-click" ? "rasgueo" : slug}${nivel}`);
   }
   const rawLevel = Number(typeof sp.nivel === "string" ? sp.nivel : "");
   const pedido = isTrainLevel(rawLevel) ? rawLevel : drill.levels[0].level;

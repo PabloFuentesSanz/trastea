@@ -1,0 +1,92 @@
+---
+slug: estilos-jazz-d2
+title: "Walking bass de dos notas por acorde — día 2"
+order: 2
+duration_min: 40
+goal: "Tocar los 12 compases de Blue Monk con dos notas de bajo por compás (raíz y aproximación) a 80 bpm sin perder la forma"
+para_que: "Para sostener Blue Monk tú solo: dos notas de bajo por compás que llevan al oyente del acorde de ahora al de después"
+blocks:
+  - id: b1
+    type: tecnica
+    min: 8
+    exercise: comping-en-cuatro
+    bpm_start: 100
+    tool: "/metronomo?bpm=100"
+    notes: "Repaso de ayer, un peldaño más arriba: cuatro por compás sobre Am7-Dm7-G7-Cmaj7 a 100."
+  - id: b2
+    type: tecnica
+    min: 12
+    exercise: walking-bass-dos-notas
+    bpm_start: 70
+    bpm_target: 80
+    log_bpm: true
+    tool: "/metronomo?bpm=70"
+    notes: "Solo bajo, sin acordes: raíz en el 1, nota de aproximación en el 3. Empieza con dos acordes y ve alargando."
+  - id: b3
+    type: diapason
+    min: 5
+    tool: "/acordes?root=Bb&type=7"
+    notes: "Localiza Sib, Mib, Do y Fa en la 6ª y en la 5ª cuerda. Sin ese mapa el bajo no camina: tropieza."
+  - id: b4
+    type: aplicacion
+    min: 10
+    exercise: walking-bass-dos-notas
+    song: blue-monk
+    bpm_start: 80
+    tool: "/metronomo?bpm=80&only24=1"
+    notes: "Los 12 compases de Blue Monk, dos notas por compás de principio a fin. La forma manda: si te pierdes, entra en el compás siguiente."
+  - id: b5
+    type: repertorio
+    min: 5
+    song: fly-me-to-the-moon
+    notes: "Una vuelta de Fly Me to the Moon acompañando a cuatro, como ayer. Que no se enfríe."
+wiki_refs: [shell-voicings, blues-de-12-compases, circulo-de-cuartas, acordes-de-septima]
+---
+
+<Ficha
+  queEntraHoy="El walking bass: una línea de bajo que camina de acorde en acorde, sin saltos"
+  hoySoloDosNotas="La raíz en el tiempo 1 y una nota de aproximación en el 3"
+  queEsAproximar="Llegar a la raíz siguiente desde un traste al lado, arriba o abajo"
+  porQueFunciona="El oído perdona cualquier nota si la de después está pegada"
+  elTema="Blue Monk: el blues de 12 en Sib que ya conoces de forma"
+/>
+
+## Dos notas y ya camina
+
+<Tab
+  notas="[2] 6:6 5:5 | 5:6 5:2 | 6:6 6:5 | 6:6 5:7"
+  swing="si"
+  bpm="70"
+  figuras="blancas · dos notas por compás"
+  pie="Sib → Re (que entra a Mib desde abajo) · Mib → Si (que entra a Sib desde arriba) · Sib → La · Sib → Mi"
+  queHacer="Toca solo el bajo, sin acordes, y di en voz alta el nombre del acorde en cada compás. La segunda nota siempre está a un traste de la primera del compás siguiente."
+/>
+
+La segunda nota no es del acorde y da igual: es un peldaño. Lo que la
+justifica es lo que viene después.
+
+<Aviso tipo="truco">
+  Elige la aproximación mirando hacia delante, no hacia atrás. Primero localiza dónde cae
+  la raíz siguiente; la nota de paso es la de al lado. Si primero eliges la nota bonita,
+  luego el salto es imposible.
+</Aviso>
+
+## Los shells, encima
+
+<Acordes>
+  <Acorde nombre="Bb7" trastes="6,x,6,7,x,x" pie="raíz en la 6ª" />
+  <Acorde nombre="Eb7" trastes="x,6,x,6,8,x" pie="raíz en la 5ª" />
+  <Acorde nombre="Cm7" trastes="x,3,x,3,4,x" pie="raíz en la 5ª" />
+  <Acorde nombre="F7" trastes="1,x,1,2,x,x" pie="raíz en la 6ª" />
+</Acordes>
+
+## La forma entera
+
+<Rejilla
+  compases="Bb7 | Eb7 | Bb7 | Bb7 | Eb7 | Eb7 | Bb7 | Bb7 | Cm7 | F7 | Bb7 | F7"
+  estilo="swing"
+  bpm="80"
+  porLinea="4"
+  pie="Blue Monk: el blues de 12 compases en Sib"
+  queHacer="Una vuelta entera solo con las dos notas de bajo. Cuando salga sin pensar, añade el shell en el 2 y el 4."
+/>

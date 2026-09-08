@@ -249,6 +249,15 @@ function boxCards(
  * de `content:audit` lo traten como a los demás; su página es propia.
  */
 export const CAMBIOS_DE_ACORDE_SLUG = "cambios-de-acorde";
+export const RITMO_A_GOLPE_SLUG = "ritmo-a-golpe";
+export const RASGUEO_SLUG = "rasgueo-con-el-click";
+
+/** Los entrenamientos que se hacen con la guitarra y tienen página propia. */
+export const DRILLS_CON_PAGINA_PROPIA: ReadonlySet<string> = new Set([
+  CAMBIOS_DE_ACORDE_SLUG,
+  RITMO_A_GOLPE_SLUG,
+  RASGUEO_SLUG,
+]);
 
 export const DRILLS: readonly Drill[] = [
   {
@@ -263,6 +272,34 @@ export const DRILLS: readonly Drill[] = [
       { level: 1, label: "Em, Am, D, A y E: las parejas de Desde cero", build: () => [] },
       { level: 2, label: "G, C, Dm y el Fa pequeño", build: () => [] },
       { level: 3, label: "Con cejilla: F y Bm", build: () => [] },
+    ],
+  },
+  {
+    slug: RITMO_A_GOLPE_SLUG,
+    title: "Ritmo a golpe",
+    summary:
+      "El click suena y tú marcas cada pulso con una tecla. Te dice, en milisegundos, si vas por delante, por detrás o bailando.",
+    theme: "ritmo",
+    skills: ["subdivision", "independencia"],
+    mode: "cronometrado",
+    levels: [
+      { level: 1, label: "Negras a 100 bpm", build: () => [] },
+      { level: 2, label: "Negras a 80: más hueco donde perderse", build: () => [] },
+      { level: 3, label: "Negras a 60: el click lento es el difícil", build: () => [] },
+    ],
+  },
+  {
+    slug: RASGUEO_SLUG,
+    title: "Rasgueo con el click",
+    summary:
+      "Eliges un patrón de mano derecha y un bucle de acordes, lo oyes con las flechas moviéndose y tocas encima hasta que la mano no se pare.",
+    theme: "tecnica",
+    skills: ["rasgueo", "subdivision"],
+    mode: "guiado",
+    levels: [
+      { level: 1, label: "Negras, corcheas y el patrón de siempre", build: () => [] },
+      { level: 2, label: "Acentos, apagados y bajo-rasgueo", build: () => [] },
+      { level: 3, label: "Semicorcheas de funk", build: () => [] },
     ],
   },
   {
