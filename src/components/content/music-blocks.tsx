@@ -7,6 +7,7 @@ import { Tablature } from "@/components/fretboard/tablature";
 import { PlayChord } from "./play-chord";
 import { PlayableGrid } from "@/components/backing/playable-grid";
 import { PlayableTab } from "@/components/backing/playable-tab";
+import { PlayableStrum } from "@/components/backing/playable-strum";
 import { ChordChip } from "./chord-chip";
 import type { BackingStyle } from "@/lib/backing/groove";
 import { formulaPositions } from "@/lib/music/fretboard";
@@ -336,6 +337,57 @@ export function Rejilla({
         bpm={num(bpm) ?? 80}
         estilo={estilo}
         id={`rejilla-${compases.slice(0, 12).replace(/\W+/g, "")}`}
+      />
+      {pie && (
+        <figcaption className="mt-1.5 text-xs text-muted-foreground">{pie}</figcaption>
+      )}
+      <QueHacer>{queHacer}</QueHacer>
+    </figure>
+  );
+}
+
+/**
+ * Patrón de rasgueo desde MDX: la mano derecha dibujada y sonando.
+ *
+ *   <Rasgueo patron="↓ · ↓↑ · ↑ ↓↑" acordes="Em" bpm="70" />
+ *   <Rasgueo patron="D - D U - U D U" acordes="G | D | Em | C" />
+ *
+ * Ocho corcheas por compás: ↓ abajo, ↑ arriba, x apagado, · la mano pasa
+ * sin tocar. Con un acorde se repite `compases` veces; con varios, uno por
+ * compás. La notación se valida en `content:audit`.
+ */
+export function Rasgueo({
+  patron,
+  acordes = "Em",
+  compases,
+  bpm,
+  pie,
+  queHacer,
+  tocable = "si",
+}: {
+  patron: string;
+  /** un cifrado, o varios separados por "|": uno por compás */
+  acordes?: string;
+  /** con un solo acorde, cuántos compases da vueltas */
+  compases?: Numerico;
+  bpm?: Numerico;
+  pie?: string;
+  queHacer?: string;
+  tocable?: string;
+}) {
+  const lista = acordes
+    .split("|")
+    .map((c) => c.trim())
+    .filter(Boolean);
+  return (
+    <figure className="not-prose my-5">
+      <PlayableStrum
+        patron={patron}
+        acordes={lista}
+        compases={num(compases) ?? 2}
+        bpm={num(bpm) ?? 70}
+        tocable={tocable !== "no"}
+        id={`rasgueo-${patron.replace(/\W+/g, "")}-${lista.join("").replace(/\W+/g, "")}`}
       />
       {pie && (
         <figcaption className="mt-1.5 text-xs text-muted-foreground">{pie}</figcaption>

@@ -9,7 +9,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { BpmChart } from "@/components/progress/bpm-chart";
 import { PracticeHeatmap } from "@/components/progress/practice-heatmap";
-import { getCourse, getExercises, getLesson } from "@/lib/content/loader";
+import { getExercises, getLesson, getModule, getSecuencia } from "@/lib/content/loader";
 import { tituloSinDia } from "@/lib/content/lesson-title";
 import { GoalList } from "@/components/progress/goal-list";
 import { WeekSummary } from "@/components/progress/week-summary";
@@ -88,16 +88,15 @@ export default async function ProgresoPage() {
       .filter(([, row]) => row.status === "done")
       .map(([slug]) => slug),
   );
+  // en el orden real del curso, con las semanas de estilo donde caen
   const mapa = mapaDelCurso(
-    getCourse().flatMap((m) =>
-      m.weeks.flatMap((w) =>
-        w.lessons.map((l) => ({
-          slug: l.frontmatter.slug,
-          moduloSlug: m.frontmatter.slug,
-          moduloTitulo: m.frontmatter.title,
-          semana: w.frontmatter.order,
-        })),
-      ),
+    getSecuencia().flatMap((s) =>
+      s.week.lessons.map((l) => ({
+        slug: l.frontmatter.slug,
+        moduloSlug: s.moduleSlug,
+        moduloTitulo: getModule(s.moduleSlug)?.frontmatter.title ?? s.moduleSlug,
+        semana: s.posicion,
+      })),
     ),
     hechas,
   );

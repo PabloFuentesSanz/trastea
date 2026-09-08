@@ -48,11 +48,32 @@ export const lessonFrontmatterSchema = z.object({
   order: z.number().int().min(1).max(7),
   duration_min: z.number().int().min(10).max(120),
   goal: z.string().min(5),
+  /**
+   * Para qué sirve lo de hoy, en una frase que nombra dónde lo vas a usar
+   * ("para tocar el riff de Smoke on the Water sin mirar"). Es lo que un
+   * profesor dice antes de empezar y lo que faltaba en 44 de 60 días.
+   */
+  para_que: z
+    .string()
+    .min(10)
+    .max(160, "el para qué es una frase: 160 caracteres como mucho")
+    .optional(),
   blocks: z.array(lessonBlockSchema).min(1),
   wiki_refs: z.array(slugSchema).default([]),
 });
 
 export type LessonFrontmatter = z.infer<typeof lessonFrontmatterSchema>;
+
+export const WEEK_STYLES = ["blues", "rock", "folk", "jazz", "metal"] as const;
+export type WeekStyle = (typeof WEEK_STYLES)[number];
+
+export const WEEK_STYLE_LABEL: Record<WeekStyle, string> = {
+  blues: "Semana de blues",
+  rock: "Semana de rock",
+  folk: "Semana de folk",
+  jazz: "Semana de jazz",
+  metal: "Semana de metal",
+};
 
 export const weekFrontmatterSchema = z.object({
   slug: slugSchema,
@@ -68,6 +89,13 @@ export const weekFrontmatterSchema = z.object({
     .min(1)
     .max(60, "el foco es un subtítulo de una línea: 60 caracteres como mucho"),
   summary: z.string().min(1),
+  /**
+   * Semana de estilo: en vez de un paso más del tronco, una semana de blues,
+   * rock, folk, jazz o metal que se intercala entre dos del tronco. Va
+   * siempre con `after`: el slug de la semana detrás de la que se coloca.
+   */
+  estilo: z.enum(WEEK_STYLES).optional(),
+  after: slugSchema.optional(),
 });
 
 export type WeekFrontmatter = z.infer<typeof weekFrontmatterSchema>;

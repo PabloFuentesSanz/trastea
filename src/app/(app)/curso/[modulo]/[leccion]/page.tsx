@@ -4,11 +4,15 @@ import { BookOpen } from "lucide-react";
 import { Mdx } from "@/components/content/mdx";
 import { LessonPlayer } from "@/components/lesson/lesson-player";
 import { LessonBlockCard } from "@/components/lesson/lesson-block-card";
+import { ExerciseFold } from "@/components/lesson/exercise-fold";
+import { resumenDeEjercicio } from "@/lib/content/exercise-summary";
+import { WEEK_STYLE_LABEL } from "@/lib/content/schemas";
 import {
   getCourse,
   getExercise,
   getLesson,
   getModule,
+  getSecuencia,
   getSong,
   getSongs,
   getTerminosNuevos,
@@ -55,7 +59,13 @@ export default async function LeccionPage({
     ? `/curso/${nextLesson.moduleSlug}/${nextLesson.frontmatter.slug}`
     : null;
 
-  const breadcrumb = `${mod.frontmatter.title} · Semana ${lesson.weekOrder} · Día ${lesson.frontmatter.order}`;
+  // una semana de estilo se presenta por lo que es ("Semana de blues"), no
+  // como la semana N de un módulo al que no pertenece
+  const semana = getSecuencia().find((s) => s.slug === lesson.weekSlug);
+  const estilo = semana?.week.frontmatter.estilo;
+  const breadcrumb = estilo
+    ? `${WEEK_STYLE_LABEL[estilo]} · Día ${lesson.frontmatter.order}`
+    : `${mod.frontmatter.title} · Semana ${lesson.weekOrder} · Día ${lesson.frontmatter.order}`;
 
   // Alternativas del catálogo para cada canción del día: mismas técnicas y
   // nunca por encima del techo del módulo.
@@ -85,6 +95,7 @@ export default async function LeccionPage({
         demo={!ctx.userId}
         breadcrumb={breadcrumb}
         nextHref={nextHref}
+        paraQue={lesson.frontmatter.para_que}
       >
         {lesson.body.trim() && <Mdx source={lesson.body} className="text-[0.95rem]" />}
 
@@ -120,9 +131,12 @@ export default async function LeccionPage({
               train={train}
             >
               {exercise && (
-                <div className="mt-3 rounded-lg border bg-background/40 p-4">
+                <ExerciseFold
+                  slug={exercise.frontmatter.slug}
+                  resumen={resumenDeEjercicio(exercise.body)}
+                >
                   <Mdx source={exercise.body} className="prose-sm" />
-                </div>
+                </ExerciseFold>
               )}
               {song && (
                 <p className="mt-3 text-sm text-muted-foreground">

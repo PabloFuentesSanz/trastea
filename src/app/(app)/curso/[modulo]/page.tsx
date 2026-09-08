@@ -3,13 +3,24 @@ import { notFound } from "next/navigation";
 import { ArrowRight, Check, Circle, Play, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Mdx } from "@/components/content/mdx";
-import { getCourse, getModule } from "@/lib/content/loader";
+import { getCourse, getModule, getSemanasDelModulo } from "@/lib/content/loader";
+import { WEEK_STYLE_LABEL } from "@/lib/content/schemas";
+import { Badge } from "@/components/ui/badge";
 import { getLessonProgressMap, getUserContext } from "@/lib/queries";
 import { cn } from "@/lib/utils";
 import { tituloSinDia } from "@/lib/content/lesson-title";
 
 export function generateStaticParams() {
   return getCourse().map((m) => ({ modulo: m.frontmatter.slug }));
+}
+
+/** "3 del Módulo A — Cimientos", para decir dónde cae una semana de estilo. */
+function ancla(weekSlug: string): string {
+  for (const m of getCourse()) {
+    const w = m.weeks.find((week) => week.frontmatter.slug === weekSlug);
+    if (w) return `${w.frontmatter.order} (${m.frontmatter.title})`;
+  }
+  return weekSlug;
 }
 
 export default async function ModuloPage({
@@ -25,6 +36,13 @@ export default async function ModuloPage({
   const progress = ctx.userId
     ? await getLessonProgressMap(ctx.userId)
     : new Map<string, { status: string }>();
+
+  // un módulo del tronco enseña sus semanas con las de estilo intercaladas
+  // donde se estudian; el módulo de las semanas de estilo enseña solo las suyas
+  const deEstilos = mod.weeks.every((w) => w.frontmatter.after !== undefined);
+  const semanas = deEstilos
+    ? mod.weeks.map((week) => ({ week, moduleSlug: mod.frontmatter.slug }))
+    : getSemanasDelModulo(modulo);
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-8">
@@ -53,10 +71,19 @@ export default async function ModuloPage({
       </ul>
 
       <div className="mt-8 flex flex-col gap-6">
-        {mod.weeks.map((week) => (
+        {semanas.map(({ week, moduleSlug }) => (
           <section key={week.frontmatter.slug} aria-label={week.frontmatter.title}>
-            <h2 className="text-lg font-medium">
-              Semana {week.frontmatter.order}: {week.frontmatter.title}
+            <h2 className="flex flex-wrap items-center gap-2 text-lg font-medium">
+              {week.frontmatter.estilo ? (
+                <>
+                  <Badge className="font-normal">
+                    {WEEK_STYLE_LABEL[week.frontmatter.estilo]}
+                  </Badge>
+                  {week.frontmatter.title}
+                </>
+              ) : (
+                `Semana ${week.frontmatter.order}: ${week.frontmatter.title}`
+              )}
             </h2>
             {/* el foco es una frase, no una etiqueta: en un badge de una sola
                 línea empujaba la página 300 px fuera de la pantalla */}
@@ -66,6 +93,11 @@ export default async function ModuloPage({
             <p className="mt-1 text-sm text-muted-foreground">
               {week.frontmatter.summary}
             </p>
+            {deEstilos && week.frontmatter.after && (
+              <p className="mt-1 text-xs text-muted-foreground">
+                Se estudia justo después de la semana {ancla(week.frontmatter.after)}.
+              </p>
+            )}
             {/* la presentación de la semana: de qué va, por qué, y qué vas a
                 saber hacer al acabarla. Sin esto se entra a los cinco días
                 sueltos sin saber a dónde llevan */}
@@ -80,7 +112,7 @@ export default async function ModuloPage({
                 return (
                   <li key={lesson.frontmatter.slug}>
                     <Link
-                      href={`/curso/${mod.frontmatter.slug}/${lesson.frontmatter.slug}`}
+                      href={`/curso/${moduleSlug}/${lesson.frontmatter.slug}`}
                       className={cn(
                         "flex items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-secondary",
                         done && "border-success/40",

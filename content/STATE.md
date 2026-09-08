@@ -6,28 +6,29 @@
 
 | Tipo | Total |
 |---|---|
-| Módulos | 5 (2 placeholder) |
+| Módulos | 6 (1 placeholder) |
 | Semanas | 12 |
 | Lecciones-día | 60 |
 | Ejercicios | 70 |
-| Canciones | 304 |
+| Canciones | 305 |
 | Tabs | 0 |
 | Artículos wiki | 87 |
-| Quizzes | 3 |
+| Quizzes | 4 |
 
 ## Módulos
 
-- **Desde cero** (`desde-cero`) _placeholder_: 0 semanas, 0 lecciones
+- **Desde cero** (`desde-cero`): 0 semanas, 0 lecciones
 - **Módulo A — Cimientos** (`a-cimientos`): 4 semanas, 20 lecciones
 - **Módulo B — Armonía y arpegios** (`b-armonia`): 4 semanas, 20 lecciones
 - **Módulo C — Lenguaje y velocidad** (`c-lenguaje`): 4 semanas, 20 lecciones
 - **Avanzado** (`avanzado`) _placeholder_: 0 semanas, 0 lecciones
+- **Semanas de estilo** (`estilos`): 0 semanas, 0 lecciones
 
 ## Repertorio
 
 | Nivel | Canciones |
 |---|---|
-| 1 | 37 |
+| 1 | 38 |
 | 2 | 99 |
 | 3 | 93 |
 | 4 | 56 |
@@ -37,7 +38,7 @@
 
 - De fogata (`fogata`): 104
 - Riffs legendarios (`riffs-legendarios`): 61
-- Tus primeras canciones (`primeras-canciones`): 55
+- Tus primeras canciones (`primeras-canciones`): 56
 - Intros que todos reconocen (`intros-reconocibles`): 50
 - Standards de jazz (`jazz-standards`): 40
 - Blues esencial (`blues-esencial`): 37
@@ -53,7 +54,7 @@
 - Fingerstyle esencial (`fingerstyle-esencial`): 18
 - Bossa y latino (`bossa-y-latin`): 16
 - Country y folk (`country-y-folk`): 16
-- Clásica de dominio público (`clasica-dominio-publico`): 15
+- Clásica de dominio público (`clasica-dominio-publico`): 16
 - Supervivencia con cejilla (`cejilla-supervivencia`): 12
 - Clásicos del rock español (`rock-espanol`): 12
 - Métricas raras (`metricas-raras`): 9
@@ -72,4 +73,4 @@
 - Referenciados sin existir: 0
 - Huérfanos (sin backlinks): 0
 
-_Última ejecución: 2026-09-08T10:02:26.370Z_
+_Última ejecución: 2026-09-08T10:33:08.937Z_

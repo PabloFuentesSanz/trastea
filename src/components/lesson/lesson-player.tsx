@@ -3,7 +3,7 @@
 import { useMemo, useState, useTransition, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Check, Maximize2, Target, X } from "lucide-react";
+import { ArrowRight, Check, Compass, Maximize2, Target, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -25,6 +25,7 @@ export function LessonPlayer({
   demo,
   breadcrumb,
   nextHref,
+  paraQue,
   children,
 }: {
   lesson: LessonFrontmatter;
@@ -33,6 +34,8 @@ export function LessonPlayer({
   demo: boolean;
   breadcrumb: string;
   nextHref: string | null;
+  /** para qué sirve lo de hoy: lo que un profesor dice antes de empezar */
+  paraQue?: string;
   children: ReactNode;
 }) {
   const router = useRouter();
@@ -131,12 +134,22 @@ export function LessonPlayer({
       </div>
 
       <div className="mx-auto max-w-3xl">
-        <p className="mt-4 flex items-start gap-2 rounded-lg border border-primary/30 bg-accent/40 p-3 text-sm">
-          <Target className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
-          <span>
-            <strong>Objetivo de hoy:</strong> {chordify(lesson.goal)}
-          </span>
-        </p>
+        <div className="mt-4 flex flex-col gap-2 rounded-lg border border-primary/30 bg-accent/40 p-3 text-sm">
+          <p className="flex items-start gap-2">
+            <Target className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+            <span>
+              <strong>Objetivo de hoy:</strong> {chordify(lesson.goal)}
+            </span>
+          </p>
+          {paraQue && (
+            <p className="flex items-start gap-2">
+              <Compass className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+              <span>
+                <strong>Para qué:</strong> {chordify(paraQue)}
+              </span>
+            </p>
+          )}
+        </div>
 
         <div className="mt-4 flex flex-col gap-3">{children}</div>
 

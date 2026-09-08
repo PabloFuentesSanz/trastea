@@ -13,18 +13,35 @@ test.describe("una lección del curso", () => {
     expect(await page.locator('svg[role="img"]').count()).toBeGreaterThan(0);
   });
 
-  test("los bloques se despliegan y traen el ejercicio dentro", async ({ page }) => {
+  test("un bloque abierto dice qué haces y para qué, y la ficha entera va plegada", async ({
+    page,
+  }) => {
     await page.goto(LECCION);
 
     const bloque = page.getByRole("button", { name: /abrir bloque/i }).first();
     await expect(bloque).toBeVisible();
-    const dibujosAntes = await page.locator('svg[role="img"]').count();
     await bloque.click();
 
-    // al abrirse aparece el contenido del ejercicio, que siempre dibuja algo
+    // lo que se ve sin tocar nada: las dos líneas del profesor
+    await expect(page.getByText("Qué haces", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("Para qué", { exact: true }).first()).toBeVisible();
+
+    // la ficha entera (tab, mástil, rutina) solo si la pides
+    const dibujosAntes = await page.locator('svg[role="img"]:visible').count();
+    await page
+      .getByRole("button", { name: /ver el ejercicio entero/i })
+      .first()
+      .click();
     await expect
-      .poll(async () => page.locator('svg[role="img"]').count(), { timeout: 7000 })
+      .poll(async () => page.locator('svg[role="img"]:visible').count(), {
+        timeout: 7000,
+      })
       .toBeGreaterThan(dibujosAntes);
+  });
+
+  test("la cabecera dice para qué sirve el día", async ({ page }) => {
+    await page.goto(LECCION);
+    await expect(page.getByText(/Para qué:/)).toBeVisible();
   });
 
   test("los enlaces a la wiki del día funcionan", async ({ page }) => {

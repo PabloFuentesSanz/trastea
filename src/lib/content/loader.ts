@@ -5,6 +5,7 @@ import matter from "gray-matter";
 import { resolveInterlinksWith } from "./interlinks";
 import { terminosPorDia, type Termino } from "./jargon";
 import { parseGlosario, type EntradaGlosario } from "./glossary";
+import { ordenarSemanas, type SemanaOrdenada } from "./sequence";
 import { cache } from "react";
 import { isTrainLevel, levelFromWeek, type TrainLevel } from "@/lib/train/taxonomy";
 import {
@@ -37,7 +38,13 @@ export interface LessonEntry {
   body: string;
   moduleSlug: string;
   weekDir: string;
+  /**
+   * La semana que decide el nivel de lo que se practica: la del tronco, o
+   * la del ancla si es una semana de estilo intercalada.
+   */
   weekOrder: number;
+  /** la semana a la que pertenece, tal cual está escrita */
+  weekSlug: string;
 }
 
 export interface WeekEntry {
@@ -88,6 +95,7 @@ export const getCourse = cache((): ModuleEntry[] => {
           moduleSlug: frontmatter.slug,
           weekDir,
           weekOrder: weekFm.order,
+          weekSlug: weekFm.slug,
         });
       }
       lessons.sort((a, b) => a.frontmatter.order - b.frontmatter.order);
@@ -110,10 +118,51 @@ export const getModule = cache((slug: string): ModuleEntry | null => {
   return getCourse().find((m) => m.frontmatter.slug === slug) ?? null;
 });
 
-/** Todas las lecciones en orden de curso (módulo → semana → día). */
-export const getOrderedLessons = cache((): LessonEntry[] => {
-  return getCourse().flatMap((m) => m.weeks.flatMap((w) => w.lessons));
+/**
+ * Las semanas en el orden real del curso: el tronco módulo a módulo, y las
+ * semanas de estilo intercaladas detrás de su `after` (ver sequence.ts).
+ */
+export const getSecuencia = cache((): (SemanaOrdenada & { week: WeekEntry })[] => {
+  const porSlug = new Map<string, WeekEntry>();
+  const fuente = getCourse().flatMap((m) =>
+    m.weeks.map((w) => {
+      porSlug.set(w.frontmatter.slug, w);
+      return {
+        slug: w.frontmatter.slug,
+        order: w.frontmatter.order,
+        moduleSlug: m.frontmatter.slug,
+        moduleOrder: m.frontmatter.order,
+        after: w.frontmatter.after,
+        // Desde cero es nivel 1 de principio a fin: sus cuatro semanas no
+        // suben de nivel como las del tronco
+        semanaDeNivel: m.frontmatter.level === "cero" ? 1 : undefined,
+      };
+    }),
+  );
+  return ordenarSemanas(fuente).map((s) => ({ ...s, week: porSlug.get(s.slug)! }));
 });
+
+/** Todas las lecciones en orden de curso (tronco con las semanas de estilo intercaladas). */
+export const getOrderedLessons = cache((): LessonEntry[] => {
+  return getSecuencia().flatMap((s) =>
+    s.week.lessons.map((l) => ({ ...l, weekOrder: s.semanaDeNivel })),
+  );
+});
+
+/**
+ * Las semanas que se ven dentro de un módulo del tronco: las suyas y las de
+ * estilo que se cuelan entre ellas, en el orden en que se estudian.
+ */
+export const getSemanasDelModulo = cache(
+  (moduleSlug: string): (SemanaOrdenada & { week: WeekEntry })[] => {
+    const secuencia = getSecuencia();
+    const propias = secuencia.filter((s) => s.moduleSlug === moduleSlug);
+    if (propias.length === 0) return [];
+    const desde = propias[0].posicion - 1;
+    const hasta = propias[propias.length - 1].posicion;
+    return secuencia.slice(desde, hasta);
+  },
+);
 
 /**
  * Las palabras que estrena cada lección. Se derivan del propio texto en el

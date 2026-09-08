@@ -38,6 +38,7 @@ import {
 } from "../src/lib/music/spec";
 import { validateGrid } from "../src/lib/music/grid";
 import { GROOVES } from "../src/lib/backing/groove";
+import { parseStrumPattern } from "../src/lib/backing/strum";
 import { DRILLS } from "../src/lib/train/catalog";
 import {
   JERGA,
@@ -105,6 +106,7 @@ interface LessonRecord {
   body: string;
   moduleSlug: string;
   weekOrder: number;
+  weekSlug: string;
 }
 
 const modules: { file: string; fm: ModuleFrontmatter }[] = [];
@@ -156,6 +158,7 @@ if (fs.existsSync(courseDir)) {
             body,
             moduleSlug: moduleFm.slug,
             weekOrder: weekFm.order,
+            weekSlug: weekFm.slug,
           });
         }
       }
@@ -584,7 +587,7 @@ for (const { file, fm } of songs) {
 // instrucción es otra cosa y faltaba en 52 bloques. En los ejercicios no hace
 // falta: allí la instrucción es la <Rutina>.
 for (const { file, body } of lessons) {
-  for (const tag of ["Rejilla", "Tab"]) {
+  for (const tag of ["Rejilla", "Tab", "Rasgueo"]) {
     const bloques = body.match(new RegExp(`<${tag}\\b[^>]*?/>`, "g")) ?? [];
     const sinDecir = bloques.filter((b) => !/\bqueHacer=/.test(b));
     if (sinDecir.length > 0) {
@@ -596,7 +599,16 @@ for (const { file, body } of lessons) {
   }
 }
 
-const DIBUJA = ["Mastil", "Tab", "Acorde", "Acordes", "Cajas", "PorCuerdas", "Rejilla"];
+const DIBUJA = [
+  "Mastil",
+  "Tab",
+  "Acorde",
+  "Acordes",
+  "Cajas",
+  "PorCuerdas",
+  "Rejilla",
+  "Rasgueo",
+];
 
 // Regla de contenido: un día del curso tiene que dejar algo que se ve y se
 // oye. Todas las primitivas visuales suenan (el mástil desde que sus notas
@@ -610,6 +622,99 @@ for (const { file, body, fm } of lessons) {
       file: rel(file),
       message:
         "no se ve ni se oye nada: el día necesita un <Mastil>, <Tab>, <Acorde> o <Rejilla> (o, si es de plan, un `tool:` en sus bloques)",
+    });
+  }
+}
+
+// Regla de contenido: cada día dice para qué sirve. Es lo que un profesor
+// dice antes de empezar ("esto es para tocar el riff de X sin mirar") y lo
+// que faltaba en 44 de 60 días: se aprendía sin saber para qué.
+for (const { file, fm } of lessons) {
+  if (!fm.para_que) {
+    errors.push({
+      file: rel(file),
+      message:
+        "sin `para_que`: el día tiene que decir en una frase para qué sirve lo que se practica y dónde se va a usar",
+    });
+  }
+}
+
+// Regla de contenido: un día se toca, no se lee. La prosa del día (fuera de
+// las primitivas) cabe en 250 palabras; lo que no cabe es de la wiki.
+const PROSA_MAXIMA = 250;
+function palabrasDeProsa(body: string): number {
+  const sinBloques = body
+    .replace(/<[A-Z][a-zA-Z]*\b[^>]*?\/>/g, " ")
+    .replace(/<([A-Z][a-zA-Z]*)\b[^>]*>[\s\S]*?<\/\1>/g, " ")
+    .replace(/^#+ .*$/gm, " ");
+  return sinBloques.split(/\s+/).filter(Boolean).length;
+}
+for (const { file, body } of lessons) {
+  const palabras = palabrasDeProsa(body);
+  if (palabras > PROSA_MAXIMA) {
+    errors.push({
+      file: rel(file),
+      message: `${palabras} palabras de prosa: un día cabe en ${PROSA_MAXIMA}; lo que sobra va a la wiki y se enlaza`,
+    });
+  }
+}
+
+// Regla de contenido: todos los días acaban en música de verdad. Un bloque
+// con canción, como mínimo, para que lo practicado se oiga en un tema.
+for (const { file, fm } of lessons) {
+  if (!fm.blocks.some((b) => b.song)) {
+    errors.push({
+      file: rel(file),
+      message:
+        "ningún bloque tiene `song`: el día tiene que aplicar lo practicado en una canción",
+    });
+  }
+}
+
+// Regla de contenido: un ejercicio empieza diciendo qué es y para qué sirve,
+// en las dos claves que el bloque de la lección enseña sin abrir la ficha.
+for (const { file, body } of exercises) {
+  const ficha = /<Ficha\b([\s\S]*?)\/>/.exec(body)?.[1] ?? "";
+  const faltan = ["queEs", "paraQue"].filter((k) => !new RegExp(`\\b${k}="`).test(ficha));
+  if (faltan.length > 0) {
+    errors.push({
+      file: rel(file),
+      message: `la primera <Ficha> no tiene ${faltan.map((k) => `\`${k}\``).join(" ni ")}: el bloque de la lección enseña esas dos líneas en vez de la ficha entera`,
+    });
+  }
+}
+
+// Semanas de estilo: van colgadas de una semana del tronco que exista, y
+// llevan `estilo` para que la app las nombre. Una semana del tronco no lleva
+// ni lo uno ni lo otro.
+const weekSlugs = new Set(weeks.map((w) => w.fm.slug));
+const troncales = new Set(
+  weeks.filter((w) => w.fm.after === undefined).map((w) => w.fm.slug),
+);
+for (const { file, fm } of weeks) {
+  if (fm.after !== undefined) {
+    if (!fm.estilo) {
+      errors.push({
+        file: rel(file),
+        message: "una semana con `after` es de estilo: le falta `estilo`",
+      });
+    }
+    if (!weekSlugs.has(fm.after)) {
+      errors.push({
+        file: rel(file),
+        message: `\`after: ${fm.after}\` no es ninguna semana`,
+      });
+    } else if (!troncales.has(fm.after)) {
+      errors.push({
+        file: rel(file),
+        message: `\`after: ${fm.after}\` es otra semana de estilo: se cuelga siempre de una del tronco`,
+      });
+    }
+  } else if (fm.estilo) {
+    errors.push({
+      file: rel(file),
+      message:
+        "una semana con `estilo` tiene que decir con `after` detrás de qué semana va",
     });
   }
 }
@@ -640,8 +745,14 @@ for (const { file, body } of exercises) {
 const songLevel = new Map(songs.map((s) => [s.fm.slug, s.fm.level]));
 const moduleMaxSongLevel = new Map(modules.map((m) => [m.fm.slug, m.fm.max_song_level]));
 
-for (const { file, fm, moduleSlug } of lessons) {
-  const techo = moduleMaxSongLevel.get(moduleSlug);
+// una semana de estilo hereda el techo del módulo detrás del que va: una
+// semana de rock colgada de la 2 no puede pedir un tema de nivel 4
+const weekModule = new Map(weeks.map((w) => [w.fm.slug, w.moduleSlug]));
+const weekAfter = new Map(weeks.map((w) => [w.fm.slug, w.fm.after]));
+for (const { file, fm, moduleSlug, weekSlug } of lessons) {
+  const ancla = weekAfter.get(weekSlug);
+  const moduloDelTecho = ancla ? (weekModule.get(ancla) ?? moduleSlug) : moduleSlug;
+  const techo = moduleMaxSongLevel.get(moduloDelTecho);
   if (techo === undefined) continue;
   for (const block of fm.blocks) {
     if (!block.song) continue;
@@ -713,8 +824,30 @@ const TAB_TAG = /<Tab\b[\s\S]*?\/>/g;
 // notas de la vecina y pierde las propias. Se escribe `caja="2"`.
 const MASTIL_TAG = /<Mastil\b[^>]*?\/>/g;
 
+const RASGUEO_TAG = /<Rasgueo\b[^>]*?\/>/g;
+
 function checkMusicSpecs(file: string, body: string) {
   const seen: [string, "scale" | "chord"][] = [];
+  // un patrón de rasgueo mal escrito no llega a la página con golpes inventados
+  for (const m of body.matchAll(RASGUEO_TAG)) {
+    const patron = /patron="([^"]+)"/.exec(m[0])?.[1];
+    if (!patron) {
+      errors.push({ file: rel(file), message: "<Rasgueo> sin `patron`" });
+      continue;
+    }
+    try {
+      parseStrumPattern(patron);
+    } catch (e) {
+      errors.push({ file: rel(file), message: (e as Error).message });
+    }
+    const acordes = /acordes="([^"]+)"/.exec(m[0])?.[1];
+    for (const chord of (acordes ?? "")
+      .split("|")
+      .map((c) => c.trim())
+      .filter(Boolean)) {
+      seen.push([chord, "chord"]);
+    }
+  }
   for (const m of body.matchAll(MASTIL_SPEC)) {
     seen.push([m[2], m[1] === "escala" ? "scale" : "chord"]);
   }
