@@ -16,6 +16,7 @@ title: "El diapasón existe — día 1"
 order: 1 # día dentro de la semana (1-5)
 duration_min: 40
 goal: "Nombrar cualquier nota de la 6ª cuerda en <2s" # SIEMPRE medible
+para_que: "Para tocar el blues en Fa sabiendo qué nota pisas" # dónde se usa lo de hoy
 blocks:
   - { id: b1, type: tecnica, min: 8, exercise: cromatico-1234, bpm_start: 60 }
   - {
@@ -54,9 +55,15 @@ llevar `tool` (ruta interna con query params precargados) y `bpm_start`.
   **d5** es repaso + mini-reto medible.
 - El objetivo (`goal`) siempre es verificable: "X a Y bpm limpio", "<2s", "sin
   mirar el mástil". Nunca "mejorar en…".
-- Cuerpo MDX: breve (el player ya renderiza los bloques). Explica el _porqué_
-  del día, 2-4 párrafos máximo, tono directo y cercano, ejemplos en el mástil.
-  Puede embeber `<WikiLink>`, `<ToolLink>`, `<YouTube>`.
+- Cuerpo MDX: menos de 250 palabras de prosa (`content:audit` lo mide). Como
+  un profesor en clase: (1) qué haces hoy y por qué, (2) lo nuevo con su
+  dibujo y su `queHacer`, (3) un `<Aviso>` con el error típico, (4) cómo lo
+  aplicas en la canción. Lo largo va a la wiki y se enlaza.
+- Cada día termina en una canción de verdad: al menos un bloque con `song`,
+  y sus `notes` dicen qué parte y cómo ("solo la estrofa, a 60, en negras").
+- Jerga: la primera vez que el curso usa una palabra de `JERGA`
+  (`src/lib/content/jargon.ts`) se presenta ese día en **negrita** con su
+  definición, o con `[[slug]]` de su ficha.
 
 ## Checklist antes de dar por buena
 
@@ -64,3 +71,5 @@ llevar `tool` (ruta interna con query params precargados) y `bpm_start`.
 - [ ] Todos los slugs referenciados existen (`pnpm content:audit` verde).
 - [ ] `goal` medible; bpm de partida coherente con d1-d5 de la semana.
 - [ ] `wiki_refs` cubren la teoría que usa el día.
+- [ ] `para_que` nombra la canción o el pasaje donde se usa lo de hoy.
+- [ ] Todo `<Rejilla>`, `<Tab>` y `<Rasgueo>` lleva `queHacer`.

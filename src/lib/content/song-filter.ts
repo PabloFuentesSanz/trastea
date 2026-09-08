@@ -56,8 +56,20 @@ export interface SongCard {
   capo?: number;
 }
 
+/** Por qué se ordena el resultado. Por nivel es lo natural para elegir qué tocar hoy. */
+export const SONG_ORDERS = ["nivel", "titulo", "tempo", "anio"] as const;
+export type SongOrder = (typeof SONG_ORDERS)[number];
+
+export const SONG_ORDER_LABEL: Record<SongOrder, string> = {
+  nivel: "Por nivel",
+  titulo: "Por título",
+  tempo: "Por tempo",
+  anio: "Por año",
+};
+
 export interface SongFilters {
   query: string;
+  order: SongOrder;
   levels: number[];
   styles: SongStyle[];
   techniques: SongTechnique[];
@@ -68,6 +80,7 @@ export interface SongFilters {
 
 export const EMPTY_SONG_FILTERS: SongFilters = {
   query: "",
+  order: "nivel",
   levels: [],
   styles: [],
   techniques: [],
@@ -147,8 +160,27 @@ export function compareSongs(a: SongCard, b: SongCard): number {
   return a.level - b.level || a.title.localeCompare(b.title, "es");
 }
 
+/**
+ * Comparador de cada orden. Lo que no tiene el dato (una canción sin bpm o
+ * sin año) va al final, ordenado por nivel, para que no se cuele arriba.
+ */
+export function songComparator(order: SongOrder): (a: SongCard, b: SongCard) => number {
+  switch (order) {
+    case "titulo":
+      return (a, b) => a.title.localeCompare(b.title, "es") || a.level - b.level;
+    case "tempo":
+      return (a, b) => (a.bpm ?? Infinity) - (b.bpm ?? Infinity) || compareSongs(a, b);
+    case "anio":
+      return (a, b) => (a.year ?? Infinity) - (b.year ?? Infinity) || compareSongs(a, b);
+    default:
+      return compareSongs;
+  }
+}
+
 export function filterSongs(songs: SongCard[], filters: SongFilters): SongCard[] {
-  return songs.filter((song) => matches(song, filters)).sort(compareSongs);
+  return songs
+    .filter((song) => matches(song, filters))
+    .sort(songComparator(filters.order));
 }
 
 export interface FacetCounts {
@@ -197,6 +229,7 @@ const PARAM = {
   techniques: "tecnica",
   collections: "coleccion",
   knownChords: "acordes",
+  order: "orden",
 } as const;
 
 function splitList(value: string | null): string[] {
@@ -212,8 +245,14 @@ export function parseSongFilters(params: URLSearchParams): SongFilters {
   const techniques = new Set<string>(SONG_TECHNIQUES);
   const collections = new Set<string>(SONG_COLLECTIONS);
 
+  const rawOrder = params.get(PARAM.order);
+  const order = (SONG_ORDERS as readonly string[]).includes(rawOrder ?? "")
+    ? (rawOrder as SongOrder)
+    : "nivel";
+
   return {
     query: params.get(PARAM.query) ?? "",
+    order,
     levels: splitList(params.get(PARAM.levels))
       .map((v) => Number(v))
       .filter((n) => Number.isInteger(n) && n >= 1 && n <= 5),
@@ -243,6 +282,7 @@ export function songFiltersToQuery(filters: SongFilters): string {
   if (filters.knownChords.length) {
     params.set(PARAM.knownChords, filters.knownChords.join(","));
   }
+  if (filters.order !== "nivel") params.set(PARAM.order, filters.order);
   return params.toString();
 }
 

@@ -3,6 +3,7 @@ import {
   EMPTY_SONG_FILTERS,
   facetCounts,
   filterSongs,
+  hasActiveFilters,
   parseSongFilters,
   playableWith,
   songFiltersToQuery,
@@ -192,6 +193,7 @@ describe("estado en la URL", () => {
       techniques: ["bending"],
       collections: ["blues-esencial"],
       knownChords: ["A7", "D7"],
+      order: "tempo",
     };
     expect(parseSongFilters(new URLSearchParams(songFiltersToQuery(filters)))).toEqual(
       filters,
@@ -213,5 +215,42 @@ describe("estado en la URL", () => {
     expect(parsed.styles).toEqual(["metal"]);
     expect(parsed.levels).toEqual([3]);
     expect(parsed.techniques).toEqual([]);
+  });
+});
+
+describe("orden del resultado", () => {
+  const songs: SongCard[] = [
+    song({ slug: "b", title: "Beta", level: 2, bpm: 120, year: 1990 }),
+    song({ slug: "a", title: "Alfa", level: 3, bpm: 80 }),
+    song({ slug: "c", title: "Gamma", level: 1, bpm: 100, year: 1970 }),
+  ];
+
+  it("por defecto va por nivel, y el orden no cuenta como filtro puesto", () => {
+    expect(filterSongs(songs, EMPTY_SONG_FILTERS).map((s) => s.slug)).toEqual([
+      "c",
+      "b",
+      "a",
+    ]);
+    expect(hasActiveFilters({ ...EMPTY_SONG_FILTERS, order: "titulo" })).toBe(false);
+  });
+
+  it("por título, por tempo y por año; lo que no tiene el dato va al final", () => {
+    expect(
+      filterSongs(songs, { ...EMPTY_SONG_FILTERS, order: "titulo" }).map((s) => s.slug),
+    ).toEqual(["a", "b", "c"]);
+    expect(
+      filterSongs(songs, { ...EMPTY_SONG_FILTERS, order: "tempo" }).map((s) => s.slug),
+    ).toEqual(["a", "c", "b"]);
+    expect(
+      filterSongs(songs, { ...EMPTY_SONG_FILTERS, order: "anio" }).map((s) => s.slug),
+    ).toEqual(["c", "b", "a"]);
+  });
+
+  it("el orden viaja en la URL solo cuando no es el de siempre", () => {
+    expect(songFiltersToQuery({ ...EMPTY_SONG_FILTERS, order: "nivel" })).toBe("");
+    const query = songFiltersToQuery({ ...EMPTY_SONG_FILTERS, order: "tempo" });
+    expect(query).toBe("orden=tempo");
+    expect(parseSongFilters(new URLSearchParams(query)).order).toBe("tempo");
+    expect(parseSongFilters(new URLSearchParams("orden=loquesea")).order).toBe("nivel");
   });
 });

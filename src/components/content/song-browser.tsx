@@ -8,6 +8,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   EMPTY_SONG_FILTERS,
   facetCounts,
   filterSongs,
@@ -16,8 +23,11 @@ import {
   parseSongFilters,
   songFiltersToQuery,
   SONG_LEVELS,
+  SONG_ORDER_LABEL,
+  SONG_ORDERS,
   type SongCard,
   type SongFilters,
+  type SongOrder,
 } from "@/lib/content/song-filter";
 import {
   SONG_COLLECTIONS,
@@ -435,16 +445,36 @@ export function SongBrowser({ songs }: { songs: SongCard[] }) {
           {activeChips.map((chip) => (
             <ActiveChip key={chip.key} label={chip.label} onRemove={chip.onRemove} />
           ))}
-          {active && (
-            <Button
-              size="sm"
-              variant="ghost"
-              className="ml-auto"
-              onClick={() => apply(EMPTY_SONG_FILTERS)}
+          <div className="ml-auto flex items-center gap-1">
+            {active && (
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => apply({ ...EMPTY_SONG_FILTERS, order: filters.order })}
+              >
+                <X aria-hidden /> Limpiar
+              </Button>
+            )}
+            {/* el orden vive en la URL como el resto: un enlace a "por tempo" es un enlace */}
+            <Select
+              value={filters.order}
+              onValueChange={(v) => apply({ ...filters, order: v as SongOrder })}
             >
-              <X aria-hidden /> Limpiar
-            </Button>
-          )}
+              <SelectTrigger
+                className="h-8 w-32 text-xs"
+                aria-label="Ordenar las canciones"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {SONG_ORDERS.map((o) => (
+                  <SelectItem key={o} value={o}>
+                    {SONG_ORDER_LABEL[o]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 

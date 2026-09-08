@@ -767,6 +767,28 @@ for (const { file, fm, moduleSlug, weekSlug } of lessons) {
   }
 }
 
+// Regla de contenido: una canción se explica. "Tres acordes, canción de
+// fogata" no le dice a nadie cómo tocarla: 245 de 305 fichas tenían menos de
+// 60 palabras. Cada ficha cuenta qué aprendes, cómo se toca y por dónde
+// empezar, con esos tres títulos para que el lector los encuentre siempre.
+const SECCIONES_DE_CANCION = ["## Qué aprendes", "## Cómo se toca", "## Por dónde empezar"];
+for (const { file, body } of songs) {
+  const faltan = SECCIONES_DE_CANCION.filter((h) => !body.includes(h));
+  if (faltan.length > 0) {
+    errors.push({
+      file: rel(file),
+      message: `le falta ${faltan.map((h) => `"${h.slice(3)}"`).join(", ")}: la ficha explica qué aprendes, cómo se toca y por dónde empezar`,
+    });
+  }
+  const palabras = body.split(/\s+/).filter(Boolean).length;
+  if (palabras < 80) {
+    errors.push({
+      file: rel(file),
+      message: `${palabras} palabras: una explicación de cómo se toca no cabe en menos de 80`,
+    });
+  }
+}
+
 // slugs duplicados
 function findDuplicates(items: { slug: string; file: string }[], kind: string) {
   const seen = new Map<string, string>();

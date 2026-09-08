@@ -8,6 +8,8 @@ y regenera `STATE.md`.
 /course/<modulo>/module.mdx        módulo (slug, order, goals, assessment)
 /course/<modulo>/wNN/week.mdx      semana (slug <modulo>-wNN, focus, summary)
 /course/<modulo>/wNN/dN.mdx        lección-día (ver .claude/skills/add-lesson)
+/course/estilos/<estilo>/week.mdx  semana de estilo: `estilo` + `after` (la semana
+                                   del tronco detrás de la que se intercala)
 /exercises/<slug>.mdx              ejercicio reutilizable
 /songs/<slug>.mdx                  ficha de canción
 /tabs/<slug>.alphatex              tablaturas propias (AlphaTab)
@@ -28,6 +30,25 @@ Reglas:
 - Los `[[interlinks]]` solo en la wiki; generan backlinks automáticamente.
 - Deep links a herramientas con estado precargado: `/metronomo?bpm=70`,
   `/escalas?root=F&type=minor-pentatonic`.
+
+## El orden del curso
+
+El tronco es Desde cero → A → B → C, módulo a módulo y semana a semana. Las
+semanas de estilo (`/course/estilos/*`) no van al final: cada `week.mdx`
+declara `estilo` (blues, rock, folk, jazz, metal) y `after` (el slug de la
+semana del tronco detrás de la que se estudia), y `src/lib/content/sequence.ts`
+las cuela en su sitio sin renumerar nada. Su techo de canciones y el nivel de
+sus ejercicios son los de la semana ancla.
+
+## La lección-día
+
+Cada día dice **para qué sirve** (`para_que`, una frase que nombra la canción
+o el pasaje donde se usa), tiene un `goal` medible, termina en una canción de
+verdad (al menos un bloque con `song`, con `notes` que digan qué parte y
+cómo), dibuja algo (`<Mastil>`, `<Tab>`, `<Acorde>`, `<Rejilla>`,
+`<Rasgueo>`) y no pasa de 250 palabras de prosa: lo largo va a la wiki. En el
+bloque de la lección se enseñan solo las dos líneas de la primera `<Ficha>`
+del ejercicio (`queEs`, `paraQue`); la ficha entera queda plegada.
 
 ## Canciones (`/songs`)
 
@@ -67,3 +88,7 @@ Reglas del catálogo:
   dominio público — para eso está la colección `clasica-dominio-publico`.
 - Una colección o una técnica sin canciones sale como aviso en `STATE.md`: es un
   hueco del catálogo, porque el curso no puede pedir lo que no existe.
+- **Cada ficha explica cómo se toca**, con estas secciones y en este orden:
+  `## Qué aprendes`, `## Cómo se toca`, `## Por dónde empezar` (tres pasos con
+  bpm) y `## En qué fijarte`. Mínimo 80 palabras. Sin letras ni tabs: los
+  acordes son los de `chords`, y si no hay `chords` se remite a la tab externa.

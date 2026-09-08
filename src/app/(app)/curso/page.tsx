@@ -11,6 +11,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { getCourse } from "@/lib/content/loader";
+import { WEEK_STYLE_LABEL } from "@/lib/content/schemas";
 import { getLessonProgressMap, getUserContext } from "@/lib/queries";
 
 export const metadata: Metadata = { title: "Curso" };
@@ -36,6 +37,10 @@ export default async function CursoPage() {
             (l) => progress.get(l.frontmatter.slug)?.status === "done",
           ).length;
           const isPlaceholder = mod.frontmatter.placeholder;
+          // las semanas de estilo no son un módulo más al final: se estudian
+          // intercaladas, y la tarjeta lo dice en vez de fingir que van después
+          const deEstilos =
+            mod.weeks.length > 0 && mod.weeks.every((w) => w.frontmatter.after);
 
           return (
             <Card
@@ -59,9 +64,26 @@ export default async function CursoPage() {
                       </Link>
                     )}
                   </CardTitle>
-                  <Badge variant="outline">{mod.frontmatter.level}</Badge>
+                  <Badge variant="outline">
+                    {deEstilos ? "intercaladas" : mod.frontmatter.level}
+                  </Badge>
                 </div>
                 <CardDescription>{mod.frontmatter.summary}</CardDescription>
+                {deEstilos && (
+                  <CardDescription className="flex flex-wrap gap-1.5">
+                    {mod.weeks.map((w) => (
+                      <Badge
+                        key={w.frontmatter.slug}
+                        variant="secondary"
+                        className="font-normal"
+                      >
+                        {w.frontmatter.estilo
+                          ? WEEK_STYLE_LABEL[w.frontmatter.estilo]
+                          : w.frontmatter.title}
+                      </Badge>
+                    ))}
+                  </CardDescription>
+                )}
               </CardHeader>
               {!isPlaceholder && (
                 <CardContent>

@@ -11,6 +11,25 @@
 
 ---
 
+## ✅ Reestructura de septiembre de 2026 — HECHO
+
+Queja de una semana de uso real: "aprendo poco, no avanzo, no sé para qué
+sirve, demasiado texto, empieza por la parte cero". Lo que se hizo, con su
+regla en `content:audit` para que no se deshaga:
+
+- `para_que` obligatorio en cada día; la cabecera de la lección lo enseña.
+- La ficha del ejercicio va plegada en el bloque: solo `queEs` y `paraQue`
+  (obligatorios en la primera `<Ficha>` de los 88 ejercicios). De 14-24
+  pantallas por día a lo que cabe en una.
+- Prosa por día ≤ 250 palabras; cada día termina en una canción.
+- Módulo **Desde cero** real (20 días, 17 ejercicios, 6 fichas de wiki, quiz).
+- Cinco **semanas de estilo** intercaladas con `after` (25 días, 21 ejercicios).
+- **Cada canción explica cómo se toca** (Qué aprendes / Cómo se toca / Por
+  dónde empezar / En qué fijarte), 305 fichas.
+- Entrenamientos con la guitarra: cambios de acorde en un minuto (con marcas
+  por pareja), ritmo a golpe, rasgueo con el click; primitiva `<Rasgueo>`.
+- Rediseño Diapasón (claro, índigo, Instrument Serif + IBM Plex) y /hoy dinámico.
+
 ## ✅ P1 — Módulo B: Armonía y arpegios (semanas 5-8) — HECHO
 
 20 lecciones (`b-armonia-w05-d1` … `w08-d5`), 13 ejercicios nuevos
@@ -239,12 +258,19 @@ todavía; se irá abriendo módulo a módulo).
 
 ### Tronco común (hecho)
 
-| Módulo                   | Semanas | Estado         |
-| ------------------------ | ------- | -------------- |
-| Pre — Desde cero         | 4       | ⬜ placeholder |
-| A — Cimientos            | 4       | ✅             |
-| B — Armonía y arpegios   | 4       | ✅             |
-| C — Lenguaje y velocidad | 4       | ✅             |
+| Módulo                   | Semanas | Estado |
+| ------------------------ | ------- | ------ |
+| Desde cero               | 4       | ✅     |
+| A — Cimientos            | 4       | ✅     |
+| B — Armonía y arpegios   | 4       | ✅     |
+| C — Lenguaje y velocidad | 4       | ✅     |
+
+### Semanas de estilo (hechas, intercaladas)
+
+Folk después de Desde cero, rock después de A·2, blues después de A·4, jazz
+después de B·6 y metal después de C·9. Ver `content/seed/plan-semanas-de-estilo.md`
+y "El orden del curso" en `content/README.md`. Las especialidades de abajo son
+la continuación natural de cada una.
 
 ### Especialidades (itinerarios, no cola lineal)
 
@@ -270,11 +296,10 @@ más el mantenimiento indefinido. Eso son años de práctica diaria.
 
 ### Orden sugerido de apertura
 
-1. **D — Blues** (es la continuación natural del módulo C y la que más gente pide).
+1. **D — Blues** (es la continuación natural de la semana de blues y la que más gente pide).
 2. **E — Jazz** (el itinerario más largo y el que más aprovecha la wiki actual).
-3. **Pre — Desde cero** (abre la app a otro público, requiere wiki nivel 0).
-4. **F — Rock y metal** y **H — Funk** (grandes y muy motivadores).
-5. El resto según lo que pida el uso real.
+3. **F — Rock y metal** y **H — Funk** (grandes y muy motivadores).
+4. El resto según lo que pida el uso real.
 
 ### Lo que el sistema necesita para soportarlo (deuda de producto)
 
