@@ -7,7 +7,7 @@ import { colorForInterval } from "./degree-colors";
 /**
  * Diagrama de acorde vertical clásico (caja): cuerdas en vertical
  * (6ª a la izquierda, 1ª a la derecha), trastes en horizontal.
- * Misma paleta que <Fretboard />: raíz = cuadrado ámbar.
+ * Misma paleta que <Fretboard />: raíz = cuadrado en el color de acción.
  */
 
 const STRINGS = 6;

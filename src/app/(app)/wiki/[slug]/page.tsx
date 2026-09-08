@@ -55,7 +55,7 @@ export default async function WikiArticlePage({
         </Link>{" "}
         / {category}
       </p>
-      <h1 className="mt-1 text-3xl font-semibold tracking-tight">
+      <h1 className="mt-1 text-4xl">
         {article.frontmatter.title}
       </h1>
       <div className="mt-2 flex flex-wrap items-center gap-2">

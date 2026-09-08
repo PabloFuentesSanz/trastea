@@ -1,5 +1,6 @@
 import "server-only";
 import { cache } from "react";
+import { cambiosPorMinuto } from "@/lib/train/chord-changes";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import { currentStreak } from "@/lib/streak";
 import { metasDeBpm, type EjercicioConMeta, type Meta } from "@/lib/progress/goals";
@@ -177,6 +178,50 @@ export interface ExerciseHistory {
  * salió limpio. El campo `clean` se guardaba desde el principio y no se
  * enseñaba en ninguna parte.
  */
+export interface ChordChangeBest {
+  pair: string;
+  /** mejor cuenta, ya normalizada a cambios por minuto */
+  best: number;
+  last: number;
+  attempts: number;
+}
+
+/**
+ * La mejor marca de cada pareja de acordes, para que la lista de parejas
+ * diga de un vistazo cuáles ya cambias a tiempo y cuáles no.
+ */
+export async function getChordChangeBests(
+  userId: string | null,
+): Promise<ChordChangeBest[]> {
+  if (!userId || !isSupabaseConfigured()) return [];
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("chord_change_records")
+    .select("pair, changes, seconds, recorded_at")
+    .eq("user_id", userId)
+    .order("recorded_at", { ascending: true })
+    .limit(1000);
+
+  const porPareja = new Map<string, ChordChangeBest>();
+  for (const r of data ?? []) {
+    const porMinuto = cambiosPorMinuto(r.changes, r.seconds);
+    const actual = porPareja.get(r.pair);
+    if (!actual) {
+      porPareja.set(r.pair, {
+        pair: r.pair,
+        best: porMinuto,
+        last: porMinuto,
+        attempts: 1,
+      });
+    } else {
+      actual.best = Math.max(actual.best, porMinuto);
+      actual.last = porMinuto;
+      actual.attempts += 1;
+    }
+  }
+  return [...porPareja.values()];
+}
+
 export async function getExerciseHistory(
   userId: string | null,
   exerciseSlug: string,

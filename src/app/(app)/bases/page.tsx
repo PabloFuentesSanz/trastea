@@ -31,20 +31,23 @@ export default async function BasesPage({
   const rawBpm = Number(get("bpm"));
   const bpm = Number.isFinite(rawBpm) && rawBpm > 0 ? clampBpm(rawBpm) : progression.bpm;
 
+  // las herramientas se tocan con la guitarra en la mano y luz baja: invierten a tinta
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-8">
-      <h1 className="text-3xl font-semibold tracking-tight">Bases</h1>
-      <p className="mt-1 max-w-2xl text-muted-foreground">
-        Una base sobre la que tocar: eliges la forma, el tono, el groove y el tempo, y te
-        acompaña. Sin descargar nada y sin buscar un backing track en internet.
-      </p>
-      <div className="mt-8">
-        <BackingStudio
-          initialProgression={progression.id}
-          initialKey={tono}
-          initialStyle={estilo}
-          initialBpm={bpm}
-        />
+    <main className="dark flex-1 bg-background text-foreground">
+      <div className="mx-auto w-full max-w-5xl px-4 py-8">
+        <h1 className="text-4xl">Bases</h1>
+        <p className="mt-1 max-w-2xl text-muted-foreground">
+          Una base sobre la que tocar: eliges la forma, el tono, el groove y el tempo, y
+          te acompaña. Sin descargar nada y sin buscar un backing track en internet.
+        </p>
+        <div className="mt-8">
+          <BackingStudio
+            initialProgression={progression.id}
+            initialKey={tono}
+            initialStyle={estilo}
+            initialBpm={bpm}
+          />
+        </div>
       </div>
     </main>
   );

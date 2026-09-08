@@ -1,13 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, Brain, Clock, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { TrainSession, type TrainChoices } from "@/components/train/train-session";
 import { getTrainingDeck, getUserContext } from "@/lib/queries";
-import { DRILLS, drillLevel, getDrill } from "@/lib/train/catalog";
+import {
+  CAMBIOS_DE_ACORDE_SLUG,
+  DRILLS,
+  drillLevel,
+  getDrill,
+} from "@/lib/train/catalog";
 import type { TrainCard } from "@/lib/train/cards";
 import { scaleBoxPositions } from "@/lib/train/scales";
 import {
@@ -60,7 +65,10 @@ function fretsNeeded(cards: readonly TrainCard[]): number {
 }
 
 export function generateStaticParams() {
-  return DRILLS.map((d) => ({ slug: d.slug }));
+  // el de cambios de acorde tiene página propia
+  return DRILLS.filter((d) => d.slug !== CAMBIOS_DE_ACORDE_SLUG).map((d) => ({
+    slug: d.slug,
+  }));
 }
 
 export async function generateMetadata({
@@ -108,6 +116,10 @@ export default async function DrillPage({
   if (!drill) notFound();
 
   const sp = await searchParams;
+  if (slug === CAMBIOS_DE_ACORDE_SLUG) {
+    const nivel = typeof sp.nivel === "string" ? `?nivel=${sp.nivel}` : "";
+    redirect(`/entrenar/cambios-de-acorde${nivel}`);
+  }
   const rawLevel = Number(typeof sp.nivel === "string" ? sp.nivel : "");
   const pedido = isTrainLevel(rawLevel) ? rawLevel : drill.levels[0].level;
   const level = drillLevel(drill, pedido);
@@ -125,7 +137,7 @@ export default async function DrillPage({
         <ArrowLeft className="size-4" aria-hidden /> Entrenar
       </Link>
 
-      <h1 className="mt-2 text-3xl font-semibold tracking-tight">{drill.title}</h1>
+      <h1 className="mt-2 text-4xl">{drill.title}</h1>
       <div className="mt-2 flex flex-wrap gap-1.5">
         <Badge variant="outline">{TRAIN_THEME_LABEL[drill.theme]}</Badge>
         <Badge variant="outline">{TRAIN_MODE_LABEL[drill.mode]}</Badge>
@@ -207,13 +219,13 @@ function Stat({
   total?: number;
 }) {
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardDescription className="flex items-center gap-1.5">
-          <Icon className="text-primary size-4" aria-hidden /> {label}
+    <Card className="min-w-0 gap-2 py-3">
+      <CardHeader className="px-3 pb-0">
+        <CardDescription className="flex items-center gap-1.5 text-xs">
+          <Icon className="text-primary size-4 shrink-0" aria-hidden /> {label}
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-3">
         <p className="display-number text-3xl">
           {value}
           {total !== undefined && (

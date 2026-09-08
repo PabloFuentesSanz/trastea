@@ -203,6 +203,7 @@ const lessonSlugs = new Set(lessons.map((l) => l.fm.slug));
 
 const KNOWN_TOOL_PREFIXES = [
   "/metronomo",
+  "/afinador",
   "/escalas",
   "/acordes",
   "/tabs",

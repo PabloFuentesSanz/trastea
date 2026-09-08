@@ -108,7 +108,7 @@ export function LessonPlayer({
         <div className="mx-auto max-w-3xl">
           <p className="text-xs text-muted-foreground">{breadcrumb}</p>
           <div className="mt-1 flex items-center justify-between gap-3">
-            <h1 className="line-clamp-2 text-lg font-semibold text-balance">
+            <h1 className="line-clamp-2 text-2xl text-balance">
               {tituloSinDia(lesson.title)}
             </h1>
             <Button

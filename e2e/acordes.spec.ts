@@ -6,8 +6,17 @@ const tarjeta = (page: import("@playwright/test").Page) => page.getByRole("dialo
 test.describe("la tarjeta de acorde", () => {
   test("hay cifrados marcados en la prosa y en la rejilla", async ({ page }) => {
     await page.goto(LECCION);
+    // la ficha del ejercicio va plegada dentro del bloque: se abre primero
+    await page
+      .getByRole("button", { name: /abrir bloque/i })
+      .first()
+      .click();
+    await page
+      .getByRole("button", { name: /ver el ejercicio entero/i })
+      .first()
+      .click();
     const chips = page.getByRole("button", { name: /ver cómo se toca/i });
-    expect(await chips.count()).toBeGreaterThan(3);
+    await expect.poll(async () => chips.count()).toBeGreaterThan(3);
   });
 
   test("con el ratón: abre al pasar por encima y cierra al salir", async ({

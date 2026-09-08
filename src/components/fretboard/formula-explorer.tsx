@@ -341,7 +341,7 @@ export function FormulaExplorer({
       )}
 
       <p className="text-xs text-muted-foreground">
-        La raíz es el cuadrado ámbar; 3ª, 5ª y 7ª llevan su propio color. Afinación:{" "}
+        La raíz es el cuadrado; 3ª, 5ª y 7ª llevan su propio color. Afinación:{" "}
         {tuning.name}.
         {view === "cajas" &&
           " Cada caja es un patrón de digitación, no un recorte de trastes: por eso no todas empiezan en el mismo sitio en cada cuerda."}

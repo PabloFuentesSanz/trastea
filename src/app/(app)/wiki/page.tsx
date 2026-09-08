@@ -15,7 +15,7 @@ export default function WikiPage() {
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-8">
-      <h1 className="text-3xl font-semibold tracking-tight">Wiki</h1>
+      <h1 className="text-4xl">Wiki</h1>
       <p className="mt-1 text-muted-foreground">
         La teoría que necesitas, sin humo y con ejemplos en el mástil. Cada ficha te dice
         cómo suena, dónde la has oído y cómo estudiarla.

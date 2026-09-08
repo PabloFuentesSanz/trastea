@@ -28,7 +28,7 @@ export default async function AcordesPage({
 
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-8">
-      <h1 className="text-3xl font-semibold tracking-tight">Acordes</h1>
+      <h1 className="text-4xl">Acordes</h1>
       <p className="mt-1 text-muted-foreground">
         Todas las formas tocables del acorde por el diapasón: abiertas, cejilla,
         inversiones y tríadas por grupos de cuerdas.

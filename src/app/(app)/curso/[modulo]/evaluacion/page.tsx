@@ -57,7 +57,7 @@ export default async function EvaluacionPage({
           {mod.frontmatter.title}
         </Link>
       </p>
-      <h1 className="mt-1 flex items-center gap-2 text-3xl font-semibold tracking-tight">
+      <h1 className="mt-1 flex items-center gap-2 text-4xl">
         Evaluación
         {complete && (
           <Badge className="bg-success text-success-foreground">Superada</Badge>

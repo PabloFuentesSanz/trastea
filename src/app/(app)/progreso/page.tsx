@@ -123,7 +123,7 @@ export default async function ProgresoPage() {
     <main className="mx-auto w-full max-w-3xl px-4 py-8">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight">Progreso</h1>
+          <h1 className="text-4xl">Progreso</h1>
           <p className="mt-1 text-muted-foreground">
             Lo que se mide, mejora. Lo que no, se estanca (otra vez).
           </p>

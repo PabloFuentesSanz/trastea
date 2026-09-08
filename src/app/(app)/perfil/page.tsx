@@ -31,7 +31,7 @@ export default async function PerfilPage() {
 
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-8">
-      <h1 className="text-3xl font-semibold tracking-tight">Perfil</h1>
+      <h1 className="text-4xl">Perfil</h1>
 
       <Card className="mt-6">
         <CardHeader>

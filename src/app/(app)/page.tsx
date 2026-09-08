@@ -36,7 +36,7 @@ export default async function DashboardPage() {
     <main className="mx-auto w-full max-w-5xl px-4 py-8">
       <div className="flex items-end justify-between">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight">
+          <h1 className="text-4xl">
             {ctx.profile?.display_name ? `Hola, ${ctx.profile.display_name}` : "Hola 👋"}
           </h1>
           <p className="mt-1 text-muted-foreground">

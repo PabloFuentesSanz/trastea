@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { DRILLS, drillsForSkills, getDrill, drillLevel, filterDrills } from "./catalog";
+import {
+  DRILLS,
+  drillsForSkills,
+  getDrill,
+  drillLevel,
+  filterDrills,
+  CAMBIOS_DE_ACORDE_SLUG,
+} from "./catalog";
 import { cardId, parseCardId, type TrainCard } from "./cards";
 import { selectSession } from "@/lib/srs/scheduler";
 import { intervalBetweenPositions } from "./cards";
@@ -35,8 +42,20 @@ describe("catálogo de entrenamientos", () => {
     }
   });
 
-  it("cada nivel genera un mazo con tarjetas de verdad", () => {
+  // el de cambios de acorde se hace con la guitarra y un cronómetro: no
+  // tiene mazo y su nivel solo dice qué parejas se proponen
+  const CON_MAZO = DRILLS.filter((d) => d.slug !== CAMBIOS_DE_ACORDE_SLUG);
+
+  it("el único sin mazo es el de cambios de acorde, y lo dice su modalidad", () => {
     for (const drill of DRILLS) {
+      const vacio = drill.levels.every((l) => l.build().length === 0);
+      expect(vacio, drill.slug).toBe(drill.slug === CAMBIOS_DE_ACORDE_SLUG);
+      if (vacio) expect(drill.mode).toBe("cronometrado");
+    }
+  });
+
+  it("cada nivel genera un mazo con tarjetas de verdad", () => {
+    for (const drill of CON_MAZO) {
       for (const level of drill.levels) {
         const mazo = level.build();
         const donde = `${drill.slug} n${level.level}`;
@@ -74,7 +93,7 @@ describe("catálogo de entrenamientos", () => {
    * tamaño, es que traiga material que no estaba.
    */
   it("cada nivel trae material que no estaba en el anterior", () => {
-    for (const drill of DRILLS) {
+    for (const drill of CON_MAZO) {
       for (let i = 1; i < drill.levels.length; i += 1) {
         const previo = new Set(drill.levels[i - 1].build().map(cardId));
         const actual = drill.levels[i].build().map(cardId);

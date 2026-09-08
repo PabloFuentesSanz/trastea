@@ -47,7 +47,7 @@ export default async function EscalasPage({
 
   return (
     <main className="mx-auto w-full max-w-4xl px-4 py-8">
-      <h1 className="text-3xl font-semibold tracking-tight">Escalas</h1>
+      <h1 className="text-4xl">Escalas</h1>
       <p className="mt-1 text-muted-foreground">
         Cualquier escala, cualquier tono, deletreada como manda la tonalidad. Míralas por
         el diapasón entero, caja a caja o cuerda a cuerda.

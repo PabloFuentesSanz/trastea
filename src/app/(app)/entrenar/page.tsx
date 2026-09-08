@@ -194,7 +194,7 @@ export default async function EntrenarPage({
 
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-8">
-      <h1 className="text-3xl font-semibold tracking-tight">Entrenar</h1>
+      <h1 className="text-4xl">Entrenar</h1>
       <p className="text-muted-foreground mt-1">
         Todo lo que se puede practicar sin partitura: el mástil, los intervalos, los
         acordes y el oído. Elige por lo que quieras mejorar y por el nivel al que estés.

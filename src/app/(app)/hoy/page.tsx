@@ -2,6 +2,13 @@ import { redirect } from "next/navigation";
 import { getLesson, getOrderedLessons } from "@/lib/content/loader";
 import { getUserContext } from "@/lib/queries";
 
+/**
+ * Depende del usuario, y sin sesión no puede quedarse prerenderizada: una
+ * página estática con `redirect()` se sirve como <meta refresh> de un
+ * segundo, y ese refresco tardío abortaba la navegación siguiente.
+ */
+export const dynamic = "force-dynamic";
+
 /** Atajo a la lección que toca hoy. */
 export default async function HoyPage() {
   const ctx = await getUserContext();

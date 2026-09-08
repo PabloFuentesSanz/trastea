@@ -22,7 +22,7 @@ export default async function GrabacionesPage() {
 
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-8">
-      <h1 className="flex items-center gap-2 text-3xl font-semibold tracking-tight">
+      <h1 className="flex items-center gap-2 text-4xl">
         <Mic className="size-7 text-primary" aria-hidden /> Grabaciones
       </h1>
       <p className="mt-1 text-muted-foreground">

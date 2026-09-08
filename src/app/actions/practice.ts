@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import { getLesson, getOrderedLessons, nextLessonSlug } from "@/lib/content/loader";
 import { nextStreak } from "@/lib/streak";
+import { parejaPorId } from "@/lib/train/chord-changes";
 import type { UserLevel } from "@/lib/supabase/types";
 
 export interface ActionResult {
@@ -100,6 +101,33 @@ export async function logBpm(input: {
     clean: input.clean,
   });
 
+  if (error) return { ok: false, error: error.message };
+  return { ok: true };
+}
+
+/**
+ * Una tanda de cambios de acorde en un minuto. Se guarda la cuenta, no un
+ * bpm: lo que se compara es cuántos cambios limpios caben en 60 segundos.
+ */
+export async function logChordChanges(input: {
+  pair: string;
+  changes: number;
+  seconds: number;
+}): Promise<ActionResult> {
+  const ctx = await requireUser();
+  if (!ctx) return DEMO;
+  if (!parejaPorId(input.pair)) return { ok: false, error: "pareja desconocida" };
+  if (input.changes < 0 || input.changes > 300)
+    return { ok: false, error: "cuenta fuera de rango" };
+  if (input.seconds < 10 || input.seconds > 300)
+    return { ok: false, error: "duración fuera de rango" };
+
+  const { error } = await ctx.supabase.from("chord_change_records").insert({
+    user_id: ctx.user.id,
+    pair: input.pair,
+    changes: Math.round(input.changes),
+    seconds: Math.round(input.seconds),
+  });
   if (error) return { ok: false, error: error.message };
   return { ok: true };
 }

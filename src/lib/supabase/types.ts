@@ -52,6 +52,16 @@ export type PracticeSessionRow = {
   created_at: string;
 };
 
+export type ChordChangeRecordRow = {
+  id: string;
+  user_id: string;
+  /** id de la pareja en src/lib/train/chord-changes.ts, p. ej. "em-am" */
+  pair: string;
+  changes: number;
+  seconds: number;
+  recorded_at: string;
+};
+
 export type ExerciseRecordRow = {
   id: string;
   user_id: string;
@@ -149,6 +159,11 @@ export type Database = {
       exercise_records: TableDef<
         ExerciseRecordRow,
         "user_id" | "exercise_slug" | "bpm",
+        "id"
+      >;
+      chord_change_records: TableDef<
+        ChordChangeRecordRow,
+        "user_id" | "pair" | "changes",
         "id"
       >;
       lesson_progress: TableDef<LessonProgressRow, "user_id" | "lesson_slug", "id">;

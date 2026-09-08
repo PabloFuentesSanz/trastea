@@ -50,7 +50,7 @@ export default async function CancionPage({
           {SONG_STYLE_LABEL[song.style]}
         </Link>
       </p>
-      <h1 className="mt-1 text-3xl font-semibold tracking-tight">{song.title}</h1>
+      <h1 className="mt-1 text-4xl">{song.title}</h1>
       <p className="mt-1 text-muted-foreground">
         {song.artist}
         {song.year ? ` · ${song.year}` : ""}

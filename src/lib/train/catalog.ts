@@ -242,7 +242,29 @@ function boxCards(
 
 // ---------- el catálogo ----------
 
+/**
+ * El entrenamiento práctico de cambios de acorde no fabrica tarjetas: se
+ * hace con la guitarra, un cronómetro y un botón por cada cambio limpio. Vive
+ * en el catálogo para que los filtros, los enlaces del curso y la validación
+ * de `content:audit` lo traten como a los demás; su página es propia.
+ */
+export const CAMBIOS_DE_ACORDE_SLUG = "cambios-de-acorde";
+
 export const DRILLS: readonly Drill[] = [
+  {
+    slug: CAMBIOS_DE_ACORDE_SLUG,
+    title: "Cambios de acorde en un minuto",
+    summary:
+      "Eliges una pareja de acordes, arrancas el minuto y cuentas cada cambio limpio. A partir de 30 ya llegas a tiempo en una canción.",
+    theme: "acordes",
+    skills: ["cambios-de-acorde"],
+    mode: "cronometrado",
+    levels: [
+      { level: 1, label: "Em, Am, D, A y E: las parejas de Desde cero", build: () => [] },
+      { level: 2, label: "G, C, Dm y el Fa pequeño", build: () => [] },
+      { level: 3, label: "Con cejilla: F y Bm", build: () => [] },
+    ],
+  },
   {
     slug: "notas-del-mastil",
     title: "Notas del mástil",

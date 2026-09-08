@@ -168,7 +168,7 @@ export function Mdx({
   return (
     <div
       className={cn(
-        "prose prose-invert max-w-none prose-headings:font-semibold prose-a:text-primary prose-a:underline-offset-4 prose-code:before:content-none prose-code:after:content-none",
+        "prose max-w-none prose-headings:font-display prose-headings:font-normal prose-headings:tracking-tight prose-h2:text-2xl prose-h3:text-xl prose-a:text-primary prose-a:underline-offset-4 prose-code:before:content-none prose-code:after:content-none",
         className,
       )}
     >

@@ -24,7 +24,7 @@ export default async function CursoPage() {
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-8">
-      <h1 className="text-3xl font-semibold tracking-tight">Curso</h1>
+      <h1 className="text-4xl">Curso</h1>
       <p className="mt-1 text-muted-foreground">
         Módulos → semanas → lecciones-día. Cada día, 40 minutos con propósito.
       </p>

@@ -69,26 +69,30 @@ export function AppNav() {
     isActive(pathname, item.href, item.exact),
   );
 
+  // el enlace activo no se pinta con una caja: lleva la cuerda debajo, en
+  // índigo, como el inlay que marca el traste en el que estás
   const barLink = (active: boolean) =>
     cn(
-      "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors",
+      "relative flex h-14 items-center gap-1.5 px-3 text-sm transition-colors",
+      "after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:bg-primary after:opacity-0 after:transition-opacity",
       active
-        ? "bg-accent text-accent-foreground"
-        : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+        ? "text-primary after:opacity-100"
+        : "text-muted-foreground hover:text-foreground",
     );
 
   return (
     <>
       {/* Barra superior (desktop) */}
-      <header className="sticky top-0 z-40 hidden border-b bg-background/90 backdrop-blur md:block">
+      <header className="sticky top-0 z-40 hidden border-b bg-card/95 backdrop-blur md:block">
         <nav
           aria-label="Principal"
           className="mx-auto flex h-14 max-w-5xl items-center gap-1 px-4"
         >
-          <Link href="/" className="mr-4 flex items-center gap-2 font-semibold">
-            <span aria-hidden className="text-primary">
-              ⏦
-            </span>
+          <Link
+            href="/"
+            className="font-display mr-4 flex items-center gap-2 text-2xl tracking-tight"
+          >
+            <span aria-hidden className="inline-block size-2.5 rounded-full bg-primary" />
             Trastea
           </Link>
           {[...MAIN_ITEMS, ...TOOL_ITEMS].map(({ href, label, icon: Icon, exact }) => (
@@ -132,9 +136,9 @@ export function AppNav() {
             aria-label="Perfil"
             aria-current={isActive(pathname, "/perfil", false) ? "page" : undefined}
             className={cn(
-              "ml-auto rounded-md p-2 transition-colors",
+              "ml-auto rounded-full p-2 transition-colors",
               isActive(pathname, "/perfil", false)
-                ? "bg-accent text-accent-foreground"
+                ? "bg-accent text-primary"
                 : "text-muted-foreground hover:bg-secondary hover:text-foreground",
             )}
           >
@@ -146,7 +150,7 @@ export function AppNav() {
       {/* Barra inferior (móvil, con la guitarra puesta) */}
       <nav
         aria-label="Principal"
-        className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 backdrop-blur md:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 border-t bg-card/95 backdrop-blur md:hidden"
       >
         <div className="grid grid-cols-5">
           {MAIN_ITEMS.map(({ href, label, icon: Icon, exact }) => (

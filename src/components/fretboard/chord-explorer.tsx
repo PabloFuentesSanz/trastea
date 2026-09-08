@@ -340,8 +340,8 @@ export function ChordExplorer({ initial }: { initial: ChordExplorerInitial }) {
       </div>
 
       <p className="text-xs text-muted-foreground">
-        La raíz es el cuadrado ámbar; 3ª verde, 5ª azul, 7ª rosa. Ordenadas de la cejuela
-        hacia arriba: son las mismas 5 zonas del sistema CAGED. Afinación: {tuning.name}.
+        La raíz es el cuadrado; 3ª verde, 5ª azul, 7ª rosa. Ordenadas de la cejuela hacia
+        arriba: son las mismas 5 zonas del sistema CAGED. Afinación: {tuning.name}.
       </p>
     </div>
   );

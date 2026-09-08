@@ -67,7 +67,7 @@ export default async function EjercicioPage({
         <ArrowLeft className="size-4" aria-hidden /> Entrenar
       </Link>
 
-      <h1 className="mt-2 text-3xl font-semibold tracking-tight">{fm.title}</h1>
+      <h1 className="mt-2 text-4xl">{fm.title}</h1>
       <div className="mt-2 flex flex-wrap gap-1.5">
         <Badge variant="outline">
           Nivel {level} · {TRAIN_LEVEL_LABEL[level]}
